@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lienzo · Plataforma de aprendizaje Power BI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#14161c;--panel:#1b1e26;--surface:#22262f;--line:#2e3440;
+  --ink:#e9ecf3;--muted:#8b93a7;--amber:#f2c811;--amber-dim:#6b5a10;
+  --teal:#2fb8a6;--coral:#e5566d;--violet:#8b7bd8;--r:4px;
+  --sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --cond:'IBM Plex Sans Condensed','IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--canvas);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.app{display:grid;grid-template-columns:264px 1fr 300px;grid-template-rows:52px 1fr;height:100vh}
+.ribbon{grid-column:1/-1;display:flex;align-items:center;gap:18px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.pane{background:var(--panel);overflow-y:auto;border-right:1px solid var(--line)}
+.pane--right{border-right:none;border-left:1px solid var(--line)}
+.stage{overflow-y:auto;padding:22px 26px 60px}
+.brand{display:flex;align-items:baseline;gap:9px}
+.brand b{font-family:var(--cond);font-weight:700;font-size:19px;letter-spacing:.02em}
+.brand span{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
+.brand-mark{width:11px;height:11px;background:var(--amber);clip-path:polygon(0 100%,0 42%,33% 42%,33% 100%,38% 100%,38% 20%,71% 20%,71% 100%,76% 100%,76% 0,100% 0,100% 100%);align-self:center}
+.ribbon-spacer{flex:1}
+.tbtn{padding:5px 11px;border:1px solid var(--line);border-radius:var(--r);font-size:13px;color:var(--muted)}
+.tbtn:hover{color:var(--ink);border-color:var(--muted)}
+.searchwrap{position:relative}
+.searchwrap input{width:230px;padding:6px 10px;background:var(--canvas);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font-family:inherit;font-size:13px}
+.searchwrap input::placeholder{color:var(--muted)}
+.results{position:absolute;top:36px;left:0;width:340px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);z-index:40;max-height:320px;overflow-y:auto;display:none}
+.results.open{display:block}
+.results button{display:block;width:100%;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.results button:hover{background:var(--canvas)}
+.results small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.pane-head{padding:12px 14px 8px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);z-index:5}
+.mod{border-bottom:1px solid var(--line)}
+.mod-btn{display:flex;width:100%;gap:10px;padding:11px 14px;text-align:left;align-items:flex-start}
+.mod-btn:hover{background:var(--surface)}
+.mod-n{font-family:var(--mono);font-size:11px;color:var(--amber);padding-top:2px;min-width:20px}
+.mod-t{font-size:13.5px;font-weight:500;line-height:1.35}
+.mod-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.lessons{display:none;padding-bottom:6px}
+.mod.open .lessons{display:block}
+.les-btn{display:flex;align-items:center;gap:9px;width:100%;padding:6px 14px 6px 44px;text-align:left;font-size:12.5px;color:var(--muted)}
+.les-btn:hover{color:var(--ink);background:var(--surface)}
+.les-btn.active{color:var(--ink);background:var(--surface);box-shadow:inset 2px 0 0 var(--amber)}
+.dot{width:7px;height:7px;border:1px solid var(--muted);border-radius:50%;flex:0 0 auto}
+.dot.done{background:var(--teal);border-color:var(--teal)}
+.crumb{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+h1.les{font-family:var(--cond);font-weight:700;font-size:30px;line-height:1.15;letter-spacing:-.01em;margin-bottom:14px}
+.objective{border-left:2px solid var(--amber);padding:2px 0 2px 14px;color:#d5d9e4;margin-bottom:22px;max-width:70ch}
+.objective b{font-family:var(--cond);display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:2px}
+.body{max-width:72ch}
+.body p{margin-bottom:13px}
+.body h3{font-family:var(--cond);font-size:17px;margin:22px 0 8px}
+.body ul{margin:0 0 14px 18px}
+.body li{margin-bottom:5px}
+.body code{font-family:var(--mono);font-size:.87em;background:var(--surface);padding:1px 5px;border-radius:3px;color:var(--amber)}
+.body em{color:var(--muted);font-style:normal}
+.body strong{font-weight:600;color:#fff}
+.visual{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:20px 0}
+.visual-h{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;border-bottom:1px solid var(--line)}
+.visual-h span{font-family:var(--cond);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.visual-b{padding:13px}
+pre{font-family:var(--mono);font-size:12.5px;line-height:1.65;overflow-x:auto;color:#cfd6e6;white-space:pre}
+.k{color:var(--violet)}.f{color:var(--amber)}.c{color:#5f6b80;font-style:italic}.s{color:var(--teal)}
+.quiz{border-top:1px solid var(--line);margin-top:30px;padding-top:22px;max-width:72ch}
+.quiz h2{font-family:var(--cond);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.q{margin-bottom:20px}
+.q-t{font-weight:500;margin-bottom:9px}
+.opt{display:block;width:100%;text-align:left;padding:9px 13px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:6px;font-size:14px;transition:border-color .12s}
+.opt:hover:not(:disabled){border-color:var(--muted)}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--teal);background:rgba(47,184,166,.09)}
+.opt.bad{border-color:var(--coral);background:rgba(229,86,109,.09)}
+.fb{font-size:13px;color:var(--muted);padding:4px 2px;display:none}
+.fb.show{display:block}
+.done-row{display:flex;gap:10px;align-items:center;margin-top:8px}
+.cta{background:var(--amber);color:#14161c;font-weight:600;padding:8px 16px;border-radius:var(--r);font-size:14px}
+.cta:hover{background:#ffd82e}
+.cta.ghost{background:none;color:var(--muted);border:1px solid var(--line)}
+.cta.ghost:hover{color:var(--ink);border-color:var(--muted)}
+.ring{display:flex;align-items:center;gap:14px;padding:14px}
+.ring svg{transform:rotate(-90deg)}
+.ring-n{font-family:var(--cond);font-size:26px;line-height:1}
+.ring-l{font-size:11px;color:var(--muted)}
+.bars{padding:0 14px 14px}
+.bar-row{margin-bottom:9px}
+.bar-t{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+.bar{height:4px;background:var(--canvas);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--amber);transition:width .3s}
+.side-sec{border-top:1px solid var(--line);padding:14px}
+.side-sec h4{font-family:var(--cond);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.card-flip{border:1px solid var(--line);border-radius:var(--r);padding:13px;min-height:96px;font-size:13.5px;cursor:pointer;background:var(--surface)}
+.card-flip small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{padding:4px 11px;border:1px solid var(--line);border-radius:12px;font-size:12.5px;color:var(--muted)}
+.chip:hover{border-color:var(--muted);color:var(--ink)}
+.chip.on{background:var(--amber);border-color:var(--amber);color:#14161c;font-weight:500}
+table.grid{width:100%;border-collapse:collapse;font-size:12.5px;font-family:var(--mono)}
+table.grid th{text-align:left;font-weight:500;color:var(--muted);border-bottom:1px solid var(--line);padding:5px 8px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+table.grid td{padding:4px 8px;border-bottom:1px solid rgba(46,52,64,.55)}
+table.grid tr.out td{color:#4b5364;text-decoration:line-through}
+table.grid tr.in td{color:var(--ink)}
+.num{text-align:right}
+.readout{display:flex;gap:22px;flex-wrap:wrap;padding:11px 13px;border-top:1px solid var(--line);margin-top:11px}
+.readout div span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.readout div b{font-family:var(--cond);font-size:21px;color:var(--amber)}
+.steps{display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
+.step{display:flex;gap:9px;align-items:baseline;padding:6px 10px;border-left:2px solid var(--line);text-align:left;font-size:13px;color:var(--muted)}
+.step:hover{color:var(--ink)}
+.step.on{border-left-color:var(--amber);color:var(--ink);background:var(--canvas)}
+.step i{font-family:var(--mono);font-size:11px;color:var(--amber);font-style:normal}
+.picker select{width:100%;padding:8px 10px;background:var(--canvas);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font-family:inherit;font-size:14px;margin-bottom:10px}
+.verdict{border:1px solid var(--amber);border-radius:var(--r);padding:12px 14px}
+.verdict b{font-family:var(--cond);font-size:16px;display:block;margin-bottom:4px;color:var(--amber)}
+.mtabs{display:none}
+@media(max-width:1080px){.app{grid-template-columns:240px 1fr}.pane--right{display:none}}
+@media(max-width:760px){
+  .app{grid-template-columns:1fr;grid-template-rows:52px 40px 1fr}
+  .mtabs{display:flex;grid-column:1/-1;border-bottom:1px solid var(--line);background:var(--panel)}
+  .mtabs button{flex:1;padding:9px;font-size:12.5px;color:var(--muted);letter-spacing:.06em}
+  .mtabs button.on{color:var(--amber);box-shadow:inset 0 -2px 0 var(--amber)}
+  .pane{display:none}.pane.show{display:block}
+  .stage{display:none;padding:18px 16px 50px}.stage.show{display:block}
+  .searchwrap input{width:150px}
+  h1.les{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="ribbon">
+    <div class="brand"><i class="brand-mark"></i><b>Lienzo</b><span>Power BI</span></div>
+    <div class="searchwrap">
+      <input id="search" type="text" placeholder="Buscar en el curso…" autocomplete="off">
+      <div class="results" id="results"></div>
+    </div>
+    <div class="ribbon-spacer"></div>
+    <button class="tbtn" id="btn-export">Guardar avance</button>
+    <button class="tbtn" id="btn-import">Cargar avance</button>
+  </header>
+  <nav class="mtabs">
+    <button data-tab="left" class="on">Módulos</button>
+    <button data-tab="stage">Lección</button>
+  </nav>
+  <aside class="pane pane--left" id="pane-left">
+    <div class="pane-head">Ruta de aprendizaje</div>
+    <div id="modtree"></div>
+  </aside>
+  <main class="stage show" id="stage"></main>
+  <aside class="pane pane--right">
+    <div class="pane-head">Progreso</div>
+    <div class="ring">
+      <svg width="58" height="58" viewBox="0 0 58 58">
+        <circle cx="29" cy="29" r="25" fill="none" stroke="#2e3440" stroke-width="6"></circle>
+        <circle id="ring-arc" cx="29" cy="29" r="25" fill="none" stroke="#f2c811" stroke-width="6"
+                stroke-linecap="butt" stroke-dasharray="157" stroke-dashoffset="157"></circle>
+      </svg>
+      <div><div class="ring-n" id="ring-pct">0%</div><div class="ring-l" id="ring-sub">0 de 0 lecciones</div></div>
+    </div>
+    <div class="bars" id="bars"></div>
+    <div class="side-sec">
+      <h4>Repaso rápido</h4>
+      <div class="card-flip" id="flash"></div>
+      <div class="done-row"><button class="cta ghost" id="flash-next" style="padding:5px 12px;font-size:12.5px">Otra tarjeta</button></div>
+    </div>
+    <div class="side-sec">
+      <h4>Cómo usar esto</h4>
+      <p style="font-size:12.5px;color:var(--muted)">Cada lección se marca completada al responder su control. Los laboratorios no evalúan: son para manipular y equivocarse. El avance vive en esta pestaña; usa <em style="color:var(--ink)">Guardar avance</em> para descargarlo.</p>
+    </div>
+  </aside>
+</div>
+<script>
+const CURSO = [
+{n:"01", t:"Fundamentos y flujo de trabajo", L:[
+ {id:"1a", t:"Qué resuelve Power BI y qué no",
+  obj:"Distinguir las tres piezas del producto y decidir dónde vive cada tarea.",
+  body:`<p>Power BI no es una herramienta, son tres que se pasan el trabajo unas a otras. Confundirlas es el origen de la mayoría de los proyectos que se atascan.</p>
+  <ul>
+  <li><strong>Power BI Desktop</strong>: aplicación de escritorio, gratuita, Windows. Aquí se conecta, se transforma, se modela, se escribe DAX y se diseña el informe. Es el taller.</li>
+  <li><strong>Servicio Power BI</strong> (app.powerbi.com): la nube. Aquí se publica, se comparte, se programa la actualización y se controla quién ve qué. Es la vitrina.</li>
+  <li><strong>Power BI Mobile</strong>: consumo, no autoría.</li>
+  </ul>
+  <p>Regla práctica: <em>todo lo que se pueda romper se hace en Desktop; todo lo que se deba gobernar se hace en el Servicio.</em> Editar un informe directamente en la nube parece cómodo y termina generando versiones divergentes.</p>
+  <h3>Lo que Power BI no es</h3>
+  <ul>
+  <li>No es un ETL corporativo. Power Query es excelente para preparar el dato de un modelo, no para orquestar cargas de toda la empresa.</li>
+  <li>No es una base de datos. Si necesitas escribir de vuelta al origen, necesitas otra pieza.</li>
+  <li>No sustituye el criterio de negocio: un modelo mal definido produce gráficos rápidos y conclusiones equivocadas.</li>
+  </ul>`,
+  quiz:[{q:"Un analista edita el informe publicado en el Servicio y otro edita el .pbix en su equipo. ¿Qué ocurre al republicar?",
+    o:["Se fusionan los cambios","El .pbix sobrescribe lo editado en la nube","El Servicio bloquea la publicación"],a:1,
+    fb:"La publicación reemplaza el informe. Por eso el .pbix en Desktop debe ser la única fuente de verdad."}]},
+
+ {id:"1b", t:"El flujo de seis pasos",
+  obj:"Ordenar mentalmente el ciclo completo antes de tocar un solo botón.",
+  body:`<p>Todo proyecto recorre la misma secuencia. Saltarse un paso no lo elimina: lo traslada, más caro, a un paso posterior.</p>
+  <ul>
+  <li><strong>1. Conectar</strong> — elegir origen y modo de acceso.</li>
+  <li><strong>2. Transformar</strong> — limpiar en Power Query, antes de que el dato entre al modelo.</li>
+  <li><strong>3. Modelar</strong> — tablas, relaciones, esquema en estrella.</li>
+  <li><strong>4. Calcular</strong> — medidas DAX sobre un modelo ya sano.</li>
+  <li><strong>5. Visualizar</strong> — objetos visuales, filtros, narrativa.</li>
+  <li><strong>6. Publicar y gobernar</strong> — áreas de trabajo, actualización, permisos.</li>
+  </ul>
+  <p>El error más caro del ciclo es empezar por el paso 5. Un informe bonito sobre un modelo plano obliga a escribir DAX defensivo, lento y frágil para compensar lo que debió resolverse en el paso 3.</p>`,
+  quiz:[{q:"Una medida DAX se vuelve enrevesada y lenta. El síntoma apunta con más frecuencia a…",
+    o:["Falta de memoria RAM","Un problema de modelado arrastrado del paso 3","Un objeto visual mal elegido"],a:1,
+    fb:"El DAX complicado casi siempre es el precio de un modelo que no está en estrella o con relaciones mal definidas."}]},
+
+ {id:"1c", t:"Roles y quién hace qué",
+  obj:"Repartir responsabilidades cuando el informe deja de ser de una sola persona.",
+  body:`<p>En cuanto un informe se comparte, aparecen roles distintos aunque los ocupe la misma persona:</p>
+  <ul>
+  <li><strong>Ingeniero de datos</strong>: garantiza el origen, su calidad y su disponibilidad.</li>
+  <li><strong>Modelador</strong>: define tablas, relaciones y medidas. Es el rol que decide qué significa "venta" en la organización.</li>
+  <li><strong>Diseñador de informes</strong>: traduce el modelo en respuestas visuales.</li>
+  <li><strong>Administrador</strong>: licencias, capacidades, áreas de trabajo, políticas.</li>
+  <li><strong>Consumidor</strong>: lee, filtra, exporta. Nunca debería necesitar entender el modelo.</li>
+  </ul>
+  <p>La frontera crítica está entre modelador y diseñador: si cada diseñador crea sus propias medidas, la organización acaba con cinco definiciones de margen y ninguna confiable.</p>`,
+  quiz:[{q:"Tres informes muestran cifras distintas de 'ventas netas'. La causa estructural más probable:",
+    o:["Cada informe define su propia medida en lugar de reutilizar una del modelo","Los usuarios filtran distinto","El servicio no actualizó"],a:0,
+    fb:"Las medidas centralizadas en el modelo son el mecanismo de una única definición compartida."}]}
+]},
+{n:"02", t:"Conexión a datos", L:[
+ {id:"2a", t:"Importación, DirectQuery y conexión activa",
+  obj:"Elegir el modo de acceso con criterio, porque condiciona todo lo demás.",
+  body:`<p>La decisión se toma al conectar y es difícil de revertir. Cada modo cambia qué se puede hacer después.</p>
+  <ul>
+  <li><strong>Importación</strong>: los datos se copian y comprimen en el motor en memoria. Es el más rápido, admite todo el DAX y todo Power Query. A cambio, los datos son tan frescos como la última actualización.</li>
+  <li><strong>DirectQuery</strong>: no se copia nada; cada interacción genera consultas al origen. Datos al día y sin límite de volumen, pero rendimiento a merced del origen y restricciones en DAX.</li>
+  <li><strong>Conexión activa</strong>: el modelo ya existe en otro sitio y solo se construye el informe encima.</li>
+  <li><strong>Compuesto</strong>: mezcla tablas importadas y en DirectQuery en un mismo modelo.</li>
+  </ul>
+  <p>Por defecto, Importación. Se pasa a DirectQuery solo cuando hay un requisito explícito de latencia baja o volumen que no cabe.</p>`,
+  quiz:[{q:"Necesitas inteligencia de tiempo compleja y transformaciones pesadas sobre 4 millones de filas. Modo recomendado:",
+    o:["DirectQuery","Importación","Conexión activa"],a:1,
+    fb:"4 millones de filas caben cómodamente comprimidas y la importación deja disponible todo el DAX y todo Power Query."}]},
+ {id:"2b", t:"Orígenes y sus trampas",
+  obj:"Anticipar los problemas típicos de cada tipo de origen.",
+  body:`<p>El conector se elige en un clic; las consecuencias duran meses.</p>
+  <ul>
+  <li><strong>Excel / CSV en carpeta local</strong>: cómodo para prototipar, insostenible en producción. La ruta se rompe al publicar. Mueve el archivo a SharePoint o OneDrive antes de compartir.</li>
+  <li><strong>Carpeta</strong>: consolida decenas de archivos de igual estructura. Exige que la estructura sea realmente igual.</li>
+  <li><strong>Base de datos</strong>: pide siempre solo las columnas necesarias. Traer <code>SELECT *</code> infla el modelo sin aportar nada.</li>
+  <li><strong>Web / API</strong>: frágil ante cambios de estructura y sensible al método de autenticación.</li>
+  </ul>
+  <h3>Plegado de consultas</h3>
+  <p>Cuando el origen es una base de datos, Power Query intenta traducir los pasos a la consulta nativa. Eso es el <em>plegado</em>. Ciertos pasos lo rompen; ordena tus pasos de modo que los que reducen filas y columnas vayan primero.</p>`,
+  quiz:[{q:"El informe funcionaba en tu equipo y falla al actualizar en la nube. Sospecha primero de:",
+    o:["Una ruta de archivo local o credenciales no configuradas","El tamaño del modelo","Un objeto visual no soportado"],a:0,
+    fb:"El origen debe ser accesible desde el Servicio, no desde tu escritorio, y con credenciales declaradas."}]},
+ {id:"2c", t:"Parámetros y rutas que sobreviven",
+  obj:"Construir conexiones que no se rompan al cambiar de entorno.",
+  body:`<p>Una consulta con la ruta escrita a mano es deuda técnica. La alternativa son los parámetros de Power Query.</p>
+  <ul>
+  <li>Crea un parámetro <code>RutaOrigen</code> de tipo texto y úsalo en el paso <code>Origen</code>.</li>
+  <li>Cambiar de desarrollo a producción pasa a ser editar un valor, no reescribir consultas.</li>
+  <li>Los parámetros también sirven para filtrar volumen durante el desarrollo.</li>
+  </ul>`,
+  code:{lang:"M", src:`let
+    Origen = Folder.Files(RutaOrigen),
+    SoloExcel = Table.SelectRows(Origen, each [Extension] = ".xlsx"),
+    Combinadas = Table.Combine(
+        List.Transform(SoloExcel[Content], each Excel.Workbook(_){0}[Data])
+    )
+in
+    Combinadas`},
+  quiz:[{q:"¿Cuál es la ventaja principal de parametrizar la ruta de origen?",
+    o:["Acelera la actualización","Permite cambiar de entorno sin reescribir las consultas","Reduce el tamaño del modelo"],a:1,
+    fb:"Es una cuestión de mantenimiento: un valor en lugar de N pasos editados a mano."}]}
+]},
+{n:"03", t:"Power Query", L:[
+ {id:"3a", t:"Limpiar antes de modelar",
+  obj:"Entender por qué cada fila y columna sobrante se paga tres veces.",
+  body:`<p>Power Query es la etapa donde el dato se vuelve utilizable. Lo que no se limpia aquí se arrastra al modelo, se compensa con DAX y se disfraza en el informe.</p>
+  <h3>Qué eliminar sin piedad</h3>
+  <ul>
+  <li><strong>Columnas que nadie usará.</strong> Cada columna se comprime, se indexa y ocupa memoria.</li>
+  <li><strong>Filas de totales</strong> incrustadas en el origen: duplican los agregados sin que nadie lo note.</li>
+  <li><strong>Filas de encabezado y pie</strong> propias de exportaciones de otros sistemas.</li>
+  </ul>
+  <h3>Qué normalizar</h3>
+  <ul>
+  <li>Espacios sobrantes y mayúsculas inconsistentes: <em>"MAERSK "</em> y <em>"Maersk"</em> son dos categorías distintas para el motor.</li>
+  <li>Fechas guardadas como texto: no admiten inteligencia de tiempo.</li>
+  <li>Números con separador de miles importados como texto.</li>
+  </ul>
+  <p>El panel de <strong>perfil de columna</strong> es la forma rápida de encontrar todo esto antes de escribir una sola medida.</p>`,
+  quiz:[{q:"¿Por qué conviene quitar columnas innecesarias en Power Query y no simplemente ocultarlas en el modelo?",
+    o:["Ocultarlas ya libera memoria","Ocultar solo afecta a la vista; la columna sigue cargada y comprimida","No hay diferencia real"],a:1,
+    fb:"Ocultar es un gesto de interfaz. Eliminar en Power Query evita que el dato entre al modelo."}]},
+ {id:"3b", t:"Laboratorio: pasos aplicados",
+  obj:"Ver cómo cada paso reescribe la tabla y qué código M genera.",
+  body:`<p>Los pasos aplicados son una receta reproducible: se ejecutan en orden, cada uno sobre el resultado del anterior. Recorre los pasos y observa la tabla y el código a la vez.</p>`,
+  lab:"pq",
+  quiz:[{q:"Cambiar el tipo de datos al final, después de dividir y añadir columnas, es…",
+    o:["Indiferente","Preferible, porque evita reprocesos y errores de conversión intermedios","Obligatorio"],a:1,
+    fb:"El orden importa: tipar demasiado pronto obliga a reconvertir; tipar al final consolida la estructura definitiva."}]},
+ {id:"3c", t:"Anular dinamización y estructura",
+  obj:"Convertir tablas pensadas para leerse en tablas pensadas para analizarse.",
+  body:`<p>La mayoría de las planillas humanas tienen los meses en columnas. El modelo tabular necesita lo contrario: una fila por hecho.</p>
+  <ul>
+  <li><strong>Anular dinamización</strong> (unpivot): convierte columnas de meses en dos columnas, <code>Atributo</code> y <code>Valor</code>.</li>
+  <li>Usa <em>Anular dinamización de otras columnas</em>, no la selección directa: si el próximo mes aparece una columna nueva, se incorpora sola.</li>
+  <li><strong>Dinamizar</strong> hace el camino inverso; se usa poco.</li>
+  <li><strong>Transponer</strong> gira la tabla entera; útil cuando el origen viene rotado.</li>
+  </ul>
+  <p>Señal de que falta un unpivot: te encuentras escribiendo una medida por cada mes.</p>`,
+  quiz:[{q:"El origen trae una columna por mes y cada mes hay que editar la consulta. La solución:",
+    o:["Anular dinamización de otras columnas","Transponer la tabla","Combinar consultas"],a:0,
+    fb:"Anular dinamización de otras columnas absorbe automáticamente las columnas nuevas."}]},
+ {id:"3d", t:"Combinar y anexar",
+  obj:"Distinguir las dos operaciones que la gente confunde a diario.",
+  body:`<ul>
+  <li><strong>Anexar</strong> (append) apila filas: dos tablas con la misma estructura se convierten en una más larga.</li>
+  <li><strong>Combinar</strong> (merge) pega columnas: trae atributos de otra tabla cruzando por una clave. Es el JOIN.</li>
+  </ul>
+  <p>Los tipos <em>anti</em> revelan claves huérfanas antes de que el modelo las convierta en un "(en blanco)" silencioso.</p>
+  <h3>Referenciar frente a duplicar</h3>
+  <ul>
+  <li><strong>Duplicar</strong> copia todos los pasos: dos consultas independientes que habrá que mantener dos veces.</li>
+  <li><strong>Referenciar</strong> crea una consulta que parte del resultado de otra: un tronco común y varias ramas.</li>
+  </ul>`,
+  quiz:[{q:"Quieres detectar clientes de la tabla de embarques que no existen en la tabla maestra. Usas:",
+    o:["Anexar consultas","Combinar con tipo anti izquierda","Agrupar por"],a:1,
+    fb:"La combinación anti izquierda devuelve exactamente las filas sin coincidencia: las claves huérfanas."}]}
+]},
+{n:"04", t:"Modelado tabular", L:[
+ {id:"4a", t:"Esquema en estrella",
+  obj:"Adoptar la única estructura que hace que todo lo demás sea fácil.",
+  body:`<p>El modelo tabular está optimizado para una forma concreta: <strong>una tabla de hechos rodeada de tablas de dimensión</strong>. Es la estrella.</p>
+  <ul>
+  <li><strong>Hechos</strong>: muchas filas, granularidad fina, casi solo claves y valores numéricos.</li>
+  <li><strong>Dimensiones</strong>: pocas filas, muchos atributos descriptivos. Cliente, ruta, naviera, calendario.</li>
+  </ul>
+  <h3>Por qué no la tabla única</h3>
+  <p>Una tabla ancha y plana funciona hasta que aparece el segundo hecho, o un atributo que debe filtrar dos tablas a la vez.</p>
+  <h3>Por qué no el copo de nieve</h3>
+  <p>Normalizar las dimensiones en subtablas es correcto en una base transaccional y contraproducente aquí: cada salto añade una relación que el motor debe recorrer. Aplana la jerarquía dentro de la dimensión.</p>`,
+  quiz:[{q:"Tienes Producto → Subcategoría → Categoría como tres tablas encadenadas. La recomendación es:",
+    o:["Dejarlo, está normalizado","Aplanar los tres niveles en una única tabla de dimensión","Convertirlas en tablas de hechos"],a:1,
+    fb:"Es un copo de nieve. Aplanarlo en una dimensión reduce saltos de relación y simplifica el DAX."}]},
+ {id:"4b", t:"Relaciones: cardinalidad y dirección",
+  obj:"Leer una relación y predecir cómo se propagará el filtro.",
+  body:`<p>Una relación tiene tres propiedades:</p>
+  <ul>
+  <li><strong>Cardinalidad</strong>. La sana es <em>uno a varios</em>: un cliente, muchos embarques.</li>
+  <li><strong>Dirección del filtro</strong>. Por defecto, sencilla: del lado uno al lado varios.</li>
+  <li><strong>Estado</strong>. Solo una relación puede estar activa entre dos tablas; las demás quedan inactivas y se invocan con <code>USERELATIONSHIP</code>.</li>
+  </ul>
+  <h3>El filtro cruzado bidireccional</h3>
+  <p>Resuelve casos puntuales y crea ambigüedad en cuanto el modelo crece. Trátalo como excepción documentada, no como opción por defecto.</p>`,
+  quiz:[{q:"Una tabla de embarques tiene tres fechas: reserva, zarpe y arribo. ¿Cómo se modela con un solo calendario?",
+    o:["Tres calendarios distintos","Una relación activa y las otras inactivas, invocadas con USERELATIONSHIP","Relación bidireccional"],a:1,
+    fb:"Es el escenario de dimensión con varios roles. Una activa, el resto inactivas invocadas desde la medida."}]},
+ {id:"4c", t:"La tabla calendario",
+  obj:"Crear la dimensión que ninguna organización puede no tener.",
+  body:`<p>Sin tabla calendario no hay inteligencia de tiempo fiable. Requisitos:</p>
+  <ul>
+  <li>Una fila por día, <strong>sin huecos</strong>, cubriendo todos los años presentes en los hechos.</li>
+  <li>Columna de fecha de tipo fecha y con valores únicos.</li>
+  <li>Marcada explícitamente como <strong>tabla de fechas</strong> en el modelo.</li>
+  <li>Atributos suficientes: año, trimestre, mes, nombre de mes, semana, día de semana.</li>
+  </ul>
+  <p>Desactiva <em>Fecha y hora automáticas</em> en las opciones: crea una tabla de fechas oculta por cada columna de fecha del modelo, engordándolo sin control.</p>
+  <p>Y ordena las columnas de texto: el nombre de mes debe ordenarse por el número de mes con <em>Ordenar por columna</em>, o aparecerá alfabéticamente.</p>`,
+  code:{lang:"DAX", src:`Calendario =
+VAR MinF = MIN( Embarques[FechaZarpe] )
+VAR MaxF = MAX( Embarques[FechaZarpe] )
+RETURN
+ADDCOLUMNS(
+    CALENDAR( DATE( YEAR(MinF), 1, 1 ), DATE( YEAR(MaxF), 12, 31 ) ),
+    "Año",        YEAR( [Date] ),
+    "NumMes",     MONTH( [Date] ),
+    "Mes",        FORMAT( [Date], "mmm" ),
+    "Trimestre",  "T" & QUARTER( [Date] ),
+    "AñoMes",     FORMAT( [Date], "yyyy-mm" )
+)`},
+  quiz:[{q:"El nombre del mes aparece como abr, ago, dic… en el eje. Falta:",
+    o:["Marcar como tabla de fechas","Ordenar la columna Mes por la columna NumMes","Cambiar el tipo de datos"],a:1,
+    fb:"Ordenar por columna es lo que sustituye el orden alfabético por el cronológico."}]}
+]},
+{n:"05", t:"DAX esencial", L:[
+ {id:"5a", t:"Columna calculada o medida",
+  obj:"Elegir bien entre las dos, que es la decisión que más se equivoca al empezar.",
+  body:`<p>Se escriben casi igual y no tienen nada que ver.</p>
+  <ul>
+  <li>Una <strong>columna calculada</strong> se evalúa una vez por fila, al actualizar, y se guarda en el modelo. Ocupa memoria. Su contexto es la fila.</li>
+  <li>Una <strong>medida</strong> se evalúa en el momento, para cada celda del objeto visual, según los filtros activos. No ocupa espacio. Su contexto es el filtro.</li>
+  </ul>
+  <p>Criterio: si el resultado debe ir en un eje, en un segmentador o en una relación, es columna. Si es un número que debe reaccionar a los filtros, es medida. Ante la duda, medida.</p>`,
+  code:{lang:"DAX", src:`-- costoso: columna calculada materializada
+Importe = Embarques[TEU] * Embarques[TarifaTEU]
+
+-- correcto: medida con iterador
+Flete USD =
+SUMX( Embarques, Embarques[TEU] * Embarques[TarifaTEU] )
+
+-- división segura, siempre
+Tarifa media =
+DIVIDE( [Flete USD], [Total TEU] )`},
+  quiz:[{q:"Necesitas un segmentador con los rangos 'Bajo / Medio / Alto' según el TEU de cada embarque. Creas:",
+    o:["Una medida","Una columna calculada","Una tabla calculada"],a:1,
+    fb:"Un segmentador necesita valores materializados en el modelo: eso solo lo da una columna."}]},
+ {id:"5b", t:"Iteradores y variables",
+  obj:"Escribir DAX que otro pueda leer dentro de seis meses.",
+  body:`<p>Las funciones X —<code>SUMX</code>, <code>AVERAGEX</code>, <code>MAXX</code>— recorren una tabla fila a fila evaluando una expresión y luego agregan.</p>
+  <h3>Variables</h3>
+  <p><code>VAR</code> aporta tres cosas:</p>
+  <ul>
+  <li><strong>Rendimiento</strong>: la expresión se evalúa una sola vez, aunque se use cinco veces.</li>
+  <li><strong>Legibilidad</strong>: cada paso recibe un nombre.</li>
+  <li><strong>Depuración</strong>: puedes devolver una variable intermedia con <code>RETURN</code> y ver qué contiene.</li>
+  </ul>`,
+  code:{lang:"DAX", src:`Variación % =
+VAR Actual   = [Flete USD]
+VAR Anterior =
+    CALCULATE( [Flete USD], DATEADD( Calendario[Date], -1, YEAR ) )
+VAR Delta    = Actual - Anterior
+RETURN
+    DIVIDE( Delta, Anterior )`},
+  quiz:[{q:"¿Por qué DIVIDE y no el operador de barra?",
+    o:["Es más rápido siempre","Gestiona la división por cero devolviendo un resultado alternativo en lugar de error","Redondea automáticamente"],a:1,
+    fb:"DIVIDE evita que un denominador en cero rompa el objeto visual completo."}]},
+ {id:"5c", t:"Formato, nombres y organización",
+  obj:"Convertir el modelo en algo que un consumidor pueda usar sin manual.",
+  body:`<ul>
+  <li><strong>Nombra en lenguaje de negocio</strong>, no de base de datos. <em>Flete USD</em>, no <em>sum_frt_usd</em>.</li>
+  <li><strong>Oculta</strong> claves, columnas técnicas y columnas numéricas que ya tienen su medida.</li>
+  <li><strong>Categoriza</strong> las columnas geográficas y las de URL de imagen.</li>
+  <li><strong>Define No resumir</strong> en columnas numéricas que son códigos: un número de contenedor no debe sumarse jamás.</li>
+  <li><strong>Agrupa las medidas</strong> en una tabla dedicada y usa carpetas de visualización cuando pasen de veinte.</li>
+  </ul>`,
+  quiz:[{q:"Un usuario arrastra 'Número de contenedor' a una tarjeta y ve 480.291.334. Faltó:",
+    o:["Definir la columna como No resumir","Ocultar la columna","Cambiar el tipo a texto"],a:0,
+    fb:"No resumir impide que una columna de códigos se agregue por defecto."}]}
+]},
+{n:"06", t:"Contexto de filtro", L:[
+ {id:"6a", t:"Los dos contextos",
+  obj:"Entender el mecanismo que explica el 90% de los resultados inesperados.",
+  body:`<p>Toda expresión DAX se evalúa dentro de un contexto. Hay dos:</p>
+  <ul>
+  <li><strong>Contexto de fila</strong>: existe cuando algo recorre una tabla fila a fila. Sabe en qué fila está; no filtra el modelo.</li>
+  <li><strong>Contexto de filtro</strong>: el conjunto de filtros activos en el momento de evaluar. Lo producen los segmentadores, los ejes del objeto visual, el panel de filtros y las propias expresiones DAX.</li>
+  </ul>
+  <p>Una celda de una matriz no contiene un número: contiene una <em>pregunta</em>. La fila aporta un filtro, la columna aporta otro, el segmentador aporta un tercero, y la medida se evalúa sobre lo que sobrevive a los tres.</p>
+  <p>El contexto de fila <strong>no se convierte solo</strong> en contexto de filtro. Esa conversión la provoca <code>CALCULATE</code>.</p>`,
+  quiz:[{q:"En una matriz por naviera, la fila 'Maersk' muestra 1.240 TEU. ¿De dónde sale ese filtro?",
+    o:["De la medida","Del contexto de filtro que aporta la fila del objeto visual","Del contexto de fila"],a:1,
+    fb:"El eje del objeto visual inyecta un filtro por cada celda: eso es contexto de filtro."}]},
+ {id:"6b", t:"Laboratorio: CALCULATE en vivo",
+  obj:"Manipular el contexto y ver el número moverse al mismo tiempo que el código.",
+  body:`<p><code>CALCULATE</code> evalúa una expresión modificando el contexto de filtro. Sus argumentos de filtro <strong>reemplazan</strong> el filtro existente sobre esa columna, no se suman a él. Activa filtros abajo y observa tres cosas: qué filas sobreviven, cómo cambia la medida y cómo <code>ALL</code> ignora todo lo que has seleccionado.</p>`,
+  lab:"ctx",
+  quiz:[{q:"El segmentador marca Maersk y la medida usa CALCULATE([TEU], Embarques[Naviera]=\"MSC\"). El resultado:",
+    o:["Vacío, porque no hay intersección","El TEU de MSC: el argumento reemplaza el filtro sobre esa columna","El TEU de ambas"],a:1,
+    fb:"Reemplaza, no intersecta, cuando actúa sobre la misma columna. Para intersectar se usa KEEPFILTERS."}]},
+ {id:"6c", t:"ALL, REMOVEFILTERS y porcentajes",
+  obj:"Construir el cálculo de participación sin equivocarse de denominador.",
+  body:`<p>La familia de funciones que quita filtros permite comparar una parte con su total.</p>
+  <ul>
+  <li><code>ALL(Tabla)</code> retira todos los filtros de esa tabla.</li>
+  <li><code>ALL(Tabla[Col])</code> retira el filtro solo de esa columna: el resto sigue en pie.</li>
+  <li><code>ALLSELECTED()</code> respeta lo que el usuario seleccionó en los segmentadores, pero ignora el filtro del propio objeto visual.</li>
+  <li><code>REMOVEFILTERS()</code> es el nombre moderno y explícito de ALL cuando se usa como modificador.</li>
+  </ul>`,
+  code:{lang:"DAX", src:`% sobre total general =
+DIVIDE(
+    [Total TEU],
+    CALCULATE( [Total TEU], REMOVEFILTERS( Embarques ) )
+)
+
+% sobre lo seleccionado =
+DIVIDE(
+    [Total TEU],
+    CALCULATE( [Total TEU], ALLSELECTED() )
+)`},
+  quiz:[{q:"El usuario filtra tres navieras y quiere que los porcentajes de esas tres sumen 100%. Usas:",
+    o:["ALL(Embarques)","ALLSELECTED()","REMOVEFILTERS(Embarques[Naviera])"],a:1,
+    fb:"ALLSELECTED conserva la selección del segmentador como universo del cálculo."}]}
+]},
+{n:"07", t:"Inteligencia de tiempo", L:[
+ {id:"7a", t:"Acumulados y comparaciones",
+  obj:"Resolver los cuatro cálculos temporales que pide todo negocio.",
+  body:`<p>Con una tabla calendario marcada, las funciones de tiempo son casi declarativas.</p>
+  <ul>
+  <li><code>TOTALYTD</code> / <code>DATESYTD</code>: acumulado del año hasta la fecha.</li>
+  <li><code>SAMEPERIODLASTYEAR</code>: el mismo periodo del año anterior.</li>
+  <li><code>DATEADD</code>: desplaza el periodo un número de unidades.</li>
+  <li><code>DATESINPERIOD</code>: define una ventana móvil desde una fecha, ideal para medias de N meses.</li>
+  </ul>
+  <p>Todas exigen: una columna de fechas continua, sin huecos, en una tabla marcada como tabla de fechas.</p>`,
+  code:{lang:"DAX", src:`TEU YTD =
+TOTALYTD( [Total TEU], Calendario[Date] )
+
+TEU año anterior =
+CALCULATE( [Total TEU], SAMEPERIODLASTYEAR( Calendario[Date] ) )
+
+Media móvil 3M =
+AVERAGEX(
+    DATESINPERIOD( Calendario[Date], MAX( Calendario[Date] ), -3, MONTH ),
+    [Total TEU]
+)`},
+  quiz:[{q:"TEU año anterior devuelve vacío para todos los meses. La causa más probable:",
+    o:["La tabla calendario no está marcada como tabla de fechas o tiene huecos","Falta DIVIDE","El modo es DirectQuery"],a:0,
+    fb:"Es el requisito estructural de toda la familia de inteligencia de tiempo."}]},
+ {id:"7b", t:"Ejercicios de negocio",
+  obj:"Traducir preguntas reales a patrones DAX conocidos.",
+  body:`<p>Casi toda petición temporal cae en uno de estos patrones:</p>
+  <ul>
+  <li><strong>"¿Cómo vamos respecto al año pasado?"</strong> → medida actual, medida desplazada, variación y variación porcentual. Cuatro medidas, no una.</li>
+  <li><strong>"Quiero ver la tendencia sin el ruido mensual"</strong> → media móvil de 3 o 12 meses.</li>
+  <li><strong>"¿Cuánto llevamos acumulado?"</strong> → YTD, y ojo con comparar un YTD parcial contra un año completo.</li>
+  <li><strong>"¿Y si la tarifa sube un 8%?"</strong> → parámetro de hipótesis.</li>
+  </ul>`,
+  quiz:[{q:"El acumulado del año en curso aparece más bajo que el del año anterior y alguien concluye caída. Antes de eso hay que verificar:",
+    o:["Que ambos acumulados cubran el mismo número de días","El formato de la medida","La relación con Cliente"],a:0,
+    fb:"Comparar un YTD parcial con un año completo es el error de lectura más frecuente."}]},
+ {id:"7c", t:"Calendarios no estándar",
+  obj:"Sobrevivir cuando el año fiscal no empieza en enero.",
+  body:`<p>Las funciones estándar asumen año calendario. Cuando el negocio usa año fiscal, semanas ISO o periodos 4-4-5:</p>
+  <ul>
+  <li><strong>Parámetro de fin de año</strong>: varias funciones aceptan un argumento de cierre como <code>"30/06"</code>.</li>
+  <li><strong>Columnas propias en el calendario</strong>: número de periodo fiscal, índice continuo de mes. Con un índice continuo, las comparaciones se resuelven restando índices en lugar de usar funciones de fecha.</li>
+  </ul>
+  <p>Regla: si el calendario del negocio no es gregoriano puro, construye índices en la dimensión y olvídate de las funciones automáticas.</p>`,
+  quiz:[{q:"El negocio usa periodos 4-4-5. La estrategia robusta es:",
+    o:["Usar SAMEPERIODLASTYEAR con parámetro de cierre","Crear índices continuos de periodo en el calendario y comparar por índice","Cambiar el modelo a DirectQuery"],a:1,
+    fb:"Los índices continuos hacen el cálculo independiente del calendario gregoriano."}]}
+]},
+{n:"08", t:"Visualización e informes", L:[
+ {id:"8a", t:"Laboratorio: elegir el objeto visual",
+  obj:"Partir de la pregunta y no del catálogo de gráficos.",
+  body:`<p>La pregunta determina el gráfico. Selecciona abajo qué quieres responder y compara la recomendación con lo que sueles usar.</p>`,
+  lab:"chart",
+  quiz:[{q:"Un gráfico circular con once categorías. El problema principal:",
+    o:["El color","El ojo humano no compara ángulos pequeños con precisión; una barra ordenada lo hace evidente","Ocupa mucho espacio"],a:1,
+    fb:"El circular solo funciona con dos o tres categorías y diferencias grandes."}]},
+ {id:"8b", t:"Filtros, segmentadores e interacciones",
+  obj:"Ordenar las cuatro capas de filtrado que conviven en un informe.",
+  body:`<p>De más amplia a más concreta:</p>
+  <ul>
+  <li><strong>Filtros de todas las páginas</strong>: alcance global del informe.</li>
+  <li><strong>Filtros de página</strong>.</li>
+  <li><strong>Filtros de objeto visual</strong>.</li>
+  <li><strong>Segmentadores</strong>: lo mismo que un filtro de página, pero manipulable por el usuario y visible en el lienzo.</li>
+  </ul>
+  <p>Los filtros del panel son más eficientes que los segmentadores porque no ocupan lienzo ni renderizan; los segmentadores son mejores cuando el usuario debe ver qué está aplicado.</p>
+  <h3>Interacciones</h3>
+  <p>Por defecto, seleccionar en un objeto filtra a los demás. <em>Editar interacciones</em> permite cambiar cada par a resaltar o a ninguna.</p>`,
+  quiz:[{q:"Quieres que un segmentador de año afecte a todas las páginas sin repetirlo en cada una:",
+    o:["Sincronizar segmentadores","Filtro de objeto visual","Editar interacciones"],a:0,
+    fb:"El panel de sincronización de segmentadores decide en qué páginas aplica y en cuáles se muestra."}]},
+ {id:"8c", t:"Contar la historia",
+  obj:"Diseñar la página para que se lea, no solo para que se vea.",
+  body:`<p>Un informe es un argumento, no un depósito de gráficos.</p>
+  <ul>
+  <li><strong>Una pregunta por página.</strong> Si el título no cabe en una frase, hay dos páginas.</li>
+  <li><strong>Jerarquía visual</strong>: la cifra que importa arriba a la izquierda, el detalle abajo.</li>
+  <li><strong>Menos objetos</strong>: cada objeto visual cuesta rendimiento y atención. Ocho es mucho.</li>
+  <li><strong>Títulos que afirman</strong>: "El flete cayó 12% en el corredor CLVAP" comunica más que "Flete por ruta".</li>
+  <li><strong>Marcadores y botones</strong> para alternar vistas sin duplicar páginas.</li>
+  <li><strong>Accesibilidad</strong>: orden de tabulación, texto alternativo, y nunca el color como único portador de significado.</li>
+  </ul>`,
+  quiz:[{q:"El indicador principal debería ubicarse:",
+    o:["Centrado abajo","Arriba a la izquierda, donde empieza la lectura","Donde quede espacio"],a:1,
+    fb:"El recorrido visual empieza arriba a la izquierda: ahí va lo que no puede pasar desapercibido."}]}
+]},
+{n:"09", t:"Servicio y gobierno", L:[
+ {id:"9a", t:"Publicar, áreas de trabajo y aplicaciones",
+  obj:"Distribuir sin perder el control de quién ve qué.",
+  body:`<p>Publicar sube el informe y su conjunto de datos a un <strong>área de trabajo</strong>. El área es el espacio de los autores; no es el canal de distribución.</p>
+  <ul>
+  <li>Roles del área: administrador, miembro, colaborador y visor.</li>
+  <li>La <strong>aplicación</strong> es el paquete que se publica a los consumidores: contenido seleccionado, navegación definida y audiencias distintas con permisos distintos.</li>
+  <li><strong>Panel</strong> e <strong>informe</strong> no son lo mismo: el panel es una sola página con anclajes de varios informes; el informe es la experiencia interactiva completa.</li>
+  </ul>
+  <p>Buena práctica: los consumidores acceden a la aplicación, nunca al área de trabajo.</p>`,
+  quiz:[{q:"Un consumidor no debe ver los informes en desarrollo. La forma correcta de distribuir:",
+    o:["Darle rol de visor en el área de trabajo","Publicar una aplicación con el contenido seleccionado","Compartir el .pbix"],a:1,
+    fb:"La aplicación separa lo publicado de lo que está en construcción."}]},
+ {id:"9b", t:"Actualización y puerta de enlace",
+  obj:"Mantener el dato vivo después de publicar.",
+  body:`<ul>
+  <li>Los orígenes locales o en red requieren <strong>puerta de enlace de datos</strong> instalada en una máquina siempre disponible.</li>
+  <li>La <strong>actualización programada</strong> se configura en el conjunto de datos.</li>
+  <li>La <strong>actualización incremental</strong> refresca solo el periodo reciente. Es lo que hace viable un histórico grande.</li>
+  <li>Las <strong>credenciales</strong> del origen se declaran en el Servicio; no viajan dentro del .pbix.</li>
+  </ul>`,
+  quiz:[{q:"El origen es una base de datos SQL en la red interna de la empresa. Para actualizar desde el Servicio necesitas:",
+    o:["Modo DirectQuery obligatorio","Una puerta de enlace de datos instalada y en línea","Licencia Premium"],a:1,
+    fb:"La puerta de enlace es el puente entre la nube y los orígenes que no son accesibles públicamente."}]},
+ {id:"9c", t:"Seguridad y linaje",
+  obj:"Aplicar control fino y poder responder de dónde sale cada número.",
+  body:`<ul>
+  <li><strong>Seguridad de nivel de fila (RLS)</strong>: roles definidos en Desktop con una expresión DAX de filtro sobre una tabla, y usuarios asignados a esos roles en el Servicio.</li>
+  <li>El patrón dinámico usa <code>USERPRINCIPALNAME()</code> contra una tabla de permisos, y evita crear un rol por cada usuario.</li>
+  <li>La <strong>vista de linaje</strong> muestra la cadena origen → flujo de datos → conjunto de datos → informe → panel.</li>
+  </ul>`,
+  code:{lang:"DAX", src:`-- Filtro de rol sobre la dimensión Cliente (RLS dinámica)
+[EjecutivoCuenta] = USERPRINCIPALNAME()`},
+  quiz:[{q:"Aplicas RLS y como autor sigues viendo todo. Motivo:",
+    o:["La regla está mal escrita","RLS no restringe a quien tiene permisos de edición sobre el conjunto de datos","Falta publicar"],a:1,
+    fb:"Hay que validar con Ver como rol y comprobar con un usuario de solo lectura."}]}
+]}
+];
+
+const FLASH = [
+ {q:"¿Reemplaza o intersecta un argumento de filtro de CALCULATE sobre una columna ya filtrada?",a:"Reemplaza. Para intersectar hay que envolverlo en KEEPFILTERS."},
+ {q:"¿Qué diferencia ALL de ALLSELECTED?",a:"ALL ignora todos los filtros; ALLSELECTED respeta la selección del usuario en segmentadores e ignora el filtro del propio objeto visual."},
+ {q:"¿Cuándo columna calculada y cuándo medida?",a:"Columna si el valor debe servir para cortar (eje, segmentador, relación). Medida si es un número que reacciona a los filtros."},
+ {q:"Tres requisitos de la tabla calendario",a:"Días continuos sin huecos, años completos de enero a diciembre y estar marcada como tabla de fechas."},
+ {q:"¿Qué es el plegado de consultas?",a:"Que Power Query traduzca los pasos a la consulta nativa del origen para que el trabajo lo haga el servidor."},
+ {q:"Anexar frente a combinar",a:"Anexar apila filas de tablas con igual estructura; combinar añade columnas cruzando por una clave."},
+ {q:"¿Por qué desactivar Fecha y hora automáticas?",a:"Crea una tabla de fechas oculta por cada columna de fecha del modelo e infla el tamaño sin control."},
+ {q:"Señal de que falta anular dinamización",a:"Estar escribiendo una medida por cada mes porque los meses están en columnas."},
+ {q:"¿Qué resuelve USERELATIONSHIP?",a:"Invocar una relación inactiva, típico en dimensiones con varios roles como fecha de zarpe y de arribo."},
+ {q:"¿Por qué DIVIDE en lugar de la barra?",a:"Gestiona la división por cero sin romper el objeto visual."}
+];
+
+const PQ = [
+ {n:"Origen", m:`Origen = Excel.Workbook(File.Contents(Ruta)){[Item="Embarques"]}[Data]`,
+  cols:["Column1","Column2","Column3","Column4"],
+  rows:[["Fecha","Cliente","Ruta","TEU"],["04-03-2025","Andes Mining","CNSHA-CLVAP","12"],
+        ["04-03-2025","Andes Mining","CNSHA-CLVAP","12"],["11-03-2025","Copperline","CNNGB-CLSAI","6"],
+        ["19-03-2025","Sur Cargo","PECLL-CLVAP","24"]]},
+ {n:"Encabezados promovidos", m:`Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars=true])`,
+  cols:["Fecha","Cliente","Ruta","TEU"],
+  rows:[["04-03-2025","Andes Mining","CNSHA-CLVAP","12"],["04-03-2025","Andes Mining","CNSHA-CLVAP","12"],
+        ["11-03-2025","Copperline","CNNGB-CLSAI","6"],["19-03-2025","Sur Cargo","PECLL-CLVAP","24"]]},
+ {n:"Duplicados quitados", m:`SinDup = Table.Distinct(Encabezados)`,
+  cols:["Fecha","Cliente","Ruta","TEU"],
+  rows:[["04-03-2025","Andes Mining","CNSHA-CLVAP","12"],["11-03-2025","Copperline","CNNGB-CLSAI","6"],
+        ["19-03-2025","Sur Cargo","PECLL-CLVAP","24"]]},
+ {n:"Columna dividida", m:`Dividida = Table.SplitColumn(SinDup, "Ruta",\n    Splitter.SplitTextByDelimiter("-"), {"Origen","Destino"})`,
+  cols:["Fecha","Cliente","Origen","Destino","TEU"],
+  rows:[["04-03-2025","Andes Mining","CNSHA","CLVAP","12"],["11-03-2025","Copperline","CNNGB","CLSAI","6"],
+        ["19-03-2025","Sur Cargo","PECLL","CLVAP","24"]]},
+ {n:"Columna condicional", m:`Segmento = Table.AddColumn(Dividida, "Segmento",\n    each if [TEU] >= 20 then "Alto" else if [TEU] >= 10 then "Medio" else "Bajo")`,
+  cols:["Fecha","Cliente","Origen","Destino","TEU","Segmento"],
+  rows:[["04-03-2025","Andes Mining","CNSHA","CLVAP","12","Medio"],["11-03-2025","Copperline","CNNGB","CLSAI","6","Bajo"],
+        ["19-03-2025","Sur Cargo","PECLL","CLVAP","24","Alto"]]},
+ {n:"Tipo cambiado", m:`Tipado = Table.TransformColumnTypes(Segmento,\n    {{"Fecha", type date}, {"TEU", Int64.Type}})`,
+  cols:["Fecha","Cliente","Origen","Destino","TEU","Segmento"],
+  rows:[["2025-03-04","Andes Mining","CNSHA","CLVAP","12","Medio"],["2025-03-11","Copperline","CNNGB","CLSAI","6","Bajo"],
+        ["2025-03-19","Sur Cargo","PECLL","CLVAP","24","Alto"]]}
+];
+
+const HECHOS = [
+ {f:"2024-05-12",cl:"Andes Mining",nv:"Maersk",ru:"CNSHA→CLVAP",teu:12,usd:21600},
+ {f:"2024-07-03",cl:"Copperline",nv:"MSC",ru:"CNNGB→CLSAI",teu:6,usd:11400},
+ {f:"2024-09-21",cl:"Sur Cargo",nv:"Hapag",ru:"PECLL→CLVAP",teu:24,usd:33600},
+ {f:"2024-11-08",cl:"Andes Mining",nv:"Maersk",ru:"PECLL→CLVAP",teu:18,usd:25200},
+ {f:"2025-01-15",cl:"Copperline",nv:"ONE",ru:"CNSHA→CLVAP",teu:9,usd:17100},
+ {f:"2025-02-27",cl:"Andes Mining",nv:"Maersk",ru:"CNSHA→CLVAP",teu:30,usd:52500},
+ {f:"2025-04-04",cl:"Sur Cargo",nv:"MSC",ru:"CNNGB→CLSAI",teu:15,usd:27000},
+ {f:"2025-06-19",cl:"Copperline",nv:"Hapag",ru:"PECLL→CLVAP",teu:21,usd:29400},
+ {f:"2025-08-02",cl:"Andes Mining",nv:"ONE",ru:"CNSHA→CLVAP",teu:7,usd:13300},
+ {f:"2025-09-30",cl:"Sur Cargo",nv:"Maersk",ru:"CNNGB→CLSAI",teu:27,usd:45900}
+];
+
+const VIS = [
+ {q:"Comparar un valor entre categorías",v:"Barras horizontales, ordenadas de mayor a menor",why:"La longitud es el atributo que el ojo compara con más precisión. Ordenar convierte el gráfico en un ranking legible de un vistazo.",no:"Circular, radar, 3D."},
+ {q:"Ver la evolución de un valor en el tiempo",v:"Líneas, con el tiempo siempre en el eje horizontal",why:"La pendiente comunica velocidad de cambio. Con pocas series y sin marcadores innecesarios.",no:"Barras, si hay más de una decena de periodos."},
+ {q:"Mostrar la composición de un total",v:"Barras apiladas al 100%, o treemap si hay muchas categorías",why:"Permite comparar composición entre grupos, cosa que un circular no hace.",no:"Circular con más de tres porciones."},
+ {q:"Relacionar dos variables numéricas",v:"Dispersión, con burbuja si hay una tercera magnitud",why:"Revela correlación, agrupaciones y valores atípicos de una sola vez.",no:"Dos ejes en un gráfico de líneas: sugiere relaciones que no existen."},
+ {q:"Mostrar una cifra única frente a su meta",v:"KPI o medidor, y tarjeta si no hay meta",why:"Un solo número grande con su referencia.",no:"Un gráfico completo para un único valor."},
+ {q:"Explicar cómo se pasa de un valor a otro",v:"Cascada",why:"Descompone la variación en contribuciones positivas y negativas con su saldo.",no:"Dos barras y una resta mental."},
+ {q:"Mostrar el detalle fila a fila",v:"Tabla, o matriz si hay jerarquía en filas y columnas",why:"Cuando el usuario necesita el dato exacto y no la forma, no hay que dibujar nada.",no:"Un gráfico que obligue a pasar el cursor para leer cifras."},
+ {q:"Analizar por ubicación geográfica",v:"Mapa de burbujas, o coropletas para densidades por zona",why:"Solo si la geografía aporta información. Categoriza antes las columnas como ubicación.",no:"Un mapa decorativo con cinco puntos: una barra dice más."}
+];
+
+const FLAT = [];
+CURSO.forEach((m,mi)=>m.L.forEach((l,li)=>FLAT.push({...l,mi,li,mod:m.t,modn:m.n})));
+const state={done:{},current:FLAT[0].id,answers:{}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function hl(src){
+  return esc(src)
+    .replace(/(--[^\n]*|\/\/[^\n]*)/g,'<span class="c">$1</span>')
+    .replace(/&quot;([^&]*?)&quot;/g,'<span class="s">"$1"</span>')
+    .replace(/\b(VAR|RETURN|let|in|each|if|then|else|type|true|false)\b/g,'<span class="k">$1</span>')
+    .replace(/\b([A-Z][A-Za-z0-9_.]{2,})(\s*\()/g,'<span class="f">$1</span>$2');
+}
+
+function renderTree(){
+  $('#modtree').innerHTML=CURSO.map((m,mi)=>{
+    const tot=m.L.length,hechas=m.L.filter(l=>state.done[l.id]).length;
+    const open=m.L.some(l=>l.id===state.current);
+    return `<div class="mod ${open?'open':''}" data-mi="${mi}">
+      <button class="mod-btn" data-toggle="${mi}">
+        <span class="mod-n">${m.n}</span>
+        <span><span class="mod-t">${esc(m.t)}</span><span class="mod-meta">${hechas}/${tot} lecciones</span></span>
+      </button>
+      <div class="lessons">${m.L.map(l=>`
+        <button class="les-btn ${l.id===state.current?'active':''}" data-go="${l.id}">
+          <i class="dot ${state.done[l.id]?'done':''}"></i>${esc(l.t)}
+        </button>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderProgress(){
+  const tot=FLAT.length,hechas=Object.keys(state.done).length;
+  const pct=tot?Math.round(hechas/tot*100):0;
+  $('#ring-pct').textContent=pct+'%';
+  $('#ring-sub').textContent=`${hechas} de ${tot} lecciones`;
+  $('#ring-arc').setAttribute('stroke-dashoffset',157-157*pct/100);
+  $('#bars').innerHTML=CURSO.map(m=>{
+    const h=m.L.filter(l=>state.done[l.id]).length,t=m.L.length;
+    return `<div class="bar-row"><div class="bar-t"><span>${m.n} · ${esc(m.t)}</span><span>${h}/${t}</span></div>
+      <div class="bar"><i style="width:${h/t*100}%"></i></div></div>`;
+  }).join('');
+}
+
+function renderLesson(id){
+  state.current=id;
+  const L=FLAT.find(l=>l.id===id);
+  const idx=FLAT.indexOf(L);
+  let html=`<div class="crumb">MÓDULO ${L.modn} · ${esc(L.mod).toUpperCase()}</div>
+    <h1 class="les">${esc(L.t)}</h1>
+    <div class="objective"><b>Al terminar</b>${esc(L.obj)}</div>
+    <div class="body">${L.body}</div>`;
+  if(L.code)html+=`<div class="visual"><div class="visual-h"><span>${L.code.lang}</span></div>
+    <div class="visual-b"><pre>${hl(L.code.src)}</pre></div></div>`;
+  if(L.lab)html+=`<div id="lab"></div>`;
+  html+=`<div class="quiz"><h2>Control</h2>`+L.quiz.map((q,qi)=>`
+      <div class="q" data-q="${qi}">
+        <div class="q-t">${esc(q.q)}</div>
+        ${q.o.map((o,oi)=>`<button class="opt" data-a="${qi}-${oi}">${esc(o)}</button>`).join('')}
+        <div class="fb" id="fb-${qi}">${esc(q.fb)}</div>
+      </div>`).join('')+`</div>`;
+  html+=`<div class="done-row">
+    ${idx>0?`<button class="cta ghost" data-go="${FLAT[idx-1].id}">← Anterior</button>`:''}
+    ${idx<FLAT.length-1?`<button class="cta" data-go="${FLAT[idx+1].id}">Siguiente lección →</button>`:'<span style="color:var(--muted)">Fin de la ruta.</span>'}
+  </div>`;
+  $('#stage').innerHTML=html;
+  $('#stage').scrollTop=0;
+  if(L.lab==='pq')labPQ();
+  if(L.lab==='ctx')labCTX();
+  if(L.lab==='chart')labCHART();
+  const prev=state.answers[id];
+  if(prev)prev.forEach((oi,qi)=>{if(oi!=null)answer(qi,oi,true);});
+  renderTree();renderProgress();
+}
+
+function answer(qi,oi,silent){
+  const L=FLAT.find(l=>l.id===state.current);
+  const q=L.quiz[qi];
+  const box=document.querySelector(`.q[data-q="${qi}"]`);
+  if(!box)return;
+  box.querySelectorAll('.opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.a)b.classList.add('ok');
+    else if(i===oi)b.classList.add('bad');
+  });
+  $('#fb-'+qi).classList.add('show');
+  if(!silent){
+    state.answers[L.id]=state.answers[L.id]||[];
+    state.answers[L.id][qi]=oi;
+  }
+  const all=L.quiz.every((_,i)=>(state.answers[L.id]||[])[i]!=null);
+  if(all){state.done[L.id]=true;renderTree();renderProgress();}
+}
+
+function labPQ(){
+  let step=0;
+  const draw=()=>{
+    const s=PQ[step];
+    $('#lab').innerHTML=`<div class="visual">
+      <div class="visual-h"><span>Consulta · Embarques</span><span>${s.rows.length} filas · ${s.cols.length} columnas</span></div>
+      <div class="visual-b" style="display:grid;grid-template-columns:210px 1fr;gap:16px">
+        <div>
+          <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px">Pasos aplicados</div>
+          <div class="steps">${PQ.map((p,i)=>`<button class="step ${i===step?'on':''}" data-step="${i}"><i>${i+1}</i>${esc(p.n)}</button>`).join('')}</div>
+        </div>
+        <div>
+          <table class="grid"><thead><tr>${s.cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead>
+          <tbody>${s.rows.map(r=>`<tr class="in">${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>
+          <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:10px"><pre>${hl(s.m)}</pre></div>
+        </div>
+      </div></div>`;
+    $('#lab').querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{step=+b.dataset.step;draw();});
+  };
+  draw();
+}
+
+function labCTX(){
+  const dims={
+    nv:{label:"Naviera",col:"Embarques[Naviera]",vals:[...new Set(HECHOS.map(h=>h.nv))]},
+    ru:{label:"Ruta",col:"Embarques[Ruta]",vals:[...new Set(HECHOS.map(h=>h.ru))]},
+    an:{label:"Año",col:"Calendario[Año]",vals:[...new Set(HECHOS.map(h=>h.f.slice(0,4)))]}
+  };
+  const sel={nv:new Set(),ru:new Set(),an:new Set()};
+  const pasa=h=>(!sel.nv.size||sel.nv.has(h.nv))&&(!sel.ru.size||sel.ru.has(h.ru))&&(!sel.an.size||sel.an.has(h.f.slice(0,4)));
+  const draw=()=>{
+    const vivas=HECHOS.filter(pasa);
+    const teu=vivas.reduce((a,h)=>a+h.teu,0);
+    const teuAll=HECHOS.reduce((a,h)=>a+h.teu,0);
+    const usd=vivas.reduce((a,h)=>a+h.usd,0);
+    const args=Object.entries(sel).filter(([,s])=>s.size)
+      .map(([k,s])=>`\n    ${dims[k].col} IN { ${[...s].map(v=>'"'+v+'"').join(', ')} }`).join(',');
+    const dax=args
+      ?`TEU en contexto =\nCALCULATE(\n    [Total TEU],${args}\n)`
+      :`TEU en contexto =\n[Total TEU]   -- sin filtros: todo el modelo`;
+    $('#lab').innerHTML=`<div class="visual">
+      <div class="visual-h"><span>Laboratorio · contexto de filtro</span><span>Embarques · 10 filas</span></div>
+      <div class="visual-b">
+        ${Object.entries(dims).map(([k,d])=>`
+          <div style="margin-bottom:9px">
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">${d.label}</div>
+            <div class="chips">${d.vals.map(v=>`<button class="chip ${sel[k].has(v)?'on':''}" data-k="${k}" data-v="${esc(v)}">${esc(v)}</button>`).join('')}</div>
+          </div>`).join('')}
+        <table class="grid" style="margin-top:6px">
+          <thead><tr><th>Fecha</th><th>Cliente</th><th>Naviera</th><th>Ruta</th><th class="num">TEU</th><th class="num">USD</th></tr></thead>
+          <tbody>${HECHOS.map(h=>`<tr class="${pasa(h)?'in':'out'}">
+            <td>${h.f}</td><td>${esc(h.cl)}</td><td>${esc(h.nv)}</td><td>${esc(h.ru)}</td>
+            <td class="num">${h.teu}</td><td class="num">${h.usd.toLocaleString('es-CL')}</td></tr>`).join('')}</tbody>
+        </table>
+        <div class="readout">
+          <div><span>Total TEU (contexto)</span><b>${teu}</b></div>
+          <div><span>Flete USD (contexto)</span><b>${usd.toLocaleString('es-CL')}</b></div>
+          <div><span>TEU con ALL(Embarques)</span><b>${teuAll}</b></div>
+          <div><span>% sobre total</span><b>${teuAll?((teu/teuAll)*100).toFixed(1):0}%</b></div>
+        </div>
+        <div style="border-top:1px solid var(--line);margin-top:11px;padding-top:11px"><pre>${hl(dax)}</pre></div>
+        <p style="font-size:12.5px;color:var(--muted);margin-top:10px">Las filas tachadas quedan fuera del contexto. La columna con <code style="color:var(--amber)">ALL</code> no se mueve: ese es el mecanismo del denominador en un porcentaje de participación.</p>
+      </div></div>`;
+    $('#lab').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+      const s=sel[c.dataset.k],v=c.dataset.v;
+      s.has(v)?s.delete(v):s.add(v);
+      draw();
+    });
+  };
+  draw();
+}
+
+function labCHART(){
+  let i=0;
+  const draw=()=>{
+    const v=VIS[i];
+    $('#lab').innerHTML=`<div class="visual"><div class="visual-h"><span>Laboratorio · elegir objeto visual</span></div>
+      <div class="visual-b picker">
+        <select id="vq">${VIS.map((x,n)=>`<option value="${n}" ${n===i?'selected':''}>${esc(x.q)}</option>`).join('')}</select>
+        <div class="verdict"><b>${esc(v.v)}</b>
+          <p style="font-size:13.5px">${esc(v.why)}</p>
+          <p style="font-size:12.5px;color:var(--coral);margin-top:7px">Evita: ${esc(v.no)}</p>
+        </div>
+      </div></div>`;
+    $('#vq').onchange=e=>{i=+e.target.value;draw();};
+  };
+  draw();
+}
+
+let fi=0,flipped=false;
+function drawFlash(){
+  const c=FLASH[fi];
+  $('#flash').innerHTML=flipped
+    ?`<small>Respuesta</small>${esc(c.a)}`
+    :`<small>Pregunta</small>${esc(c.q)}<div style="color:var(--muted);font-size:11.5px;margin-top:8px">Toca para ver la respuesta</div>`;
+}
+$('#flash').onclick=()=>{flipped=!flipped;drawFlash();};
+$('#flash-next').onclick=()=>{fi=(fi+1)%FLASH.length;flipped=false;drawFlash();};
+
+$('#search').oninput=e=>{
+  const q=e.target.value.trim().toLowerCase();
+  const box=$('#results');
+  if(q.length<2){box.classList.remove('open');return;}
+  const hits=FLAT.filter(l=>(l.t+' '+l.obj+' '+l.body.replace(/<[^>]+>/g,' ')).toLowerCase().includes(q)).slice(0,8);
+  box.innerHTML=hits.length
+    ?hits.map(l=>`<button data-go="${l.id}"><small>${esc(l.modn)} · ${esc(l.mod)}</small>${esc(l.t)}</button>`).join('')
+    :`<button disabled style="color:var(--muted)">Sin coincidencias</button>`;
+  box.classList.add('open');
+};
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.searchwrap'))$('#results').classList.remove('open');
+});
+
+document.addEventListener('click',e=>{
+  const go=e.target.closest('[data-go]');
+  if(go){renderLesson(go.dataset.go);$('#results').classList.remove('open');$('#search').value='';
+         if(innerWidth<=760)showTab('stage');return;}
+  const tg=e.target.closest('[data-toggle]');
+  if(tg){tg.parentElement.classList.toggle('open');return;}
+  const op=e.target.closest('.opt');
+  if(op&&!op.disabled){const [qi,oi]=op.dataset.a.split('-').map(Number);answer(qi,oi);}
+});
+
+$('#btn-export').onclick=()=>{
+  const blob=new Blob([JSON.stringify({done:state.done,answers:state.answers},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='avance-powerbi.json';a.click();
+};
+$('#btn-import').onclick=()=>{
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=()=>{
+    const fr=new FileReader();
+    fr.onload=()=>{
+      try{const d=JSON.parse(fr.result);state.done=d.done||{};state.answers=d.answers||{};renderLesson(state.current);}
+      catch{alert('El archivo no tiene el formato de avance esperado.');}
+    };
+    fr.readAsText(inp.files[0]);
+  };
+  inp.click();
+};
+
+function showTab(t){
+  document.querySelectorAll('.mtabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $('#pane-left').classList.toggle('show',t==='left');
+  $('#stage').classList.toggle('show',t==='stage');
+}
+document.querySelectorAll('.mtabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+
+renderLesson(FLAT[0].id);
+drawFlash();
+if(innerWidth<=760)showTab('left');
+
+</script>
+</body>
+</html>
