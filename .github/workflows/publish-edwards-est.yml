@@ -1,0 +1,44 @@
+name: Publish Edwards EST course
+
+on:
+  push:
+    paths:
+      - '.github/workflows/publish-edwards-est.yml'
+      - 'payload/edwards/**'
+
+permissions:
+  contents: write
+
+jobs:
+  build-edwards:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild static Edwards course
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat payload/edwards/part1.txt payload/edwards/part2.txt payload/edwards/part3.txt payload/edwards/part4.txt payload/edwards/part5.txt > /tmp/edwards.b64
+          base64 -d /tmp/edwards.b64 > /tmp/edwards.html.gz
+          gzip -dc /tmp/edwards.html.gz > edwards-est.html
+          test "$(wc -c < edwards-est.html)" -eq 97807
+          echo "1b12376dbb63501a5e699dee3685d1a0d62e6270152ee638f37fdfd9df277d47  edwards-est.html" | sha256sum -c -
+          head -n 8 edwards-est.html
+
+      - name: Commit static Edwards course
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add edwards-est.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Publish Edwards EST course"
+          git push
