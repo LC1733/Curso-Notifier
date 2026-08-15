@@ -23,7 +23,7 @@ jobs:
           import base64, gzip, hashlib, pathlib
 
           root = pathlib.Path('.')
-          parts = [root / 'payload' / f'dj-console-upload-{i:02}.txt' for i in range(4)]
+          parts = [root / 'payload' / f'dj-safe-{i:02}.txt' for i in range(7)]
           b64 = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
           raw = gzip.decompress(base64.b64decode(b64))
 
