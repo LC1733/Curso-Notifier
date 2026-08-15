@@ -167,6 +167,20 @@ canvas#spec{width:100%;height:54px;background:#04060a;border:1px solid var(--lin
 .veil button{padding:13px 30px;background:linear-gradient(#2f8fd8,#1a5f92);border:1px solid var(--a);border-radius:4px;font:800 .76rem var(--mono);letter-spacing:.16em}
 .kbd{margin-top:22px;font:.66rem/1.9 var(--mono);color:var(--dim)}
 .kbd b{color:var(--muted);font-weight:600}
+
+/* Responsive DJ mobile fix */
+@media (max-width:900px){
+  html,body{height:auto;min-height:100%;overflow:auto}.shell{display:flex;flex-direction:column;height:auto;min-height:100vh}
+  .browser{border-right:0;border-bottom:1px solid var(--line);min-height:0;max-height:36vh;flex:0 0 auto}.bh{grid-template-columns:1fr auto;align-items:center}.bh h2{grid-column:1/-1}.imp{width:auto;white-space:nowrap}.tlist{max-height:22vh}
+  .main{min-height:0;overflow:visible}.top{height:auto;min-height:48px;flex-wrap:wrap;padding:7px 9px;gap:7px;position:sticky;top:0;z-index:30}.top h1{font-size:.7rem;letter-spacing:.17em}.chip{max-width:135px;padding:4px 6px}
+  .stack{padding:7px 7px 5px}canvas.zoom{height:82px}canvas.ov{height:24px}.console{display:grid;grid-template-columns:1fr;gap:8px;padding:8px;overflow:visible}.deck,.mixer{min-width:0;width:100%}.mixer{order:2}.deck.A{order:1}.deck.B{order:3}
+  .jogzone{grid-template-columns:120px minmax(0,1fr);gap:8px}canvas.jog{width:120px;height:120px}.transport,.pads,.loops,.fxgrid,.fxrow{gap:4px}.tbtn,.pad,.lp,.fx{min-height:38px}.veil{overflow:auto}.veil>div{width:min(100%,520px)}
+}
+@media (max-width:520px){
+  .browser{max-height:34vh}.bh{grid-template-columns:1fr;padding:8px}.imp{width:100%}.top h1{width:100%}.top .chip{max-width:46%;font-size:.58rem}.top .spacer{display:none}.tb{flex:1;min-width:84px}
+  .stack{padding:5px}canvas.zoom{height:68px}.console{padding:6px;gap:6px}.deck,.mixer{padding:8px}.jogzone{grid-template-columns:1fr}canvas.jog{width:126px;height:126px;margin:auto}.bigbpm{text-align:center}
+  .transport{grid-template-columns:repeat(2,1fr)}.fxgrid{grid-template-columns:repeat(2,1fr)}.knobs{gap:5px}.k{padding:6px}.k label{font-size:.54rem}.veil{padding:16px 12px}.veil h2{font-size:1.2rem;letter-spacing:.13em}.veil button{width:100%;padding:13px 12px}
+}
 </style>
 </head>
 <body>
@@ -501,6 +515,11 @@ function lfo(freq, depth, target, type){
 
 // Construye TODOS los modulos de efecto en paralelo.
 // Cada uno termina en su propio gain (0 = apagado) que alimenta fxOut.
+
+function makeStereoPanner(){
+  if(ac&&typeof ac.createStereoPanner==="function") return ac.createStereoPanner();
+  var g=ac.createGain(); g.pan=null; return g;
+}
 function buildFx(input, output){
   var F = {}, mk = function(name, type){ var g=ac.createGain(); g.gain.value=0; g.connect(output); F[name]={out:g, type:type}; return g; };
 
@@ -512,9 +531,9 @@ function buildFx(input, output){
   F.echo.delay=eD; F.echo.fb=eF;
 
   // PING PONG: dos delays cruzados en estereo
-  var pL=ac.createDelay(4), pR=ac.createDelay(4), panL=ac.createStereoPanner(), panR=ac.createStereoPanner(),
+  var pL=ac.createDelay(4), pR=ac.createDelay(4), panL=makeStereoPanner(), panR=makeStereoPanner(),
       pF=ac.createGain();
-  panL.pan.value=-1; panR.pan.value=1; pF.gain.value=0.45;
+  if(panL.pan)panL.pan.value=-1; if(panR.pan)panR.pan.value=1; pF.gain.value=0.45;
   pL.delayTime.value=0.25; pR.delayTime.value=0.25;
   input.connect(pL); pL.connect(panL); panL.connect(mk("pingpong","send"));
   pL.connect(pR); pR.connect(panR); panR.connect(F.pingpong.out);
@@ -557,9 +576,9 @@ function buildFx(input, output){
   F.tremolo.lfo=lfo(4, 0.5, tG.gain);
 
   // AUTO PAN
-  var aP=ac.createStereoPanner();
+  var aP=makeStereoPanner();
   input.connect(aP); aP.connect(mk("autopan","insert"));
-  F.autopan.lfo=lfo(1, 0.95, aP.pan);
+  F.autopan.lfo=aP.pan ? lfo(1,0.95,aP.pan) : null;
 
   // WOBBLE: pasa bajos resonante barrido por LFO
   var wF=ac.createBiquadFilter(); wF.type="lowpass"; wF.frequency.value=700; wF.Q.value=12;
@@ -608,7 +627,7 @@ function updateFx(id){
   if(name==="flanger"){ m.lfo.osc.frequency.setTargetAtTime(1/(t*4), now, 0.05); }
   if(name==="phaser"){ m.lfo.osc.frequency.setTargetAtTime(1/(t*4), now, 0.05); }
   if(name==="tremolo"){ m.lfo.osc.frequency.setTargetAtTime(1/t, now, 0.05); }
-  if(name==="autopan"){ m.lfo.osc.frequency.setTargetAtTime(1/(t*2), now, 0.05); }
+  if(name==="autopan"&&m.lfo){ m.lfo.osc.frequency.setTargetAtTime(1/(t*2),now,0.05); }
   if(name==="wobble"){ m.lfo.osc.frequency.setTargetAtTime(1/t, now, 0.05); }
   if(name==="crush"){ m.shaper.curve=crushCurve(Math.max(2, Math.round(16-d.wet*14))); }
   if(name==="drive"){ m.shaper.curve=driveCurve(1+d.wet*14); }
@@ -1228,7 +1247,7 @@ function frame(ts){
   }
 }
 
-$("#boot").onclick = function(){ initAudio(); $("#veil").classList.add("hide"); toast("Motor listo - carga tus pistas"); };
+$("#boot").onclick=function(){try{initAudio();if(ac&&ac.resume)ac.resume();$("#veil").classList.add("hide");toast("Motor listo - carga tus pistas");}catch(e){var m="No se pudo iniciar el audio"+(e&&e.message?": "+e.message:"");toast(m,true);var p=$("#veil p");if(p)p.textContent=m+". Abre esta pagina directamente en Chrome, Safari o Edge.";}};
 $("#imp").onclick = function(){ $("#file").click(); };
 $("#file").onchange = function(e){ addFiles(Array.prototype.slice.call(e.target.files)); e.target.value=""; };
 $("#srch").oninput = renderLib;
