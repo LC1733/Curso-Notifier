@@ -18,6 +18,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify payload chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "e32d3e15803b0906474916cac5c2059608ae9f5481030ebc4399ac9755140643  payload/edwards-v3/part01.txt" | sha256sum -c -
+          echo "d1f50443e05c1897e0a3d270a43199267dd8ed6d38671ec93f5f69f9aaac0f6a  payload/edwards-v3/part02.txt" | sha256sum -c -
+          echo "d20c68456058dc5fd1bc013f67498245c95fe8d644d48f576879de739601e98a  payload/edwards-v3/part03.txt" | sha256sum -c -
+          echo "4e88ea5a489437a97e91be019d4943ece232c048c95954e3310cee06bbda942c  payload/edwards-v3/part04.txt" | sha256sum -c -
+          echo "6a039adb45c24b0eb368793139d31a68e257935ba78b9d5ecb22737ba4fa1ddc  payload/edwards-v3/part05.txt" | sha256sum -c -
+          echo "e91def3b5ddda1be71336e6febfc57e4135c98d076ab3797b2531ca2215256f4  payload/edwards-v3/part06.txt" | sha256sum -c -
+          echo "73a4a2c57471a056cbbc68b7e8da49bd109879ce31a65a7516604004153f8853  payload/edwards-v3/part07.txt" | sha256sum -c -
+          echo "a1a462175b1dcd1b8abf2d4a05c759b4ba14b06f6dfc17854d27b6b31cb10c9e  payload/edwards-v3/part08.txt" | sha256sum -c -
+
       - name: Rebuild static Edwards course
         shell: bash
         run: |
