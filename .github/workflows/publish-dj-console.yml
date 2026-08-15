@@ -1,0 +1,59 @@
+name: Publish DJ Console Pro
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-dj-console.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild verified DJ Console HTML
+        shell: python
+        run: |
+          import base64, gzip, hashlib, pathlib
+
+          root = pathlib.Path('.')
+          parts = [root / 'payload' / f'dj-console-upload-{i:02}.txt' for i in range(4)]
+          b64 = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
+          raw = gzip.decompress(base64.b64decode(b64))
+
+          expected_size = 70329
+          expected_sha = '635b271acd0a136d464384b1da4b52aad58c2f8d610600e0a5fbac5f56c402d0'
+          actual_sha = hashlib.sha256(raw).hexdigest()
+
+          if len(raw) != expected_size:
+              raise SystemExit(f'Size mismatch: {len(raw)} != {expected_size}')
+          if actual_sha != expected_sha:
+              raise SystemExit(f'SHA mismatch: {actual_sha} != {expected_sha}')
+
+          text = raw.decode('utf-8')
+          low = text.lower()
+          if '<html' not in low or '</html>' not in low or '<body' not in low or '</body>' not in low:
+              raise SystemExit('HTML integrity check failed')
+          if '<title>dj console pro</title>' not in low:
+              raise SystemExit('Unexpected document title')
+
+          (root / 'dj-console-pro.html').write_bytes(raw)
+          print('dj-console-pro.html', len(raw), actual_sha)
+
+      - name: Commit published page
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dj-console-pro.html
+          if git diff --cached --quiet; then
+            echo "No changes required"
+            exit 0
+          fi
+          git commit -m "Add DJ Console Pro"
+          git push
