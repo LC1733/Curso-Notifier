@@ -1,0 +1,57 @@
+name: Publish Power BI platform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-powerbi.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild verified HTML
+        shell: python
+        run: |
+          import base64, gzip, hashlib, pathlib
+
+          root = pathlib.Path('.')
+          parts = [root / 'payload' / f'powerbi-upload-{i:02d}.txt' for i in range(4)]
+          b64 = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
+          raw = gzip.decompress(base64.b64decode(b64))
+
+          expected_size = 64316
+          expected_sha = 'e621810210d9fe2b6248d44ec5ba6061bae8aabd1456886d3eca931ddbc145ed'
+          actual_sha = hashlib.sha256(raw).hexdigest()
+
+          if len(raw) != expected_size:
+              raise SystemExit(f'Size mismatch: {len(raw)} != {expected_size}')
+          if actual_sha != expected_sha:
+              raise SystemExit(f'SHA mismatch: {actual_sha} != {expected_sha}')
+
+          text = raw.decode('utf-8')
+          low = text.lower()
+          if '<html' not in low or '</html>' not in low or '<body' not in low or '</body>' not in low:
+              raise SystemExit('HTML integrity check failed')
+
+          (root / 'plataforma-powerbi.html').write_bytes(raw)
+          print('plataforma-powerbi.html', len(raw), actual_sha)
+
+      - name: Commit published page
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plataforma-powerbi.html
+          if git diff --cached --quiet; then
+            echo "No changes required"
+            exit 0
+          fi
+          git commit -m "Add Power BI learning platform"
+          git push
