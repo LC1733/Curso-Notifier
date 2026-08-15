@@ -22,7 +22,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "e32d3e15803b0906474916cac5c2059608ae9f5481030ebc4399ac9755140643  payload/edwards-v3/part01.txt" | sha256sum -c -
+          echo "a68a942334a62d078f6a6c8a0ead224e96ab5a4329a265f6b6b8fe12b1a4f587  payload/edwards-v3/part01a.txt" | sha256sum -c -
+          echo "82f9b5eb9513fb7401232eaea4b870127c5ed50ecca722a457d9bd5063344ad2  payload/edwards-v3/part01b.txt" | sha256sum -c -
+          echo "a961a46de2772071d016ebee8f1fa7a21b508cd9aba34e76045041812de4c1a3  payload/edwards-v3/part01c.txt" | sha256sum -c -
+          echo "4a6cf359fb417fcca3d50349f93574df32b3a4741ddff70149dc439a80b60d23  payload/edwards-v3/part01d.txt" | sha256sum -c -
           echo "d1f50443e05c1897e0a3d270a43199267dd8ed6d38671ec93f5f69f9aaac0f6a  payload/edwards-v3/part02.txt" | sha256sum -c -
           echo "d20c68456058dc5fd1bc013f67498245c95fe8d644d48f576879de739601e98a  payload/edwards-v3/part03.txt" | sha256sum -c -
           echo "4e88ea5a489437a97e91be019d4943ece232c048c95954e3310cee06bbda942c  payload/edwards-v3/part04.txt" | sha256sum -c -
@@ -35,7 +38,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat payload/edwards-v3/part01.txt payload/edwards-v3/part02.txt payload/edwards-v3/part03.txt payload/edwards-v3/part04.txt payload/edwards-v3/part05.txt payload/edwards-v3/part06.txt payload/edwards-v3/part07.txt payload/edwards-v3/part08.txt > /tmp/edwards.b64
+          cat payload/edwards-v3/part01a.txt payload/edwards-v3/part01b.txt payload/edwards-v3/part01c.txt payload/edwards-v3/part01d.txt payload/edwards-v3/part02.txt payload/edwards-v3/part03.txt payload/edwards-v3/part04.txt payload/edwards-v3/part05.txt payload/edwards-v3/part06.txt payload/edwards-v3/part07.txt payload/edwards-v3/part08.txt > /tmp/edwards.b64
           base64 -d /tmp/edwards.b64 > /tmp/edwards.html.gz
           gzip -dc /tmp/edwards.html.gz > edwards-est.html
           test "$(wc -c < edwards-est.html)" -eq 162400
