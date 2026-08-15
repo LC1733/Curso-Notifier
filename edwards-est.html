@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edwards EST — Curso Técnico Completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #06080F;
+  --bg-panel:  #0C1018;
+  --bg-card:   #111722;
+  --bg-card2:  #161E2C;
+  --orange:    #E8510A;
+  --orange2:   #FF6B1A;
+  --orange-dim:rgba(232,81,10,0.18);
+  --orange-glow:rgba(232,81,10,0.35);
+  --blue:      #1A6FE8;
+  --blue-dim:  rgba(26,111,232,0.15);
+  --green:     #16A34A;
+  --green-dim: rgba(22,163,74,0.15);
+  --amber:     #D97706;
+  --amber-dim: rgba(217,119,6,0.15);
+  --white:     #DDE4F0;
+  --muted:     rgba(221,228,240,0.5);
+  --border:    rgba(255,255,255,0.06);
+  --border-o:  rgba(232,81,10,0.35);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden}
+
+/* SCANLINES */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.02) 3px,rgba(0,0,0,0.02) 4px);pointer-events:none;z-index:9998}
+
+/* ── SIDEBAR NAV ── */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:220px;
+  background:var(--bg-panel);
+  border-right:1px solid var(--border-o);
+  z-index:200;
+  display:flex;flex-direction:column;
+  transform:translateX(-100%);
+  transition:transform 0.3s;
+}
+.sidebar.open{transform:translateX(0)}
+.sidebar-logo{
+  padding:1.25rem 1.25rem 1rem;
+  border-bottom:1px solid var(--border);
+}
+.sidebar-logo-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:800;font-size:1.2rem;
+  letter-spacing:0.08em;line-height:1;
+}
+.sidebar-logo-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.58rem;color:var(--orange);
+  letter-spacing:0.2em;margin-top:4px;
+}
+.sidebar-nav{flex:1;overflow-y:auto;padding:0.75rem 0}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:0.65rem 1.25rem;
+  font-size:0.8rem;font-weight:500;
+  cursor:pointer;
+  border-left:2px solid transparent;
+  transition:all 0.15s;
+  color:var(--muted);
+}
+.nav-item:hover,.nav-item.active{
+  color:var(--white);
+  border-left-color:var(--orange);
+  background:var(--orange-dim);
+}
+.nav-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:currentColor;flex-shrink:0;
+  opacity:0.4;
+}
+.nav-item.active .nav-dot{opacity:1;box-shadow:0 0 6px currentColor}
+.nav-phase{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.55rem;color:var(--orange);
+  letter-spacing:0.15em;
+  padding:0.5rem 1.25rem 0.25rem;
+  margin-top:0.5rem;
+}
+.sidebar-footer{
+  padding:1rem 1.25rem;
+  border-top:1px solid var(--border);
+}
+.system-status{
+  display:flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.6rem;color:var(--green);
+}
+.led-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 5px var(--green),0 0 10px var(--green);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:52px;
+  background:rgba(6,8,15,0.93);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-o);
+  z-index:100;
+  display:flex;align-items:center;
+  padding:0 1.25rem;gap:1rem;
+}
+.menu-btn{
+  background:none;border:none;color:var(--white);
+  cursor:pointer;padding:4px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.menu-btn span{display:block;width:18px;height:1.5px;background:currentColor;transition:all 0.2s}
+.topbar-brand{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:1rem;
+  letter-spacing:0.15em;
+}
+.topbar-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.58rem;padding:2px 8px;
+  background:var(--orange-dim);
+  border:1px solid var(--border-o);
+  color:var(--orange);
+  letter-spacing:0.1em;
+  margin-left:auto;
+}
+.topbar-progress{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.6rem;color:var(--muted);
+  white-space:nowrap;
+}
+
+/* ── OVERLAY ── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.5);z-index:150;
+}
+.overlay.show{display:block}
+
+/* ── MAIN ── */
+main{padding-top:52px;min-height:100vh}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:4rem 2rem 3rem;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 50%, rgba(232,81,10,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 30% 80%, rgba(26,111,232,0.05) 0%, transparent 60%);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(232,81,10,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(232,81,10,0.05) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 20%,transparent 100%);
+}
+/* Animated circuit lines */
+.circuit{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  overflow:hidden;pointer-events:none;
+}
+.circuit-line{
+  position:absolute;background:linear-gradient(90deg,transparent,var(--orange),transparent);
+  height:1px;animation:circuit-flow 4s linear infinite;opacity:0;
+}
+@keyframes circuit-flow{
+  0%{opacity:0;transform:translateX(-100%)}
+  10%{opacity:0.4}
+  90%{opacity:0.4}
+  100%{opacity:0;transform:translateX(100%)}
+}
+.hero-inner{max-width:820px;position:relative;z-index:1}
+.hero-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;letter-spacing:0.25em;
+  color:var(--orange);margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--orange)}
+h1.hero-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:800;
+  font-size:clamp(3rem,9vw,7rem);
+  line-height:0.88;
+  letter-spacing:-0.01em;
+  margin-bottom:0.15em;
+}
+.hero-title .line2{
+  -webkit-text-stroke:1px var(--orange);
+  color:transparent;
+  display:block;
+}
+.hero-sub{
+  font-size:0.95rem;color:var(--muted);
+  max-width:480px;line-height:1.7;
+  margin:1.25rem 0 2rem;font-weight:300;
+}
+.hero-stats{
+  display:flex;gap:2px;margin-bottom:2rem;
+  flex-wrap:wrap;
+}
+.hstat{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-top:2px solid var(--orange);
+  padding:0.75rem 1.25rem;
+  min-width:90px;
+}
+.hstat-num{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.8rem;font-weight:700;
+  color:var(--orange);line-height:1;
+}
+.hstat-lbl{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.58rem;color:var(--muted);
+  letter-spacing:0.12em;text-transform:uppercase;margin-top:3px;
+}
+.btn-row{display:flex;gap:0.75rem;flex-wrap:wrap}
+.btn{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:1rem;
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:0.65rem 1.75rem;
+  border:none;cursor:pointer;
+  text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all 0.2s;
+}
+.btn-main{background:var(--orange);color:#fff;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%)}
+.btn-main:hover{background:var(--orange2);box-shadow:0 6px 20px var(--orange-glow);transform:translateY(-1px)}
+.btn-out{background:transparent;color:var(--white);border:1px solid var(--border);border-radius:1px}
+.btn-out:hover{border-color:var(--muted);background:rgba(255,255,255,0.04)}
+
+/* ── PROGRESS BAR HERO ── */
+.hero-progress{
+  margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:12px;
+}
+.hpbar{flex:1;height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;max-width:300px}
+.hpfill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange2));transition:width 0.8s}
+.hptxt{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted)}
+
+/* ── SECTION WRAPPER ── */
+.section{padding:0 1.5rem 4rem;max-width:980px;margin:0 auto}
+.sec-head{
+  display:flex;align-items:center;gap:1rem;
+  padding:3.5rem 0 1.75rem;
+}
+.sec-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.62rem;color:var(--orange);
+  letter-spacing:0.2em;text-transform:uppercase;white-space:nowrap;
+}
+.sec-line{flex:1;height:1px;background:var(--border)}
+
+/* ── PHASES GRID ── */
+.phases-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+  gap:1px;background:var(--border);border:1px solid var(--border);
+}
+.phase-card{
+  background:var(--bg-card);padding:1.5rem;
+  cursor:pointer;transition:background 0.2s;
+  position:relative;overflow:hidden;
+  text-decoration:none;color:inherit;display:block;
+}
+.phase-card:hover{background:var(--bg-card2)}
+.phase-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:var(--pc-color,var(--orange));
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.3s;
+}
+.phase-card:hover::after{transform:scaleX(1)}
+.pc-head{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:8px;margin-bottom:0.75rem;
+}
+.pc-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.62rem;color:var(--pc-color,var(--orange));
+  letter-spacing:0.18em;
+}
+.pc-status{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.55rem;padding:2px 7px;border-radius:1px;
+  letter-spacing:0.08em;white-space:nowrap;
+}
+.st-ok{background:var(--green-dim);color:#4ade80;border:1px solid rgba(74,222,128,0.25)}
+.st-next{background:var(--amber-dim);color:#fbbf24;border:1px solid rgba(251,191,36,0.25)}
+.st-lock{background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border)}
+.phase-card h3{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:1.25rem;
+  letter-spacing:0.04em;margin-bottom:0.4rem;line-height:1.15;
+}
+.phase-card p{font-size:0.78rem;color:var(--muted);line-height:1.55;margin-bottom:0.9rem}
+.pc-tags{display:flex;flex-wrap:wrap;gap:5px}
+.pc-tag{
+  font-family:'JetBrains Mono',monospace;font-size:0.58rem;
+  padding:2px 7px;background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);color:var(--muted);
+}
+.pc-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:1rem;
+}
+.pc-dur{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted)}
+
+/* ── CONTENT PHASES (accordion) ── */
+.phase-content{display:none;padding:2rem 0}
+.phase-content.active{display:block}
+.phase-banner{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-left:3px solid var(--orange);
+  padding:1.25rem 1.5rem;
+  margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:1rem;
+  flex-wrap:wrap;
+}
+.phase-banner-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:1.4rem;
+  letter-spacing:0.04em;
+}
+.module-list{display:flex;flex-direction:column;gap:1px;background:var(--border)}
+.module-item{
+  background:var(--bg-card);
+  border:none;cursor:pointer;
+  display:flex;align-items:flex-start;gap:1rem;
+  padding:1rem 1.25rem;
+  text-align:left;color:var(--white);
+  transition:background 0.15s;width:100%;
+}
+.module-item:hover,.module-item.open{background:var(--bg-card2)}
+.m-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.65rem;color:var(--orange);
+  letter-spacing:0.15em;min-width:28px;
+  padding-top:2px;
+}
+.m-body{flex:1}
+.m-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:600;font-size:1.05rem;
+  letter-spacing:0.04em;margin-bottom:3px;
+}
+.m-desc{font-size:0.78rem;color:var(--muted);line-height:1.5}
+.m-arrow{
+  font-size:0.7rem;color:var(--muted);
+  margin-top:2px;transition:transform 0.2s;
+}
+.module-item.open .m-arrow{transform:rotate(90deg)}
+.module-detail{
+  display:none;
+  background:var(--bg-panel);
+  border-top:1px solid var(--border);
+  padding:1.25rem 1.5rem 1.25rem 4rem;
+}
+.module-detail.show{display:block}
+.detail-block{margin-bottom:1.25rem}
+.detail-block h5{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.2em;
+  color:var(--orange);text-transform:uppercase;
+  margin-bottom:0.5rem;
+}
+.detail-block p,.detail-block li{
+  font-size:0.82rem;color:var(--muted);line-height:1.65;
+}
+.detail-block ul,.detail-block ol{
+  padding-left:1.1rem;display:flex;flex-direction:column;gap:4px;
+}
+.step-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+.step-item{
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:0.82rem;color:var(--muted);line-height:1.55;
+}
+.step-n{
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;
+  color:var(--orange);min-width:20px;padding-top:2px;
+}
+.warning-box{
+  background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.3);
+  border-left:3px solid var(--amber);
+  padding:0.75rem 1rem;font-size:0.8rem;color:var(--muted);
+  line-height:1.55;margin-top:0.75rem;
+}
+.info-box{
+  background:var(--blue-dim);border:1px solid rgba(26,111,232,0.25);
+  border-left:3px solid var(--blue);
+  padding:0.75rem 1rem;font-size:0.8rem;color:var(--muted);
+  line-height:1.55;margin-top:0.75rem;
+}
+.code-block{
+  background:#050810;border:1px solid var(--border);
+  border-left:2px solid var(--orange);
+  padding:0.85rem 1rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem;color:#a3c9ff;
+  line-height:1.7;margin-top:0.75rem;overflow-x:auto;
+}
+.checklist{display:flex;flex-direction:column;gap:6px;padding:0}
+.check-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:0.82rem;color:var(--muted);line-height:1.5;
+  cursor:pointer;
+}
+.check-item input[type=checkbox]{
+  width:14px;height:14px;accent-color:var(--orange);
+  flex-shrink:0;margin-top:2px;cursor:pointer;
+}
+.check-item.done{color:rgba(221,228,240,0.3);text-decoration:line-through}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:0.8rem}
+.data-table th{
+  font-family:'JetBrains Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--muted);padding:0.65rem 0.9rem;
+  text-align:left;border-bottom:1px solid var(--border);
+  background:var(--bg-panel);white-space:nowrap;
+}
+.data-table td{
+  padding:0.75rem 0.9rem;border-bottom:1px solid var(--border);
+  background:var(--bg-card);vertical-align:top;line-height:1.45;
+}
+.data-table tr:hover td{background:var(--bg-card2)}
+.data-table td:first-child{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;color:var(--orange);white-space:nowrap;
+}
+.table-wrap{overflow-x:auto;border:1px solid var(--border)}
+
+/* ── VIDEOS ── */
+.video-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:1px;background:var(--border);border:1px solid var(--border);
+}
+.video-card{background:var(--bg-card);overflow:hidden}
+.video-card iframe{width:100%;aspect-ratio:16/9;display:block;border:none}
+.video-meta{padding:0.9rem 1rem}
+.video-meta h4{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:600;font-size:1.05rem;margin-bottom:3px;
+}
+.video-meta p{font-size:0.72rem;color:var(--muted)}
+
+/* ── SVG DIAGRAM ── */
+.diagram-wrap{
+  background:var(--bg-card);border:1px solid var(--border);
+  padding:1.5rem;overflow-x:auto;
+}
+.diagram-wrap svg{max-width:100%;display:block;margin:0 auto}
+
+/* ── AI ASSISTANT ── */
+.ai-wrap{
+  background:var(--bg-card);
+  border:1px solid var(--border-o);border-radius:2px;overflow:hidden;
+}
+.ai-top{
+  background:var(--bg-panel);border-bottom:1px solid var(--border-o);
+  padding:0.9rem 1.25rem;
+  display:flex;align-items:center;gap:10px;
+}
+.ai-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:1.1rem;letter-spacing:0.08em;
+}
+.ai-badge-tag{
+  font-family:'JetBrains Mono',monospace;font-size:0.58rem;
+  padding:2px 8px;background:var(--orange-dim);
+  border:1px solid var(--border-o);color:var(--orange);
+  margin-left:auto;
+}
+.ai-msgs{
+  padding:1.25rem;min-height:180px;max-height:360px;
+  overflow-y:auto;display:flex;flex-direction:column;gap:0.85rem;
+}
+.msg-row{display:flex;gap:8px;align-items:flex-start}
+.msg-av{
+  width:26px;height:26px;border-radius:1px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:0.55rem;font-weight:600;
+  flex-shrink:0;
+}
+.av-ai{background:var(--orange-dim);border:1px solid var(--border-o);color:var(--orange)}
+.av-u{background:var(--blue-dim);border:1px solid rgba(26,111,232,0.3);color:#60a5fa}
+.msg-bub{
+  background:var(--bg-panel);border:1px solid var(--border);
+  padding:0.65rem 0.85rem;font-size:0.8rem;line-height:1.6;flex:1;
+}
+.msg-row.user .msg-bub{border-color:rgba(26,111,232,0.2)}
+.dots-ani{display:inline-flex;gap:3px;align-items:center}
+.dots-ani span{
+  width:4px;height:4px;border-radius:50%;background:var(--muted);
+  animation:dot 1.2s ease-in-out infinite;
+}
+.dots-ani span:nth-child(2){animation-delay:0.2s}
+.dots-ani span:nth-child(3){animation-delay:0.4s}
+@keyframes dot{0%,60%,100%{opacity:0.2;transform:scale(0.8)}30%{opacity:1;transform:scale(1.1)}}
+.ai-input-area{
+  padding:0.85rem 1.25rem;border-top:1px solid var(--border);
+  display:flex;gap:0.65rem;
+}
+.ai-inp{
+  flex:1;background:var(--bg-panel);border:1px solid var(--border);
+  padding:0.6rem 0.85rem;color:var(--white);
+  font-family:'Inter',sans-serif;font-size:0.82rem;outline:none;
+  transition:border-color 0.2s;
+}
+.ai-inp:focus{border-color:var(--orange)}
+.ai-inp::placeholder{color:rgba(255,255,255,0.18)}
+.ai-send-btn{
+  background:var(--orange);border:none;color:#fff;
+  padding:0.6rem 1.1rem;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:0.9rem;letter-spacing:0.1em;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  transition:background 0.2s;white-space:nowrap;
+}
+.ai-send-btn:hover{background:var(--orange2)}
+.ai-send-btn:disabled{opacity:0.4;cursor:not-allowed}
+.quick-btns{
+  padding:0 1.25rem 0.85rem;
+  display:flex;gap:6px;flex-wrap:wrap;
+}
+.quick-btn{
+  font-family:'JetBrains Mono',monospace;font-size:0.6rem;
+  padding:4px 10px;background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);color:var(--muted);
+  cursor:pointer;transition:all 0.15s;
+}
+.quick-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(232,81,10,0.4);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--orange)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .phases-grid{grid-template-columns:1fr}
+  .video-grid{grid-template-columns:1fr}
+  .hero-stats{gap:2px}
+  .module-detail{padding-left:1.25rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .led-dot,.circuit-line{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-name">EDWARDS EST</div>
+    <div class="sidebar-logo-sub">// CURSO TÉCNICO</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-phase">INICIO</div>
+    <div class="nav-item active" onclick="showSection('home');closeSidebar()">
+      <div class="nav-dot"></div>Portada
+    </div>
+    <div class="nav-item" onclick="showSection('paneles');closeSidebar()">
+      <div class="nav-dot"></div>Referencia Paneles
+    </div>
+    <div class="nav-item" onclick="showSection('videos');closeSidebar()">
+      <div class="nav-dot"></div>Videos
+    </div>
+
+    <div class="nav-phase">FASES</div>
+    <div class="nav-item" onclick="showSection('f1');closeSidebar()">
+      <div class="nav-dot"></div>F1 · Fundamentos
+    </div>
+    <div class="nav-item" onclick="showSection('f2');closeSidebar()">
+      <div class="nav-dot"></div>F2 · Hardware
+    </div>
+    <div class="nav-item" onclick="showSection('f3');closeSidebar()">
+      <div class="nav-dot"></div>F3 · Cableado
+    </div>
+    <div class="nav-item" onclick="showSection('f4');closeSidebar()">
+      <div class="nav-dot"></div>F4 · Software
+    </div>
+    <div class="nav-item" onclick="showSection('f5');closeSidebar()">
+      <div class="nav-dot"></div>F5 · Comisionamiento
+    </div>
+    <div class="nav-item" onclick="showSection('f6');closeSidebar()">
+      <div class="nav-dot"></div>F6 · Operación
+    </div>
+    <div class="nav-item" onclick="showSection('f7');closeSidebar()">
+      <div class="nav-dot"></div>F7 · Avanzado
+    </div>
+
+    <div class="nav-phase">HERRAMIENTAS</div>
+    <div class="nav-item" onclick="showSection('asistente');closeSidebar()">
+      <div class="nav-dot"></div>⚡ Asistente IA
+    </div>
+    <div class="nav-item" onclick="showSection('checklist');closeSidebar()">
+      <div class="nav-dot"></div>✓ Checklist
+    </div>
+    <div class="nav-item" onclick="showSection('errores');closeSidebar()">
+      <div class="nav-dot"></div>⚠ Matriz de Fallas
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="system-status">
+      <div class="led-dot"></div>SISTEMA ACTIVO
+    </div>
+  </div>
+</nav>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-brand">EDWARDS EST</div>
+  <div class="topbar-badge">EST4 · EST3 · iO SERIES</div>
+  <div class="topbar-progress" id="topProgress">0/7 FASES</div>
+</div>
+
+<!-- ════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════ -->
+<main>
+
+<!-- ══ HOME ══ -->
+<div id="sec-home">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="circuit">
+      <div class="circuit-line" style="top:22%;width:45%;animation-delay:0s"></div>
+      <div class="circuit-line" style="top:55%;width:35%;left:30%;animation-delay:1.5s"></div>
+      <div class="circuit-line" style="top:75%;width:55%;left:10%;animation-delay:3s"></div>
+    </div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow">Programa de formación — Nivel 0 a Experto</div>
+      <h1 class="hero-title">
+        EDWARDS
+        <span class="line2">FIRE SAFETY</span>
+      </h1>
+      <p class="hero-sub">
+        EST4 · EST3 · iO Series · SIGA Signature Series.<br>
+        7 fases, protocolos paso a paso, diagramas de conexión,
+        matriz de fallas y asistente técnico IA integrado.
+      </p>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-num">7</div><div class="hstat-lbl">Fases</div></div>
+        <div class="hstat"><div class="hstat-num">35+</div><div class="hstat-lbl">Módulos</div></div>
+        <div class="hstat"><div class="hstat-num">EST4</div><div class="hstat-lbl">Plataforma</div></div>
+        <div class="hstat"><div class="hstat-num">IA</div><div class="hstat-lbl">Asistente</div></div>
+      </div>
+      <div class="hero-progress">
+        <div class="hpbar"><div class="hpfill" id="hpf" style="width:0%"></div></div>
+        <span class="hptxt" id="hptxt">0 de 7 fases completadas</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-main" onclick="showSection('f1')">▶ INICIAR FASE 1</button>
+        <button class="btn btn-out" onclick="showSection('asistente')">⚡ ASISTENTE IA</button>
+        <button class="btn btn-out" onclick="showSection('paneles')">☰ REFERENCIA</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAPA DE FASES -->
+  <div class="section">
+    <div class="sec-head"><span class="sec-tag">// mapa del curso</span><div class="sec-line"></div></div>
+    <div class="phases-grid">
+
+      <div class="phase-card" style="--pc-color:#22C55E" onclick="showSection('f1')">
+        <div class="pc-head"><span class="pc-num">FASE 01</span><span class="pc-status st-ok">DISPONIBLE</span></div>
+        <h3>Fundamentos Teóricos</h3>
+        <p>NFPA 72, UL 864, diferencias convencional vs. direccionable, arquitectura del sistema Edwards EST.</p>
+        <div class="pc-tags"><span class="pc-tag">NFPA 72</span><span class="pc-tag">UL 864</span><span class="pc-tag">Conceptos</span></div>
+        <div class="pc-foot"><span class="pc-dur">⏱ ~3h</span></div>
+      </div>
+
+      <div class="phase-card" style="--pc-color:#3B82F6" onclick="showSection('f2')">
+        <div class="pc-head"><span class="pc-num">FASE 02</span><span class="pc-status st-next">SIGUIENTE</span></div>
+        <h3>Hardware & Componentes</h3>
+        <p>Paneles EST4, EST3, iO Series. Módulos SIGA: detectores, control, monitoreo, relés.</p>
+        <div class="pc-tags"><span class="pc-tag">EST4</span><span class="pc-tag">SIGA</span><span class="pc-tag">iO500</span></div>
+        <div class="pc-foot"><span class="pc-dur">⏱ ~4h</span></div>
+      </div>
+
+      <div class="phase-card" style="--pc-color:#F59E0B" onclick="showSection('f3')">
+        <div class="pc-head"><span class="pc-num">FASE 03</span><span class="pc-status st-lock">BLOQUEADO</span></div>
+        <h3>Cableado & Instalación</h3>
+        <p>SLC Class A/B/X, NAC, topología de red, resistencias EOL, wiring EST4 con 75% menos cableado.</p>
+        <div class="pc-tags"><span class="pc-tag">SLC</span><span class="pc-tag">Class X</span><span class="pc-tag">EOL</span></div>
+        <div class="pc-foot"><span class="pc-dur">⏱ ~5h</span></div>
+      </div>
+
+      <div class="phase-card" style="--pc-color:#A855F7" onclick="showSection('f4')">
+        <div class="pc-head"><span class="pc-num">FASE 04</span><span class="pc-status st-lock">BLOQUEADO</span></div>
+        <h3>Software & Programación</h3>
+        <p>EST Configuration Utility (CU), asignación de direcciones, cause & effect, transferencia al panel.</p>
+        <div class="pc-tags"><span class="pc-tag">Config CU</span><span class="pc-tag">C&E</span><span class="pc-tag">SLC Map</span></div>
+        <div class="pc-foot"><span class="pc-dur">⏱ ~6h</span></div>
+      </div>
+
+      <div class="phase-card" style="--pc-color:#EC4899" onclick="showSection('f5')">
+        <div class="pc-head"><span class="pc-num">FASE 05</span><span class="pc-status st-lock">BLOQUEADO</span></div>
+        <h3>Comisionamiento</h3>
+        <p>Walk test, pruebas de salidas NAC/relé, integración con AHU/PA/control de acceso, documentación.</p>
+        <div class="pc-tags"><span class="pc-tag">Walk Test</span><span class="pc-tag">NAC</span><span class="pc-tag">AHU</span></div>
+        <div class="pc-foot"><span class="pc-dur">⏱ ~5h</span></div>
+      </div>
+
+      <div class="phase-card" style="--pc-color:#14B8A6" onclick="showSection('f6')">
+        <div class="pc-head"><span class="pc-num">FASE 06</span><span class="pc-status st-lock">BLOQUEADO</span></div>
+        <h3>Operación & Mantenimiento</h3>
+        <p>Lectura del panel, respuesta a alarmas, silencio y reset, mantenimiento preventivo, logs de fallas.</p>
+        <div class="pc-tags"><span class="pc-tag">Alarmas</span><span class="pc-tag">Reset</span><span class="pc-tag">Mantención</span></div>
+        <div class="pc-foot"><span class="pc-dur">⏱ ~4h</span></div>
+      </div>
+
+      <div class="phase-card" style="--pc-color:#F97316" onclick="showSection('f7')">
+        <div class="pc-head"><span class="pc-num">FASE 07</span><span class="pc-status st-lock">BLOQUEADO</span></div>
+        <h3>Nivel Avanzado</h3>
+        <p>Redes EST4 multipanel, BACnet/IP, integración con BMS, mass notification, ciberseguridad AES.</p>
+        <div class="pc-tags"><span class="pc-tag">BACnet</span><span class="pc-tag">MNS</span><span class="pc-tag">AES</span></div>
+        <div class="pc-foot"><span class="pc-dur">⏱ ~7h</span></div>
+      </div>
+
+      <div class="phase-card" style="--pc-color:var(--orange);cursor:default">
+        <div class="pc-head"><span class="pc-num">RECURSOS</span><span class="pc-status st-ok">ACTIVO</span></div>
+        <h3>Biblioteca Técnica</h3>
+        <p>Datasheets SIGA, manuales EST4/EST3/iO, normativa NFPA 72, guías de aplicación Carrier/Edwards.</p>
+        <div class="pc-tags"><span class="pc-tag">PDF</span><span class="pc-tag">Datasheets</span><span class="pc-tag">NFPA</span></div>
+        <div class="pc-foot"><span class="pc-dur">⬇ Descarga</span></div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /home -->
+
+<!-- ══ REFERENCIA PANELES ══ -->
+<div id="sec-paneles" style="display:none">
+  <div class="section">
+    <div class="sec-head"><span class="sec-tag">// referencia rápida — familia de paneles Edwards EST</span><div class="sec-line"></div></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th>Modelo</th><th>Capacidad SLC</th><th>Lazos</th><th>Uso típico</th><th>Estado</th><th>Software</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>EST4</td><td>Ilimitado (red)</td><td>Múltiples nodos</td><td>Grandes: hospitales, industria, minería</td><td style="color:#4ade80">ACTIVO</td><td>Config Utility CU</td></tr>
+          <tr><td>EST3</td><td>Hasta 2.500 pts</td><td>10 tarjetas SLC</td><td>Medianos/grandes — EOL Q4 2026</td><td style="color:#fbbf24">EOL 2026</td><td>EST3 Programmer</td></tr>
+          <tr><td>EST3X</td><td>Hasta 2.500 pts</td><td>8 nodos red</td><td>Medianos — Discontinued Q1 2025</td><td style="color:#f87171">DISCONTINUADO</td><td>EST3 Programmer</td></tr>
+          <tr><td>iO64</td><td>64 puntos</td><td>1 SLC</td><td>Edificios pequeños</td><td style="color:#4ade80">ACTIVO</td><td>Config Utility</td></tr>
+          <tr><td>iO500</td><td>500 puntos</td><td>Múltiples</td><td>Edificios medianos</td><td style="color:#4ade80">ACTIVO</td><td>Config Utility</td></tr>
+          <tr><td>iO1000</td><td>1.000 puntos</td><td>Múltiples</td><td>Comercial / institucional</td><td style="color:#4ade80">ACTIVO</td><td>Config Utility</td></tr>
+          <tr><td>QuickStart</td><td>Hasta 99 zonas</td><td>Convencional</td><td>Sistemas convencionales pequeños</td><td style="color:#4ade80">ACTIVO</td><td>No requiere software</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec-head" style="padding-top:2.5rem"><span class="sec-tag">// serie SIGA — dispositivos direccionables</span><div class="sec-line"></div></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Código</th><th>Tipo</th><th>Función</th><th>Base compatible</th></tr></thead>
+        <tbody>
+          <tr><td>SIGA-PD</td><td>Detector</td><td>Fotoeléctrico de humo</td><td>SIGA-SB / SIGA-RB</td></tr>
+          <tr><td>SIGA-PS</td><td>Detector</td><td>Foto + temperatura combo</td><td>SIGA-SB / SIGA-RB</td></tr>
+          <tr><td>SIGA-IS</td><td>Detector</td><td>Iónico de humo</td><td>SIGA-SB</td></tr>
+          <tr><td>SIGA-HRS</td><td>Detector</td><td>Calor fijo + diferencial</td><td>SIGA-SB</td></tr>
+          <tr><td>SIGA-DDOS</td><td>Detector</td><td>Duct smoke — ductos HVAC</td><td>Base duct integrada</td></tr>
+          <tr><td>SIGA-CT1</td><td>Módulo</td><td>Monitor entrada seca (1 input)</td><td>SIGA-MB o direct mount</td></tr>
+          <tr><td>SIGA-CT2</td><td>Módulo</td><td>Monitor entrada doble (2 inputs)</td><td>SIGA-MB</td></tr>
+          <tr><td>SIGA-CC1</td><td>Módulo</td><td>Control salida (1 output)</td><td>SIGA-MB</td></tr>
+          <tr><td>SIGA-MCM</td><td>Módulo</td><td>Control multipropósito</td><td>SIGA-MB</td></tr>
+          <tr><td>SIGA-REL</td><td>Módulo relé</td><td>Relé direccionable para cargas</td><td>Direct mount</td></tr>
+          <tr><td>SIGA-CRR</td><td>Repetidor</td><td>Control relay remoto</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIDEOS ══ -->
+<div id="sec-videos" style="display:none">
+  <div class="section">
+    <div class="sec-head"><span class="sec-tag">// videos de referencia — Edwards EST</span><div class="sec-line"></div></div>
+    <div class="video-grid">
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/1OXtHiFlxb0" title="Webinar Panel Edwards EST4" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+        <div class="video-meta"><h4>Webinar Técnico — Panel Edwards EST4</h4><p>Digital Fire Industry · Presentación técnica-comercial completa del EST4 en español</p></div>
+      </div>
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/C3id1Nc2m-8" title="Edwards EST3 Panel Overview" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+        <div class="video-meta"><h4>EST3 — Overview y Demo Completo</h4><p>dewpoint8900 · Layout del panel, activación de alarma, navegación de menús</p></div>
+      </div>
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/h-xFLrGq1Mk" title="Edwards IO Programming" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+        <div class="video-meta"><h4>Edwards iO — Programación para Principiantes</h4><p>Tutorial paso a paso de programación del panel iO, ideal para comenzar</p></div>
+      </div>
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/e-yljLAw_IM" title="Edwards EST Programming Tutorial" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+        <div class="video-meta"><h4>Programación Edwards EST — Tutorial Completo</h4><p>Secure it Securities · Cómo programar paneles Edwards EST profesionalmente</p></div>
+      </div>
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/eFZ1SDvkqQ4" title="Tutorial iO500 alarma" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+        <div class="video-meta"><h4>iO500 — Restaurar y Silenciar Alarma</h4><p>Tutorial en español: cómo restaurar y silenciar un evento en el panel iO500</p></div>
+      </div>
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/JlNrWperZbg" title="EST3 detalle completo" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+        <div class="video-meta"><h4>EST3 — Panel Completo con Detalle</h4><p>Edwards Fire Alarm System · Programación y funcionamiento del EST3 en detalle</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FASE 1 ══ -->
+<div id="sec-f1" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// fase 01 — fundamentos teóricos</span><div class="sec-line"></div></div>
+  <div class="phase-banner">
+    <div>
+      <div class="pc-num" style="margin-bottom:4px">FASE 01 · ~3 HORAS</div>
+      <div class="phase-banner-title">Fundamentos Teóricos de Sistemas de Detección de Incendio</div>
+    </div>
+    <button class="btn btn-main" style="margin-left:auto" onclick="markComplete(1)">✓ MARCAR COMPLETA</button>
+  </div>
+
+  <div class="module-list">
+
+    <button class="module-item" onclick="toggleModule('m1-1')">
+      <div class="m-num">01</div>
+      <div class="m-body">
+        <div class="m-title">¿Qué es un sistema de detección de incendio?</div>
+        <div class="m-desc">Propósito, componentes básicos y principios de operación</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m1-1">
+      <div class="detail-block">
+        <h5>Definición</h5>
+        <p>Un sistema de detección y alarma de incendio (SDAI) es un conjunto integrado de dispositivos diseñados para detectar condiciones de incendio en etapa temprana y alertar a los ocupantes, activar supresión y comunicar a bomberos.</p>
+      </div>
+      <div class="detail-block">
+        <h5>Componentes fundamentales</h5>
+        <ul>
+          <li><strong>Panel de control (FACP):</strong> cerebro del sistema, procesa señales y toma decisiones</li>
+          <li><strong>Dispositivos de iniciación:</strong> detectores de humo, calor, llama; estaciones manuales</li>
+          <li><strong>Dispositivos de notificación:</strong> sirenas, strobes, bocinas, altavoces</li>
+          <li><strong>Módulos de control:</strong> relés para activar supresión, HVAC, elevadores</li>
+          <li><strong>Fuente de poder:</strong> primaria (AC) + respaldo (baterías 24VDC)</li>
+        </ul>
+      </div>
+      <div class="info-box">ℹ Edwards EST es propietario del protocolo <strong>Signature</strong> — todos los dispositivos SIGA se comunican sobre este protocolo propietario en el lazo SLC.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m1-2')">
+      <div class="m-num">02</div>
+      <div class="m-body">
+        <div class="m-title">NFPA 72 — La norma base</div>
+        <div class="m-desc">Qué regula, ediciones vigentes y cómo aplica a sistemas Edwards EST</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m1-2">
+      <div class="detail-block">
+        <h5>¿Qué es NFPA 72?</h5>
+        <p>National Fire Alarm and Signaling Code — el estándar estadounidense que gobierna el diseño, instalación, prueba y mantenimiento de todos los sistemas de alarma de incendio. Es la referencia técnica fundamental para certificar sistemas Edwards EST.</p>
+      </div>
+      <div class="detail-block">
+        <h5>Capítulos clave para Edwards EST</h5>
+        <ul>
+          <li><strong>Cap. 10:</strong> Fundamentos — fuente de poder, supervisión de circuitos</li>
+          <li><strong>Cap. 12:</strong> Circuitos y caminos — Class A, B, X, N</li>
+          <li><strong>Cap. 17:</strong> Iniciación — ubicación de detectores, espaciado</li>
+          <li><strong>Cap. 18:</strong> Notificación — niveles de presión sonora, intensidad visual</li>
+          <li><strong>Cap. 21:</strong> Señalización a central de monitoreo</li>
+          <li><strong>Cap. 24:</strong> Mass Notification (aplica al EST4)</li>
+        </ul>
+      </div>
+      <div class="detail-block">
+        <h5>UL 864 — Certificación de paneles</h5>
+        <p>Standard for Control Units and Accessories for Fire Alarm Systems. Todos los paneles Edwards EST (EST4, EST3, iO Series) deben cumplir UL 864 para ser instalados en proyectos que exigen certificación UL.</p>
+      </div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m1-3')">
+      <div class="m-num">03</div>
+      <div class="m-body">
+        <div class="m-title">Convencional vs. Direccionable</div>
+        <div class="m-desc">Diferencias fundamentales, ventajas y cuándo usar cada sistema</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m1-3">
+      <div class="detail-block">
+        <h5>Sistema Convencional</h5>
+        <ul>
+          <li>Dispositivos agrupados en zonas — una alarma identifica la zona, no el dispositivo exacto</li>
+          <li>Cableado point-to-point más sencillo</li>
+          <li>Bajo costo inicial, menor capacidad de diagnóstico</li>
+          <li>Edwards: panel QuickStart</li>
+        </ul>
+      </div>
+      <div class="detail-block">
+        <h5>Sistema Direccionable (Addressable)</h5>
+        <ul>
+          <li>Cada dispositivo tiene una dirección única en el lazo SLC</li>
+          <li>Identificación exacta del dispositivo en alarma</li>
+          <li>Diagnóstico en tiempo real, mantenimiento predictivo</li>
+          <li>Edwards: protocolo Signature — SIGA devices en paneles iO, EST3, EST4</li>
+        </ul>
+      </div>
+      <div class="warning-box">⚠ Los dispositivos SIGA de Edwards usan el protocolo propietario <strong>Signature</strong>. NO son compatibles con lazos SLC de otras marcas (Notifier, Simplex, etc.) aunque físicamente se vean similares.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m1-4')">
+      <div class="m-num">04</div>
+      <div class="m-body">
+        <div class="m-title">Arquitectura del sistema Edwards EST</div>
+        <div class="m-desc">Topología panel → lazo SLC → dispositivos SIGA</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m1-4">
+      <div class="detail-block">
+        <h5>Topología básica</h5>
+        <div class="diagram-wrap" style="margin-top:0.5rem">
+          <svg width="500" height="180" viewBox="0 0 500 180">
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#E8510A"/>
+              </marker>
+            </defs>
+            <!-- Panel -->
+            <rect x="10" y="60" width="90" height="60" rx="2" fill="#161E2C" stroke="#E8510A" stroke-width="1.5"/>
+            <text x="55" y="86" text-anchor="middle" fill="#E8510A" font-family="JetBrains Mono" font-size="8" font-weight="500">EST4</text>
+            <text x="55" y="98" text-anchor="middle" fill="#DDE4F0" font-family="JetBrains Mono" font-size="7">PANEL</text>
+            <text x="55" y="110" text-anchor="middle" fill="#888" font-family="JetBrains Mono" font-size="6">FACP</text>
+            <!-- Arrow 1 -->
+            <line x1="100" y1="90" x2="145" y2="90" stroke="#E8510A" stroke-width="1" marker-end="url(#arr)"/>
+            <text x="122" y="84" text-anchor="middle" fill="#888" font-family="JetBrains Mono" font-size="6">SLC</text>
+            <!-- SLC box -->
+            <rect x="145" y="70" width="70" height="40" rx="2" fill="#111722" stroke="#3B82F6" stroke-width="1"/>
+            <text x="180" y="88" text-anchor="middle" fill="#60a5fa" font-family="JetBrains Mono" font-size="7">LAZO</text>
+            <text x="180" y="100" text-anchor="middle" fill="#60a5fa" font-family="JetBrains Mono" font-size="7">SLC</text>
+            <!-- Arrow 2 -->
+            <line x1="215" y1="90" x2="255" y2="50" stroke="#E8510A" stroke-width="1" marker-end="url(#arr)"/>
+            <line x1="215" y1="90" x2="255" y2="90" stroke="#E8510A" stroke-width="1" marker-end="url(#arr)"/>
+            <line x1="215" y1="90" x2="255" y2="130" stroke="#E8510A" stroke-width="1" marker-end="url(#arr)"/>
+            <!-- Devices -->
+            <rect x="255" y="32" width="65" height="36" rx="2" fill="#111722" stroke="#22C55E" stroke-width="1"/>
+            <text x="288" y="47" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono" font-size="6.5">SIGA-PD</text>
+            <text x="288" y="59" text-anchor="middle" fill="#888" font-family="JetBrains Mono" font-size="6">Detector</text>
+            <rect x="255" y="72" width="65" height="36" rx="2" fill="#111722" stroke="#22C55E" stroke-width="1"/>
+            <text x="288" y="87" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono" font-size="6.5">SIGA-CT1</text>
+            <text x="288" y="99" text-anchor="middle" fill="#888" font-family="JetBrains Mono" font-size="6">Módulo</text>
+            <rect x="255" y="112" width="65" height="36" rx="2" fill="#111722" stroke="#22C55E" stroke-width="1"/>
+            <text x="288" y="127" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono" font-size="6.5">SIGA-CC1</text>
+            <text x="288" y="139" text-anchor="middle" fill="#888" font-family="JetBrains Mono" font-size="6">Control</text>
+            <!-- Arrow out -->
+            <line x1="320" y1="90" x2="360" y2="90" stroke="#E8510A" stroke-width="1" marker-end="url(#arr)"/>
+            <!-- NAC -->
+            <rect x="360" y="72" width="70" height="36" rx="2" fill="#111722" stroke="#EC4899" stroke-width="1"/>
+            <text x="395" y="87" text-anchor="middle" fill="#f472b6" font-family="JetBrains Mono" font-size="6.5">NAC</text>
+            <text x="395" y="99" text-anchor="middle" fill="#888" font-family="JetBrains Mono" font-size="6">Notificación</text>
+            <!-- Arrow out2 -->
+            <line x1="430" y1="90" x2="460" y2="90" stroke="#E8510A" stroke-width="1" marker-end="url(#arr)"/>
+            <!-- Strobe -->
+            <rect x="460" y="72" width="35" height="36" rx="2" fill="#111722" stroke="#EC4899" stroke-width="1"/>
+            <text x="477" y="87" text-anchor="middle" fill="#f472b6" font-family="JetBrains Mono" font-size="6">Horn</text>
+            <text x="477" y="99" text-anchor="middle" fill="#f472b6" font-family="JetBrains Mono" font-size="6">Strobe</text>
+          </svg>
+        </div>
+      </div>
+      <div class="detail-block">
+        <h5>Niveles jerárquicos</h5>
+        <ul>
+          <li><strong>Nivel 1 — Panel FACP:</strong> toma decisiones, supervisa todo el sistema</li>
+          <li><strong>Nivel 2 — Lazo SLC:</strong> bus de comunicación con todos los dispositivos SIGA</li>
+          <li><strong>Nivel 3 — Dispositivos de campo:</strong> detectores, módulos, estaciones manuales</li>
+          <li><strong>Nivel 4 — Salidas NAC:</strong> sirenas, strobes, amplificadores de voz</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m1-5')">
+      <div class="m-num">05</div>
+      <div class="m-body">
+        <div class="m-title">Tipos de alarmas y estados del sistema</div>
+        <div class="m-desc">Alarm, Trouble, Supervisory — significado y respuesta requerida</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m1-5">
+      <div class="detail-block">
+        <h5>Los 3 estados críticos</h5>
+        <ul>
+          <li><strong style="color:#f87171">ALARM (Rojo):</strong> condición de incendio detectada. Activa NAC, señaliza a central. Requiere respuesta inmediata.</li>
+          <li><strong style="color:#fbbf24">TROUBLE (Amarillo):</strong> falla del sistema (circuito abierto, batería baja, dispositivo desconectado). Requiere mantenimiento.</li>
+          <li><strong style="color:#60a5fa">SUPERVISORY (Azul/Amarillo):</strong> condición anormal en sistema de supresión (válvula cerrada, nivel de agua). Requiere investigación.</li>
+        </ul>
+      </div>
+      <div class="warning-box">⚠ NFPA 72 establece que una señal de ALARM no puede ser silenciada por más de 3 minutos sin que el operador tome acción deliberada en el panel.</div>
+    </div>
+
+  </div><!-- /module-list -->
+</div>
+</div><!-- /f1 -->
+
+<!-- ══ FASE 2 ══ -->
+<div id="sec-f2" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// fase 02 — hardware & componentes</span><div class="sec-line"></div></div>
+  <div class="phase-banner">
+    <div>
+      <div class="pc-num" style="margin-bottom:4px">FASE 02 · ~4 HORAS</div>
+      <div class="phase-banner-title">Hardware — Paneles, Módulos SIGA y Dispositivos de Campo</div>
+    </div>
+    <button class="btn btn-main" style="margin-left:auto" onclick="markComplete(2)">✓ MARCAR COMPLETA</button>
+  </div>
+  <div class="module-list">
+
+    <button class="module-item" onclick="toggleModule('m2-1')">
+      <div class="m-num">06</div>
+      <div class="m-body">
+        <div class="m-title">Panel EST4 — La plataforma actual</div>
+        <div class="m-desc">Arquitectura IPv6, ciberseguridad AES, compatibilidad con EST3</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m2-1">
+      <div class="detail-block">
+        <h5>Características principales EST4</h5>
+        <ul>
+          <li>Red IPv6 nativa — opera en Class B, A, X, N o full mesh</li>
+          <li>Cableado con <strong>75% menos que EST3</strong> en configuraciones equivalentes</li>
+          <li>Firewall integrado con cifrado AES (FIPS Pub 197)</li>
+          <li>Webserver incorporado — acceso remoto sin software adicional</li>
+          <li>Compatible con dispositivos SIGA de sistemas EST3 existentes</li>
+          <li>Soporta Mass Notification System (MNS) NFPA 72 Cap. 24</li>
+          <li>Capacidad prácticamente ilimitada en red (múltiples nodos)</li>
+        </ul>
+      </div>
+      <div class="info-box">ℹ Edwards posiciona el EST4 como el sucesor directo del EST3. La migración preserva los dispositivos SIGA existentes y el cableado de campo, reduciendo costos de actualización.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m2-2')">
+      <div class="m-num">07</div>
+      <div class="m-body">
+        <div class="m-title">iO Series — iO64, iO500, iO1000</div>
+        <div class="m-desc">Paneles direccionables para pequeña y mediana escala</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m2-2">
+      <div class="detail-block">
+        <h5>iO64 — Especificaciones técnicas</h5>
+        <div class="code-block">Capacidad SLC:   64 puntos (1 lazo)
+Alimentación:    120/240 VAC → 24 VDC
+AUX Power:       500 mA continuo | 1.5 A total (AUX1+AUX2)
+NAC Circuits:    2 circuitos supervisados (Class B)
+Resistencia SLC: máx. 26 Ω
+Capacitancia SLC: máx. 0.35 µF
+Corriente alarma: 60 mA máx. (remote annunciator)
+Módulo Class A:  SA-CLA (opcional)
+Temp. operación: 0°C a 49°C</div>
+      </div>
+      <div class="detail-block">
+        <h5>iO500 — Diferencias clave</h5>
+        <ul>
+          <li>500 puntos direccionables en múltiples lazos SLC</li>
+          <li>Soporta módulos de expansión NAC adicionales</li>
+          <li>Panel de anunciadores LED: 16 grupos, 2 LEDs por grupo</li>
+          <li>Compatible con annunciator remoto LCD 4×20</li>
+        </ul>
+      </div>
+      <div class="warning-box">⚠ Las cabezas de detectores SIGA requieren bases específicas. Siempre verificar compatibilidad de base antes de reemplazar: <strong>SIGA-SB</strong> (estándar 6"), <strong>SIGA-RB</strong> (rebajada), <strong>SIGA-MB</strong> (módulos).</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m2-3')">
+      <div class="m-num">08</div>
+      <div class="m-body">
+        <div class="m-title">Detectores SIGA Signature Series</div>
+        <div class="m-desc">SIGA-PD, SIGA-PS, SIGA-IS, SIGA-HRS, SIGA-DDOS</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m2-3">
+      <div class="detail-block">
+        <h5>SIGA-PD — Fotoeléctrico</h5>
+        <p>El más utilizado en campo. Detecta partículas de humo visible mediante dispersión de luz. Ideal para humos lentos y smoldering fires. Ajuste automático de sensibilidad según condiciones ambientales.</p>
+      </div>
+      <div class="detail-block">
+        <h5>SIGA-PS — Foto + Temperatura</h5>
+        <p>Combina cámara fotoeléctrica con sensor térmico diferencial. Reduce falsas alarmas en ambientes con polvo o vapor. Recomendado en cocinas industriales, áreas de proceso.</p>
+      </div>
+      <div class="detail-block">
+        <h5>SIGA-DDOS — Detector de Ducto</h5>
+        <p>Diseñado para monitorear flujo de aire en sistemas HVAC. Se instala en ductos de retorno/supply. Detiene el HVAC en caso de alarma para evitar propagación de humo. Requiere tubo de muestreo de 15 a 30 cm dentro del ducto.</p>
+      </div>
+      <div class="info-box">ℹ Detectores con más de 10 años deben evaluarse para reemplazo según NFPA 72. El panel EST genera alertas de mantenimiento basadas en conteo de alarmas y drift de sensibilidad.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m2-4')">
+      <div class="m-num">09</div>
+      <div class="m-body">
+        <div class="m-title">Módulos SIGA de Control y Monitoreo</div>
+        <div class="m-desc">SIGA-CT1/CT2, SIGA-CC1, SIGA-REL, SIGA-MCM</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m2-4">
+      <div class="detail-block">
+        <h5>SIGA-CT1 / CT2 — Monitor</h5>
+        <p>Módulos de monitoreo de contactos secos. CT1 = 1 entrada, CT2 = 2 entradas. Usos típicos: monitorear válvulas de supresión, flujo de agua, estaciones manuales convencionales, detectores de 4 hilos.</p>
+      </div>
+      <div class="detail-block">
+        <h5>SIGA-CC1 — Control Output</h5>
+        <p>Módulo de salida de control direccionable. Activa dispositivos convencionales: sirenas, ventiladores de presurización, shunt trip MCCB, dampers cortafuego, magnets de puertas. Alimentación externa 24VDC supervisada.</p>
+      </div>
+      <div class="detail-block">
+        <h5>SIGA-REL — Relé Direccionable</h5>
+        <p>Relé de propósito general direccionable. Contactos N/A y N/C. Alimentación desde la fuente auxiliar del panel. Todos los relés son <strong>no supervisados</strong> y deben conectarse a fuente power-limited.</p>
+      </div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m2-5')">
+      <div class="m-num">10</div>
+      <div class="m-body">
+        <div class="m-title">Dispositivos de Notificación — Genesis Series</div>
+        <div class="m-desc">Sirenas, strobes, cornetas y combinados Edwards Genesis</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m2-5">
+      <div class="detail-block">
+        <h5>Familia Genesis — Características</h5>
+        <ul>
+          <li><strong>EG4VWF:</strong> strobe de pared, no direccionable</li>
+          <li><strong>EG4SVWF:</strong> speaker + strobe de pared (Mass Notification)</li>
+          <li><strong>EGCSVWF:</strong> speaker + strobe de techo</li>
+          <li><strong>EG4AVWF:</strong> audible + visual (horn + strobe)</li>
+        </ul>
+        <p style="margin-top:8px">Los Genesis usan tecnología de sincronización automática sin módulo externo. Cumplen ADA para dispositivos visuales (strobe ≥ 75 cd a 15 metros).</p>
+      </div>
+      <div class="warning-box">⚠ NFPA 72 Cap. 18: el nivel de presión sonora en el área más alejada debe ser al menos 15 dB sobre el nivel de ruido ambiental o 5 dB sobre el nivel máximo de ruido sostenido, lo que sea mayor. Mínimo 75 dBA.</div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /f2 -->
+
+<!-- ══ FASE 3 ══ -->
+<div id="sec-f3" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// fase 03 — cableado & instalación</span><div class="sec-line"></div></div>
+  <div class="phase-banner">
+    <div>
+      <div class="pc-num" style="margin-bottom:4px">FASE 03 · ~5 HORAS</div>
+      <div class="phase-banner-title">Cableado, Topología SLC y Conceptos de Instalación</div>
+    </div>
+    <button class="btn btn-main" style="margin-left:auto" onclick="markComplete(3)">✓ MARCAR COMPLETA</button>
+  </div>
+  <div class="module-list">
+
+    <button class="module-item" onclick="toggleModule('m3-1')">
+      <div class="m-num">11</div>
+      <div class="m-body">
+        <div class="m-title">Clases de Cableado SLC — Class B, A, X</div>
+        <div class="m-desc">Diferencias operativas, ventajas y cuándo especificar cada clase</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m3-1">
+      <div class="detail-block">
+        <h5>Class B (Estilo 4)</h5>
+        <p>Lazo abierto — un corte o cortocircuito deja sin supervisión la parte del lazo después del defecto. Más económico. Usado en sistemas pequeños donde la supervivencia parcial es aceptable.</p>
+        <div class="code-block">Panel → Dispositivos → EOL (fin de línea)
+         ↑ Corte aquí: todo lo que sigue = TROUBLE</div>
+      </div>
+      <div class="detail-block">
+        <h5>Class A (Estilo 6/7)</h5>
+        <p>Lazo cerrado — el cable sale del panel, pasa por todos los dispositivos y regresa al panel. Un solo corte no interrumpe la comunicación (el lazo se aísla y continúa operando en ambas mitades). Requerido en edificios esenciales.</p>
+      </div>
+      <div class="detail-block">
+        <h5>Class X — EST4 exclusivo</h5>
+        <p>Topología de malla (mesh) usando la red IPv6 del EST4. Múltiples caminos redundantes. Un corte o cortocircuito no afecta ningún dispositivo. La opción más robusta disponible en el ecosistema Edwards.</p>
+      </div>
+      <div class="info-box">ℹ El EST4 con su arquitectura IPv6 puede operar en Class B, A, X, N o full mesh usando fibra óptica, Ethernet o cobre, en la misma instalación.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m3-2')">
+      <div class="m-num">12</div>
+      <div class="m-body">
+        <div class="m-title">Resistencias EOL y Supervisión de Circuitos</div>
+        <div class="m-desc">Tipos, valores y puntos de instalación en sistemas Edwards</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m3-2">
+      <div class="detail-block">
+        <h5>End-Of-Line Resistor (EOL)</h5>
+        <p>Las resistencias EOL permiten al panel supervisar continuamente la integridad del cableado. Si el circuito se abre (corte), el panel deja de medir la resistencia y genera TROUBLE. Si se cortocircuita, la corriente sube y también genera TROUBLE.</p>
+      </div>
+      <div class="detail-block">
+        <h5>Valores típicos en sistemas Edwards</h5>
+        <div class="code-block">NAC (Notification Appliance Circuit): 
+  iO64/iO500: revisar datasheet específico
+  Típico: 3.9 kΩ - 15 kΩ según circuito
+
+Circuitos de monitoreo (SIGA-CT1):
+  EOL integrado en el módulo — no externo</div>
+      </div>
+      <div class="warning-box">⚠ Nunca instalar dos EOL en el mismo circuito. Siempre verificar el datasheet del panel y del dispositivo — los valores pueden variar entre modelos de la misma familia.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m3-3')">
+      <div class="m-num">13</div>
+      <div class="m-body">
+        <div class="m-title">Cableado NAC — Notification Appliance Circuit</div>
+        <div class="m-desc">Diseño del circuito de notificación, cálculo de carga y sincronización</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m3-3">
+      <div class="detail-block">
+        <h5>Diseño del circuito NAC</h5>
+        <ol style="padding-left:1rem;display:flex;flex-direction:column;gap:5px">
+          <li>Determinar corriente total de todos los dispositivos de notificación</li>
+          <li>Calcular caída de voltaje por resistencia del cable</li>
+          <li>Verificar voltaje mínimo en el dispositivo más alejado (min. 16 VDC)</li>
+          <li>Instalar EOL en el último dispositivo del circuito</li>
+          <li>Verificar sincronización automática de Genesis (protocolo interno)</li>
+        </ol>
+      </div>
+      <div class="detail-block">
+        <h5>Fórmula básica caída de voltaje</h5>
+        <div class="code-block">V_caída = I_total × R_cable
+R_cable = (longitud_m × 2) × resistencia_Ω/m
+
+Cable AWG 18: ≈ 0.021 Ω/m
+Cable AWG 14: ≈ 0.008 Ω/m
+
+V_dispositivo = V_NAC_salida - V_caída
+Mínimo aceptable: 16 VDC</div>
+      </div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m3-4')">
+      <div class="m-num">14</div>
+      <div class="m-body">
+        <div class="m-title">Cálculo de Baterías de Respaldo</div>
+        <div class="m-desc">NFPA 72 requiere 24h standby + 5 min alarma (o 5 min evacuation)</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m3-4">
+      <div class="detail-block">
+        <h5>Procedimiento NFPA 72</h5>
+        <ol style="padding-left:1rem;display:flex;flex-direction:column;gap:5px">
+          <li>Calcular corriente standby total del sistema (panel + todos los dispositivos en reposo)</li>
+          <li>Calcular corriente de alarma total (panel + todos los NAC activados)</li>
+          <li>Aplicar fórmula: Ah = (I_standby × 24h) + (I_alarma × 0.083h)</li>
+          <li>Multiplicar por factor de derating de batería: ÷ 0.8 (80% capacidad utilizable)</li>
+          <li>Seleccionar la batería inmediatamente superior disponible</li>
+        </ol>
+        <div class="code-block">Ejemplo iO500:
+I_standby = 350 mA (0.35 A)
+I_alarma  = 4.5 A
+
+Ah = (0.35 × 24) + (4.5 × 0.083)
+   = 8.40 + 0.37 = 8.77 Ah
+Con derating: 8.77 / 0.8 = 10.96 Ah
+→ Seleccionar: 2 × baterías 7 Ah = 14 Ah ✓</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /f3 -->
+
+<!-- ══ FASE 4 ══ -->
+<div id="sec-f4" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// fase 04 — software & programación</span><div class="sec-line"></div></div>
+  <div class="phase-banner">
+    <div>
+      <div class="pc-num" style="margin-bottom:4px">FASE 04 · ~6 HORAS</div>
+      <div class="phase-banner-title">EST Configuration Utility (CU) — Programación de Paneles</div>
+    </div>
+    <button class="btn btn-main" style="margin-left:auto" onclick="markComplete(4)">✓ MARCAR COMPLETA</button>
+  </div>
+  <div class="module-list">
+
+    <button class="module-item" onclick="toggleModule('m4-1')">
+      <div class="m-num">15</div>
+      <div class="m-body">
+        <div class="m-title">Configuration Utility (CU) — Introducción</div>
+        <div class="m-desc">Software de programación para iO Series, EST3 y EST4</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m4-1">
+      <div class="detail-block">
+        <h5>¿Qué es el Configuration Utility?</h5>
+        <p>Software Windows de Edwards para programar, configurar y diagnosticar todos los paneles de la familia inteligente (iO64, iO500, EST3, EST4). Reemplaza el concepto de programación manual por un entorno gráfico con base de datos de dispositivos.</p>
+      </div>
+      <div class="detail-block">
+        <h5>Funciones principales</h5>
+        <ul>
+          <li>Crear y editar base de datos del sistema (offline)</li>
+          <li>Asignar direcciones SLC a cada dispositivo SIGA</li>
+          <li>Configurar zonas lógicas y grupos</li>
+          <li>Programar lógica Cause & Effect (C&E)</li>
+          <li>Cargar/descargar configuración al panel via USB o Ethernet</li>
+          <li>Diagnóstico en tiempo real: ver estado de cada punto</li>
+          <li>Generar reportes de configuración imprimibles</li>
+        </ul>
+      </div>
+      <div class="info-box">ℹ La programación field-programmable del iO64/iO500 debe cumplir los requisitos de UL 864. Cualquier modificación de lógica C&E requiere re-prueba del sistema afectado según NFPA 72.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m4-2')">
+      <div class="m-num">16</div>
+      <div class="m-body">
+        <div class="m-title">Asignación de Direcciones SLC</div>
+        <div class="m-desc">Proceso paso a paso para mapear dispositivos SIGA en el lazo</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m4-2">
+      <div class="detail-block">
+        <h5>Proceso de asignación — Paso a paso</h5>
+        <ol class="step-list">
+          <li class="step-item"><div class="step-n">01</div><div>Abrir CU → Nuevo proyecto → Seleccionar modelo de panel (ej: iO500)</div></li>
+          <li class="step-item"><div class="step-n">02</div><div>Ir a "Device List" o "SLC Map" → Agregar dispositivo</div></li>
+          <li class="step-item"><div class="step-n">03</div><div>Seleccionar tipo de dispositivo SIGA (ej: SIGA-PD, SIGA-CT1)</div></li>
+          <li class="step-item"><div class="step-n">04</div><div>Asignar número de lazo (loop) y dirección (1-64 en iO64, 1-500 en iO500)</div></li>
+          <li class="step-item"><div class="step-n">05</div><div>Ingresar descripción del punto: ubicación, piso, zona (ej: "DETECTOR-OFICINA-301")</div></li>
+          <li class="step-item"><div class="step-n">06</div><div>Asignar a zona lógica y grupo de notificación</div></li>
+          <li class="step-item"><div class="step-n">07</div><div>Repetir para todos los dispositivos</div></li>
+          <li class="step-item"><div class="step-n">08</div><div>Validar base de datos → Cargar al panel</div></li>
+        </ol>
+      </div>
+      <div class="warning-box">⚠ Las direcciones físicas de los dispositivos SIGA se configuran con un programador de base (SIGA-PRO) o mediante rotary switches en versiones antiguas. La dirección en el CU debe coincidir exactamente con la dirección física del dispositivo instalado.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m4-3')">
+      <div class="m-num">17</div>
+      <div class="m-body">
+        <div class="m-title">Lógica Cause & Effect (C&E)</div>
+        <div class="m-desc">Programación de respuestas automáticas del sistema</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m4-3">
+      <div class="detail-block">
+        <h5>¿Qué es Cause & Effect?</h5>
+        <p>La lógica C&E define qué acciones toma el sistema automáticamente cuando ocurre un evento. Es la "inteligencia" del sistema — permite respuestas diferenciadas según el origen y tipo de alarma.</p>
+      </div>
+      <div class="detail-block">
+        <h5>Ejemplos de C&E típicos</h5>
+        <div class="code-block">CAUSE: Alarma detector SIGA-PD (Dirección 047, Zona 3-Bodega)
+EFFECT:
+  → Activar NAC-1 (sirena piso 3)
+  → Activar SIGA-CC1 (damper cortafuego Zona 3)
+  → Activar SIGA-REL (shunt trip tablero TG-3)
+  → Señalizar a central monitoreo (DACT)
+  → Activar PA "Evacuación Zona 3"
+
+CAUSE: 2 detectores en Zona 5 en alarma (coincidencia)
+EFFECT:
+  → Activar supresión CO2 Sala Eléctrica
+  → Abrir magnets puertas cortafuego
+  → Detener HVAC zonas 4,5,6</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /f4 -->
+
+<!-- ══ FASE 5 ══ -->
+<div id="sec-f5" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// fase 05 — comisionamiento</span><div class="sec-line"></div></div>
+  <div class="phase-banner">
+    <div>
+      <div class="pc-num" style="margin-bottom:4px">FASE 05 · ~5 HORAS</div>
+      <div class="phase-banner-title">Puesta en Marcha y Verificación del Sistema</div>
+    </div>
+    <button class="btn btn-main" style="margin-left:auto" onclick="markComplete(5)">✓ MARCAR COMPLETA</button>
+  </div>
+  <div class="module-list">
+
+    <button class="module-item" onclick="toggleModule('m5-1')">
+      <div class="m-num">18</div>
+      <div class="m-body">
+        <div class="m-title">Pre-Comisionamiento — Verificación Física</div>
+        <div class="m-desc">Lo que debe revisarse antes de energizar el sistema</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m5-1">
+      <div class="detail-block">
+        <h5>Checklist pre-energización</h5>
+        <ol class="step-list">
+          <li class="step-item"><div class="step-n">01</div><div>Verificar polaridad de alimentación AC en el panel</div></li>
+          <li class="step-item"><div class="step-n">02</div><div>Confirmar capacidad del circuito de alimentación (mínimo 15A dedicado)</div></li>
+          <li class="step-item"><div class="step-n">03</div><div>Medir resistencia del lazo SLC con ohmímetro (antes de conectar al panel)</div></li>
+          <li class="step-item"><div class="step-n">04</div><div>Verificar que no hay cortocircuitos en el cableado SLC (≠ 0 Ω)</div></li>
+          <li class="step-item"><div class="step-n">05</div><div>Confirmar direcciones físicas de todos los dispositivos SIGA</div></li>
+          <li class="step-item"><div class="step-n">06</div><div>Verificar polaridad y cableado de circuitos NAC</div></li>
+          <li class="step-item"><div class="step-n">07</div><div>Cargar configuración CU al panel (offline primero)</div></li>
+          <li class="step-item"><div class="step-n">08</div><div>Conectar baterías y verificar voltaje de carga (tipico 27.2 VDC)</div></li>
+        </ol>
+      </div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m5-2')">
+      <div class="m-num">19</div>
+      <div class="m-body">
+        <div class="m-title">Walk Test — Protocolo Completo</div>
+        <div class="m-desc">Prueba dispositivo a dispositivo según NFPA 72 Cap. 14</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m5-2">
+      <div class="detail-block">
+        <h5>Procedimiento Walk Test iO / EST</h5>
+        <ol class="step-list">
+          <li class="step-item"><div class="step-n">01</div><div>Notificar a la central de monitoreo: modo prueba en curso</div></li>
+          <li class="step-item"><div class="step-n">02</div><div>En el panel: acceder a menú WALK TEST → seleccionar modo</div></li>
+          <li class="step-item"><div class="step-n">03</div><div>Recorrer cada dispositivo con técnico en campo + operador en panel</div></li>
+          <li class="step-item"><div class="step-n">04</div><div>Activar detector con aerosol de prueba aprobado (Ultratest o similar)</div></li>
+          <li class="step-item"><div class="step-n">05</div><div>Verificar que el panel muestra la dirección correcta y el descriptor</div></li>
+          <li class="step-item"><div class="step-n">06</div><div>Verificar activación de NAC correspondiente según C&E</div></li>
+          <li class="step-item"><div class="step-n">07</div><div>Documentar resultado: OK / FALLA / REEMPLAZAR</div></li>
+          <li class="step-item"><div class="step-n">08</div><div>Resetear punto desde el panel antes de continuar</div></li>
+          <li class="step-item"><div class="step-n">09</div><div>Al finalizar: generar reporte de comisionamiento impreso</div></li>
+          <li class="step-item"><div class="step-n">10</div><div>Notificar a central: fin de modo prueba, sistema en servicio</div></li>
+        </ol>
+      </div>
+      <div class="warning-box">⚠ NFPA 72 requiere prueba del 100% de los dispositivos en comisionamiento inicial. En pruebas anuales se acepta un programa de prueba rotativo si se prueba el 100% en un período definido.</div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /f5 -->
+
+<!-- ══ FASE 6 ══ -->
+<div id="sec-f6" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// fase 06 — operación & mantenimiento</span><div class="sec-line"></div></div>
+  <div class="phase-banner">
+    <div>
+      <div class="pc-num" style="margin-bottom:4px">FASE 06 · ~4 HORAS</div>
+      <div class="phase-banner-title">Operación Diaria y Mantenimiento Preventivo</div>
+    </div>
+    <button class="btn btn-main" style="margin-left:auto" onclick="markComplete(6)">✓ MARCAR COMPLETA</button>
+  </div>
+  <div class="module-list">
+
+    <button class="module-item" onclick="toggleModule('m6-1')">
+      <div class="m-num">20</div>
+      <div class="m-body">
+        <div class="m-title">Lectura e Interpretación del Panel</div>
+        <div class="m-desc">Indicadores LED, display LCD, navegación de menús</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m6-1">
+      <div class="detail-block">
+        <h5>Indicadores principales (iO / EST)</h5>
+        <ul>
+          <li><strong style="color:#f87171">LED ALARM (Rojo parpadeante):</strong> incendio activo — actúa inmediatamente</li>
+          <li><strong style="color:#fbbf24">LED TROUBLE (Amarillo):</strong> falla del sistema — investigar dentro de 24h</li>
+          <li><strong style="color:#60a5fa">LED SUPERVISORY (Amarillo/Azul):</strong> condición de supervisión</li>
+          <li><strong style="color:#4ade80">LED AC POWER (Verde):</strong> alimentación AC presente — normal</li>
+          <li><strong>LED GROUND FAULT:</strong> falla de tierra en el sistema — investigar</li>
+        </ul>
+      </div>
+      <div class="detail-block">
+        <h5>Secuencia de respuesta a alarma</h5>
+        <ol class="step-list">
+          <li class="step-item"><div class="step-n">01</div><div>Leer display: anotar zona/dispositivo/descriptor</div></li>
+          <li class="step-item"><div class="step-n">02</div><div>Presionar ACKNOWLEDGE (silencia el buzzer del panel)</div></li>
+          <li class="step-item"><div class="step-n">03</div><div>Investigar la zona en campo (nunca asumir falsa alarma)</div></li>
+          <li class="step-item"><div class="step-n">04</div><div>Si es alarma real: coordinar con bomberos, no resetear</div></li>
+          <li class="step-item"><div class="step-n">05</div><div>Si es falsa alarma confirmada: presionar RESET</div></li>
+          <li class="step-item"><div class="step-n">06</div><div>Documentar en bitácora: fecha, punto, causa, acción</div></li>
+        </ol>
+      </div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m6-2')">
+      <div class="m-num">21</div>
+      <div class="m-body">
+        <div class="m-title">Mantenimiento Preventivo — Calendario NFPA 72</div>
+        <div class="m-desc">Frecuencia de pruebas según tipo de componente</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m6-2">
+      <div class="detail-block">
+        <h5>Frecuencias NFPA 72 Tabla 14.4.5</h5>
+        <div class="table-wrap" style="margin-top:8px">
+          <table class="data-table">
+            <thead><tr><th>Componente</th><th>Frecuencia</th><th>Prueba</th></tr></thead>
+            <tbody>
+              <tr><td>Panel FACP</td><td>Anual</td><td>Funcionalidad completa, baterías</td></tr>
+              <tr><td>Detectores humo</td><td>Anual / Semestral*</td><td>Funcional con aerosol</td></tr>
+              <tr><td>Detectores calor</td><td>Anual</td><td>Calor controlado o sustitución</td></tr>
+              <tr><td>Estaciones manuales</td><td>Anual</td><td>Activación manual</td></tr>
+              <tr><td>NAC (sirenas/strobes)</td><td>Anual</td><td>Nivel sonoro, parpadeo</td></tr>
+              <tr><td>Baterías selladas</td><td>Semestral</td><td>Voltaje en carga y descarga</td></tr>
+              <tr><td>Módulos SIGA-CT/CC</td><td>Anual</td><td>Activación y supervisión</td></tr>
+              <tr><td>Duct detectors</td><td>Semestral</td><td>Flujo de humo en ducto</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:8px;font-size:0.75rem;color:var(--muted)">*Detectores con edad > 10 años: semestral y evaluación de reemplazo</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /f6 -->
+
+<!-- ══ FASE 7 ══ -->
+<div id="sec-f7" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// fase 07 — nivel avanzado</span><div class="sec-line"></div></div>
+  <div class="phase-banner">
+    <div>
+      <div class="pc-num" style="margin-bottom:4px">FASE 07 · ~7 HORAS</div>
+      <div class="phase-banner-title">Redes EST4, BACnet, Mass Notification y Ciberseguridad</div>
+    </div>
+    <button class="btn btn-main" style="margin-left:auto" onclick="markComplete(7)">✓ MARCAR COMPLETA</button>
+  </div>
+  <div class="module-list">
+
+    <button class="module-item" onclick="toggleModule('m7-1')">
+      <div class="m-num">22</div>
+      <div class="m-body">
+        <div class="m-title">Red EST4 Multipanel — Arquitectura IPv6</div>
+        <div class="m-desc">Nodos, topología de red, fibra óptica y redundancia</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m7-1">
+      <div class="detail-block">
+        <h5>Red EST4</h5>
+        <p>El EST4 usa una arquitectura de red basada en IPv6 donde cada panel es un nodo. Los nodos pueden conectarse por fibra óptica, Ethernet o cobre en topologías Class B, A, X, N o full mesh.</p>
+      </div>
+      <div class="detail-block">
+        <h5>Ventajas sobre EST3/NOTI-FIRE-NET</h5>
+        <ul>
+          <li>Cifrado AES nativo — inmune a ataques de red</li>
+          <li>Webserver integrado — acceso remoto sin software</li>
+          <li>75% menos cableado en configuraciones equivalentes</li>
+          <li>Failover automático en caso de falla de nodo</li>
+          <li>Compatible con estándares IT (switches Ethernet estándar)</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m7-2')">
+      <div class="m-num">23</div>
+      <div class="m-body">
+        <div class="m-title">Integración BACnet/IP con BMS</div>
+        <div class="m-desc">Protocolo de integración con sistemas de gestión de edificios</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m7-2">
+      <div class="detail-block">
+        <h5>BACnet en Edwards EST4</h5>
+        <p>El EST4 puede actuar como servidor BACnet/IP, exponiendo puntos del sistema de alarma al BMS (Building Management System). Esto permite:</p>
+        <ul>
+          <li>Visualización de estados de alarma en el BMS</li>
+          <li>Integración con control de HVAC, accesos, iluminación de emergencia</li>
+          <li>Registro centralizado de eventos en el BMS historian</li>
+          <li>Comandos de control desde el BMS (silencio, reset — con restricciones)</li>
+        </ul>
+      </div>
+      <div class="warning-box">⚠ NFPA 72 prohíbe que sistemas externos puedan inhibir la señalización de alarma. La integración BACnet debe ser de solo lectura para los estados de alarma. El reset y silencio desde BMS debe requerir autenticación y está restringido.</div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m7-3')">
+      <div class="m-num">24</div>
+      <div class="m-body">
+        <div class="m-title">Mass Notification System (MNS)</div>
+        <div class="m-desc">NFPA 72 Cap. 24 — comunicación de emergencia EST4</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m7-3">
+      <div class="detail-block">
+        <h5>EST4 como plataforma MNS</h5>
+        <p>El EST4 integra natively Mass Notification según NFPA 72 Capítulo 24. Permite distribuir mensajes de emergencia personalizados por zona, piso o edificio completo a través de los amplificadores de voz y speaker-strobes Genesis.</p>
+      </div>
+      <div class="detail-block">
+        <h5>Funcionalidades MNS</h5>
+        <ul>
+          <li>Mensajes pre-grabados por evento (evacuación, refugio, all-clear)</li>
+          <li>Mensajes en vivo desde micrófono del operador</li>
+          <li>Prioridad de mensajes configurable (incendio > amenaza > instrucción)</li>
+          <li>Integración con PA existente en modo dual function</li>
+          <li>Speaker-strobes EG4SVWF / EGCSVWF compatibles</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="module-item" onclick="toggleModule('m7-4')">
+      <div class="m-num">25</div>
+      <div class="m-body">
+        <div class="m-title">Migración EST3 → EST4</div>
+        <div class="m-desc">Ruta de actualización conservando dispositivos SIGA y cableado</div>
+      </div>
+      <div class="m-arrow">▶</div>
+    </button>
+    <div class="module-detail" id="m7-4">
+      <div class="detail-block">
+        <h5>⚠ Urgencia: EST3 EOL Q4 2026 / EST3X Discontinuado Q1 2025</h5>
+        <p>Edwards recomienda planificar la migración ahora. Opciones:</p>
+      </div>
+      <div class="detail-block">
+        <h5>Qué se conserva en la migración</h5>
+        <ul>
+          <li>✅ Dispositivos SIGA de campo (detectores, módulos) — compatibles con EST4</li>
+          <li>✅ Cableado de field devices — se reutiliza</li>
+          <li>✅ Bases de detectores — compatibles</li>
+        </ul>
+      </div>
+      <div class="detail-block">
+        <h5>Qué se reemplaza</h5>
+        <ul>
+          <li>❌ Panel de control EST3/EST3X → Panel EST4</li>
+          <li>❌ Tarjetas SLC del EST3 → Módulos SLC del EST4</li>
+          <li>❌ Software EST3 Programmer → Config Utility CU</li>
+        </ul>
+      </div>
+      <div class="info-box">ℹ La eficiencia de cableado del EST4 (75% menos) aplica a nuevas instalaciones. En migración, el cableado existente se reutiliza tal cual.</div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /f7 -->
+
+<!-- ══ ASISTENTE IA ══ -->
+<div id="sec-asistente" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// asistente técnico IA — Edwards EST</span><div class="sec-line"></div></div>
+  <div class="ai-wrap">
+    <div class="ai-top">
+      <div class="led-dot"></div>
+      <span class="ai-title">EST TECH ASSISTANT</span>
+      <span class="ai-badge-tag">CLAUDE · ESPECIALIZADO</span>
+    </div>
+    <div class="ai-msgs" id="aiChat">
+      <div class="msg-row">
+        <div class="msg-av av-ai">AI</div>
+        <div class="msg-bub">
+          Sistema activo. Soy tu asistente técnico especializado en <strong>Edwards EST Fire Safety</strong>.<br><br>
+          Puedo ayudarte con: paneles EST4, EST3, iO Series, dispositivos SIGA Signature Series, 
+          software Configuration Utility, cableado SLC, lógica C&amp;E, comisionamiento, 
+          diagnóstico de fallas, NFPA 72, migración EST3→EST4, y cualquier duda técnica del curso.<br><br>
+          ¿En qué te ayudo?
+        </div>
+      </div>
+    </div>
+    <div class="quick-btns">
+      <button class="quick-btn" onclick="quickAsk('¿Cuál es la diferencia entre EST4 y EST3?')">EST4 vs EST3</button>
+      <button class="quick-btn" onclick="quickAsk('¿Cómo programo la lógica Cause and Effect en el CU?')">Cause &amp; Effect</button>
+      <button class="quick-btn" onclick="quickAsk('¿Qué significa el código de falla TROUBLE en un iO500?')">Falla TROUBLE</button>
+      <button class="quick-btn" onclick="quickAsk('¿Cómo calcular la batería de respaldo según NFPA 72?')">Cálculo baterías</button>
+      <button class="quick-btn" onclick="quickAsk('¿Cuándo hay que reemplazar un detector SIGA-PD?')">Reemplazo SIGA</button>
+    </div>
+    <div class="ai-input-area">
+      <input type="text" class="ai-inp" id="aiInput"
+        placeholder="Ej: ¿Cómo asigno una dirección SLC al SIGA-CT1?"
+        onkeydown="if(event.key==='Enter')sendAI()"/>
+      <button class="ai-send-btn" id="aiSend" onclick="sendAI()">ENVIAR ▶</button>
+    </div>
+  </div>
+</div>
+</div><!-- /asistente -->
+
+<!-- ══ CHECKLIST ══ -->
+<div id="sec-checklist" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// checklist operativo — comisionamiento Edwards EST</span><div class="sec-line"></div></div>
+  <div style="background:var(--bg-card);border:1px solid var(--border);padding:1.5rem">
+    <div style="margin-bottom:1.5rem">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:0.75rem;color:var(--orange)">PRE-INSTALACIÓN</div>
+      <ul class="checklist" id="cl1">
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Planos contra incendio revisados y aprobados</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Materiales SIGA verificados con lista de diseño</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Direcciones físicas SIGA programadas (SIGA-PRO)</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Panel recibido, modelo correcto verificado</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Software CU instalado y licenciado</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Base de datos CU creada y validada (offline)</li>
+      </ul>
+    </div>
+    <div style="margin-bottom:1.5rem">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:0.75rem;color:var(--orange)">CABLEADO Y FÍSICO</div>
+      <ul class="checklist">
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Resistencia SLC medida y dentro de rango</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Sin cortocircuitos en SLC (medición con panel apagado)</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Cableado NAC verificado (polaridad y EOL)</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Alimentación AC dedicada confirmada</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Tierra del panel verificada (≤ 1 Ω)</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Baterías conectadas y voltaje de carga OK (27.2 VDC)</li>
+      </ul>
+    </div>
+    <div style="margin-bottom:1.5rem">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:0.75rem;color:var(--orange)">PROGRAMACIÓN</div>
+      <ul class="checklist">
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Configuración CU cargada al panel sin errores</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Todos los dispositivos SLC reconocidos por el panel</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Descriptores de puntos verificados en display</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Lógica C&E probada en modo test</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> DACT/comunicador configurado y probado</li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:0.75rem;color:var(--orange)">WALK TEST Y CERTIFICACIÓN</div>
+      <ul class="checklist">
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Central de monitoreo notificada: modo prueba</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> 100% detectores probados con aerosol</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> 100% estaciones manuales activadas</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> 100% sirenas/strobes verificados</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Salidas de control (SIGA-CC1, REL) verificadas</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Reporte de comisionamiento impreso y firmado</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Manual entregado al usuario final</li>
+        <li class="check-item"><input type="checkbox" onchange="checkItem(this)"> Central notificada: fin de prueba, sistema en servicio</li>
+      </ul>
+    </div>
+    <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:1rem">
+      <span id="clCount" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted)">0 / 0 completados</span>
+      <button class="btn btn-out" onclick="resetChecklist()" style="padding:0.4rem 1rem;font-size:0.8rem">↺ RESET</button>
+    </div>
+  </div>
+</div>
+</div><!-- /checklist -->
+
+<!-- ══ MATRIZ DE FALLAS ══ -->
+<div id="sec-errores" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// matriz de fallas — diagnóstico Edwards EST</span><div class="sec-line"></div></div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Indicación Panel</th><th>Causa Probable</th><th>Acción Correctiva</th><th>Urgencia</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>TROUBLE — SLC Open</td>
+          <td>Corte en cableado SLC, conector suelto, dispositivo desconectado</td>
+          <td>Localizar corte con tester SLC. Verificar conexiones en el punto indicado. Revisar bases de detectores.</td>
+          <td style="color:#fbbf24">24h</td>
+        </tr>
+        <tr>
+          <td>TROUBLE — SLC Short</td>
+          <td>Cortocircuito en lazo, cable pelado tocando tierra o el otro conductor</td>
+          <td>Aislar secciones del lazo para localizar el corto. Revisar tuberías y puntos de roce del cable.</td>
+          <td style="color:#f87171">Inmediata</td>
+        </tr>
+        <tr>
+          <td>TROUBLE — Low Battery</td>
+          <td>Baterías descargadas, fin de vida útil (tipico 3-5 años), falla de cargador</td>
+          <td>Medir voltaje de baterías bajo carga. Si &lt; 20 VDC, reemplazar. Verificar voltaje cargador (27.2 VDC).</td>
+          <td style="color:#fbbf24">48h</td>
+        </tr>
+        <tr>
+          <td>TROUBLE — AC Loss</td>
+          <td>Falla de alimentación AC, breaker disparado, corte externo</td>
+          <td>Verificar breaker dedicado del panel. Revisar alimentación en el tablero. Sistema opera en baterías.</td>
+          <td style="color:#fbbf24">24h</td>
+        </tr>
+        <tr>
+          <td>TROUBLE — Ground Fault</td>
+          <td>Cable SLC o NAC en contacto con tierra (conduit metálico, humedad)</td>
+          <td>Localizar falla de tierra sección por sección. Revisar puntos con conduit mojado o dañado.</td>
+          <td style="color:#fbbf24">48h</td>
+        </tr>
+        <tr>
+          <td>TROUBLE — Device Missing</td>
+          <td>Dispositivo SIGA removido, base vacía, falla de comunicación</td>
+          <td>Verificar presencia física del dispositivo. Limpiar contactos de la base. Reemplazar si corresponde.</td>
+          <td style="color:#fbbf24">24h</td>
+        </tr>
+        <tr>
+          <td>TROUBLE — NAC Open/Short</td>
+          <td>Circuito NAC abierto, cortocircuito, EOL ausente o incorrecto</td>
+          <td>Verificar continuidad del NAC. Confirmar EOL correcto en el último dispositivo.</td>
+          <td style="color:#fbbf24">24h</td>
+        </tr>
+        <tr>
+          <td>ALARM — Detector (sin incendio)</td>
+          <td>Polvo o contaminación en cámara del detector, vapor, insectos, aerosol</td>
+          <td>Limpiar detector según procedimiento Edwards. Si reincide, reemplazar cabeza SIGA-PD.</td>
+          <td style="color:#60a5fa">Investigar</td>
+        </tr>
+        <tr>
+          <td>SUPERVISORY</td>
+          <td>Válvula de supresión cerrada, nivel bajo de agente, flujo de agua anormal</td>
+          <td>Verificar sistema de supresión vinculado. No es emergencia inmediata pero requiere investigación.</td>
+          <td style="color:#60a5fa">Investigar</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div><!-- /errores -->
+
+</main><!-- /main -->
+
+<script>
+// ─── SECTIONS ───
+const sections = ['home','paneles','videos','f1','f2','f3','f4','f5','f6','f7','asistente','checklist','errores'];
+
+function showSection(id) {
+  sections.forEach(s => {
+    const el = document.getElementById('sec-' + s);
+    if (el) el.style.display = 'none';
+  });
+  const target = document.getElementById('sec-' + id);
+  if (target) { target.style.display = 'block'; }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  updateProgressUI();
+  updateChecklistCount();
+}
+
+// ─── SIDEBAR ───
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ─── MODULES ACCORDION ───
+function toggleModule(id) {
+  const detail = document.getElementById(id);
+  const btn = detail.previousElementSibling;
+  const allDetails = document.querySelectorAll('.module-detail');
+  const allBtns = document.querySelectorAll('.module-item');
+
+  allDetails.forEach((d,i) => {
+    if (d.id !== id) {
+      d.classList.remove('show');
+      if (allBtns[i]) allBtns[i].classList.remove('open');
+    }
+  });
+
+  detail.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+
+// ─── PROGRESS ───
+const PROGRESS_KEY = 'est_course_progress';
+
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || { completed: [] }; }
+  catch { return { completed: [] }; }
+}
+function saveProgress(data) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); }
+
+function markComplete(fase) {
+  const p = getProgress();
+  if (!p.completed.includes(fase)) {
+    p.completed.push(fase);
+    saveProgress(p);
+  }
+  updateProgressUI();
+  // Move to next phase
+  if (fase < 7) showSection('f' + (fase + 1));
+}
+
+function updateProgressUI() {
+  const p = getProgress();
+  const count = p.completed.length;
+  const pct = Math.round((count / 7) * 100);
+  const fill = document.getElementById('hpf');
+  const txt = document.getElementById('hptxt');
+  const top = document.getElementById('topProgress');
+  if (fill) fill.style.width = pct + '%';
+  if (txt) txt.textContent = count + ' de 7 fases completadas';
+  if (top) top.textContent = count + '/7 FASES';
+}
+
+updateProgressUI();
+
+// ─── CHECKLIST ───
+function checkItem(cb) {
+  const li = cb.closest('.check-item');
+  li.classList.toggle('done', cb.checked);
+  updateChecklistCount();
+}
+
+function updateChecklistCount() {
+  const all = document.querySelectorAll('.check-item input[type=checkbox]');
+  const done = document.querySelectorAll('.check-item input[type=checkbox]:checked');
+  const cnt = document.getElementById('clCount');
+  if (cnt && all.length > 0) cnt.textContent = done.length + ' / ' + all.length + ' completados';
+}
+
+function resetChecklist() {
+  document.querySelectorAll('.check-item').forEach(li => {
+    li.classList.remove('done');
+    const cb = li.querySelector('input');
+    if (cb) cb.checked = false;
+  });
+  updateChecklistCount();
+}
+
+// ─── AI ASSISTANT ───
+const EST_SYSTEM = `Eres un experto técnico senior en sistemas de detección y alarma de incendio Edwards EST Fire Safety (Carrier Global Corporation).
+
+Tu especialidad cubre:
+- Paneles: EST4, EST3, EST3X (EOL), iO64, iO500, iO1000, QuickStart
+- Dispositivos SIGA Signature Series: SIGA-PD, SIGA-PS, SIGA-IS, SIGA-HRS, SIGA-DDOS, SIGA-CT1/CT2, SIGA-CC1, SIGA-MCM, SIGA-REL, SIGA-CRR
+- Notificadores Genesis Series: EG4VWF, EG4SVWF, EGCSVWF, EG4AVWF
+- Software: EST Configuration Utility (CU), EST3 Programmer
+- Normativa: NFPA 72, UL 864, UL 2572 (MNS)
+- Cableado: SLC Class A/B/X/N, NAC, topología de red IPv6 EST4
+- Integración: BACnet/IP, BMS, Mass Notification System (MNS), AHU/HVAC
+- Ciberseguridad: AES encryption EST4, FIPS Pub 197
+- Migración EST3/EST3X → EST4
+
+Responde SIEMPRE en español, de forma técnica y precisa.
+Cuando sea apropiado incluye: valores técnicos específicos, pasos numerados, códigos de error, procedimientos de diagnóstico.
+Si hay una diferencia importante de seguridad o de cumplimiento NFPA 72, resáltala claramente.
+Sé conciso pero completo.`;
+
+const aiHistory = [];
+
+async function sendAI() {
+  const input = document.getElementById('aiInput');
+  const sendBtn = document.getElementById('aiSend');
+  const text = input.value.trim();
+  if (!text) return;
+
+  appendAIMsg('user', text);
+  aiHistory.push({ role: 'user', content: text });
+  input.value = '';
+  sendBtn.disabled = true;
+
+  const thinkId = appendThinking();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: EST_SYSTEM,
+        messages: aiHistory
+      })
+    });
+    const data = await res.json();
+    removeThinking(thinkId);
+    const reply = data.content?.find(b => b.type === 'text')?.text || 'Sin respuesta del servidor.';
+    aiHistory.push({ role: 'assistant', content: reply });
+    appendAIMsg('ai', reply);
+  } catch(e) {
+    removeThinking(thinkId);
+    appendAIMsg('ai', '⚠️ Error de conexión. Verifica tu red e intenta de nuevo.');
+  }
+  sendBtn.disabled = false;
+}
+
+function quickAsk(q) {
+  document.getElementById('aiInput').value = q;
+  sendAI();
+}
+
+function appendAIMsg(role, text) {
+  const chat = document.getElementById('aiChat');
+  const div = document.createElement('div');
+  div.className = 'msg-row' + (role === 'user' ? ' user' : '');
+  div.innerHTML = `
+    <div class="msg-av ${role === 'ai' ? 'av-ai' : 'av-u'}">${role === 'ai' ? 'AI' : 'TÚ'}</div>
+    <div class="msg-bub">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function appendThinking() {
+  const chat = document.getElementById('aiChat');
+  const id = 'think-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'msg-row'; div.id = id;
+  div.innerHTML = `<div class="msg-av av-ai">AI</div><div class="msg-bub"><div class="dots-ani"><span></span><span></span><span></span></div></div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return id;
+}
+
+function removeThinking(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+</script>
+</body>
+</html>
