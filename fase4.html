@@ -1,4 +1,984 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fase 4 — VeriFire Tools | NOTIFIER Pro</title><script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script></head><body><script>
-(async()=>{const files=["payload/f4-00.txt","payload/f4-01.txt","payload/f4-02.txt","payload/f4-03.txt"];const parts=await Promise.all(files.map(f=>fetch(f).then(r=>{if(!r.ok)throw new Error(f);return r.text()})));const b64=parts.join("");const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));const html=pako.ungzip(bytes,{to:"string"});document.open();document.write(html);document.close();})().catch(e=>{document.body.innerHTML="<main style='font-family:sans-serif;padding:2rem'><h1>Error cargando la fase</h1><p>"+e+"</p></main>"});
-</script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fase 4 — VeriFire Tools | NOTIFIER Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep:    #070B14;
+    --bg-panel:   #0F1624;
+    --bg-card:    #161E30;
+    --bg-card2:   #1C2540;
+    --red:        #C41E3A;
+    --red-glow:   rgba(196,30,58,0.25);
+    --amber:      #F59E0B;
+    --amber-dim:  rgba(245,158,11,0.12);
+    --green:      #22C55E;
+    --green-dim:  rgba(34,197,94,0.12);
+    --blue:       #3B82F6;
+    --blue-dim:   rgba(59,130,246,0.12);
+    --purple:     #A855F7;
+    --purple-dim: rgba(168,85,247,0.12);
+    --white:      #E8EDF8;
+    --white-dim:  rgba(232,237,248,0.55);
+    --border:     rgba(255,255,255,0.07);
+    --fase-color: #A855F7;
+    --fase-dim:   rgba(168,85,247,0.12);
+    --fase-border:rgba(168,85,247,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg-deep); color: var(--white); min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px); pointer-events: none; z-index: 9999; }
+
+  /* HEADER */
+  header { position: sticky; top: 0; background: rgba(7,11,20,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--fase-border); z-index: 100; padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.12em; display: flex; align-items: center; gap: 10px; }
+  .logo-badge { background: var(--red); color: #fff; padding: 2px 8px; font-size: 0.7rem; letter-spacing: 0.2em; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); }
+  .header-nav { display: flex; align-items: center; gap: 1.2rem; }
+  .back-link { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--white-dim); text-decoration: none; letter-spacing: 0.1em; transition: color 0.2s; }
+  .back-link:hover { color: var(--white); }
+  .fase-indicator { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--fase-color); letter-spacing: 0.2em; display: flex; align-items: center; gap: 6px; }
+  .led { width: 7px; height: 7px; border-radius: 50%; background: var(--fase-color); box-shadow: 0 0 6px var(--fase-color); animation: blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* HERO */
+  .fase-hero { background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 3rem 2rem 2.5rem; position: relative; overflow: hidden; }
+  .fase-hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(168,85,247,0.03) 1px,transparent 1px), linear-gradient(90deg,rgba(168,85,247,0.03) 1px,transparent 1px); background-size: 40px 40px; }
+  .fase-hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+  .fase-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: var(--fase-color); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+  .fase-eyebrow::before { content: ''; display: block; width: 24px; height: 1px; background: var(--fase-color); }
+  .fase-hero h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(2rem,5vw,3.5rem); line-height: 1; letter-spacing: 0.02em; margin-bottom: 1rem; }
+  .fase-hero p { font-size: 0.95rem; color: var(--white-dim); max-width: 580px; line-height: 1.65; font-weight: 300; }
+  .fase-meta { display: flex; gap: 2rem; margin-top: 1.75rem; flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--white-dim); text-transform: uppercase; }
+  .meta-value { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; }
+
+  /* LAYOUT */
+  .layout { max-width: 960px; margin: 0 auto; padding: 3rem 2rem; display: grid; grid-template-columns: 220px 1fr; gap: 2.5rem; align-items: start; }
+
+  /* SIDEBAR */
+  .sidebar { position: sticky; top: 80px; }
+  .sidebar-title { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--white-dim); text-transform: uppercase; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  .sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .sidebar-nav li a { display: flex; align-items: center; gap: 8px; padding: 0.55rem 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--white-dim); text-decoration: none; border-radius: 2px; border-left: 2px solid transparent; transition: all 0.2s; }
+  .sidebar-nav li a:hover, .sidebar-nav li a.active { color: var(--white); background: var(--bg-card); border-left-color: var(--fase-color); }
+  .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--fase-color); min-width: 18px; }
+  .progress-mini { margin-top: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px; padding: 1rem; }
+  .progress-mini-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--white-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+  .progress-fill { height: 100%; background: var(--fase-color); border-radius: 2px; transition: width 0.5s ease; }
+  .progress-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--fase-color); }
+
+  /* CONTENT */
+  .content { display: flex; flex-direction: column; gap: 3rem; }
+  .modulo { scroll-margin-top: 80px; }
+  .modulo-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .modulo-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--fase-color); background: var(--fase-dim); border: 1px solid var(--fase-border); padding: 4px 10px; border-radius: 2px; white-space: nowrap; margin-top: 4px; }
+  .modulo-header h2 { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1.5rem; letter-spacing: 0.04em; line-height: 1.2; }
+  .modulo-header p { font-size: 0.82rem; color: var(--white-dim); margin-top: 4px; line-height: 1.5; }
+
+  /* PROSE */
+  .prose { font-size: 0.88rem; line-height: 1.75; color: var(--white-dim); }
+  .prose p { margin-bottom: 1rem; }
+  .prose strong { color: var(--white); font-weight: 600; }
+  .highlight-box { background: var(--bg-card); border-left: 3px solid var(--fase-color); padding: 1rem 1.25rem; margin: 1.25rem 0; border-radius: 0 2px 2px 0; font-size: 0.85rem; color: var(--white); }
+  .warning-box { background: rgba(196,30,58,0.07); border-left: 3px solid var(--red); padding: 1rem 1.25rem; margin: 1.25rem 0; border-radius: 0 2px 2px 0; font-size: 0.85rem; color: var(--white); }
+  .warning-box::before { content: '🔴 CRÍTICO — '; color: var(--red); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; }
+  .info-box { background: rgba(59,130,246,0.07); border-left: 3px solid var(--blue); padding: 1rem 1.25rem; margin: 1.25rem 0; border-radius: 0 2px 2px 0; font-size: 0.85rem; color: var(--white); }
+  .info-box::before { content: '💡 NOTA — '; color: var(--blue); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; position: relative; }
+  .steps::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 1px; background: var(--fase-border); }
+  .step { display: flex; gap: 1.25rem; padding: 1.25rem 0; position: relative; }
+  .step-num { width: 40px; height: 40px; border-radius: 2px; background: var(--bg-card); border: 1px solid var(--fase-border); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: var(--fase-color); flex-shrink: 0; position: relative; z-index: 1; }
+  .step-body { flex: 1; padding-top: 8px; }
+  .step-body h4 { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--white); }
+  .step-body p { font-size: 0.82rem; color: var(--white-dim); line-height: 1.6; }
+  .step-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; background: var(--bg-panel); border: 1px solid var(--border); padding: 1px 6px; border-radius: 2px; color: var(--amber); }
+  .step-body .sub-steps { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 5px; }
+  .sub-step { font-size: 0.8rem; color: var(--white-dim); padding: 0.5rem 0.85rem; background: var(--bg-card); border-left: 2px solid var(--fase-border); border-radius: 0 2px 2px 0; line-height: 1.5; }
+  .sub-step strong { color: var(--white); }
+
+  /* VERIFIRESCREEN MOCKUP */
+  .vf-screen { background: #0A1020; border: 1px solid var(--fase-border); border-radius: 4px; overflow: hidden; margin: 1.5rem 0; font-family: 'JetBrains Mono', monospace; }
+  .vf-titlebar { background: #1C2035; border-bottom: 1px solid var(--fase-border); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 8px; }
+  .vf-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .vf-title { font-size: 0.72rem; color: var(--white-dim); letter-spacing: 0.1em; margin-left: 4px; }
+  .vf-menubar { background: #141828; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.35rem 1rem; display: flex; gap: 1.5rem; }
+  .vf-menu { font-size: 0.7rem; color: var(--white-dim); cursor: default; padding: 2px 6px; border-radius: 2px; }
+  .vf-menu:hover { background: rgba(168,85,247,0.15); color: var(--white); }
+  .vf-body { display: grid; grid-template-columns: 200px 1fr; min-height: 260px; }
+  .vf-tree { background: #0D1525; border-right: 1px solid rgba(255,255,255,0.05); padding: 0.75rem 0; overflow-y: auto; }
+  .vf-tree-item { padding: 0.3rem 1rem; font-size: 0.68rem; color: var(--white-dim); cursor: default; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .vf-tree-item:hover { background: rgba(168,85,247,0.1); color: var(--white); }
+  .vf-tree-item.selected { background: rgba(168,85,247,0.2); color: var(--fase-color); border-left: 2px solid var(--fase-color); }
+  .vf-tree-item.folder { color: var(--amber); }
+  .vf-tree-item.folder.open { color: var(--amber); }
+  .vf-content { padding: 1rem; }
+  .vf-field-row { display: grid; grid-template-columns: 140px 1fr; gap: 6px; margin-bottom: 8px; align-items: center; }
+  .vf-label { font-size: 0.68rem; color: var(--white-dim); }
+  .vf-input { background: #1C2540; border: 1px solid rgba(168,85,247,0.25); border-radius: 2px; padding: 3px 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--white); }
+  .vf-input.highlight { border-color: var(--fase-color); background: rgba(168,85,247,0.08); color: var(--fase-color); }
+  .vf-select { background: #1C2540; border: 1px solid rgba(168,85,247,0.25); border-radius: 2px; padding: 3px 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--white); width: 100%; cursor: default; }
+  .vf-section-title { font-size: 0.65rem; color: var(--fase-color); letter-spacing: 0.15em; text-transform: uppercase; margin: 0.85rem 0 0.5rem; border-bottom: 1px solid var(--fase-border); padding-bottom: 3px; }
+  .vf-statusbar { background: #141828; border-top: 1px solid rgba(255,255,255,0.05); padding: 0.3rem 1rem; display: flex; align-items: center; gap: 1.5rem; }
+  .vf-status-item { font-size: 0.63rem; color: var(--white-dim); }
+  .vf-status-ok { color: var(--green); }
+
+  /* CE TABLE */
+  .ce-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 1.25rem 0; }
+  .ce-table th { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--white-dim); padding: 0.6rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-panel); }
+  .ce-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--border); background: var(--bg-card); vertical-align: middle; line-height: 1.5; font-size: 0.8rem; }
+  .ce-table tr:hover td { background: var(--bg-card2); }
+  .ce-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--purple); }
+  .ce-table td:nth-child(2) { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--amber); }
+  .ce-arrow { color: var(--white-dim); font-size: 0.9rem; }
+
+  /* CHECKLIST */
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin: 1rem 0; }
+  .check-item { display: flex; align-items: flex-start; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); padding: 0.75rem 1rem; border-radius: 2px; cursor: pointer; transition: all 0.2s; user-select: none; }
+  .check-item:hover { background: var(--bg-card2); }
+  .check-item.done { border-color: var(--fase-border); background: var(--fase-dim); }
+  .check-box { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 1px; }
+  .check-item.done .check-box { background: var(--fase-color); border-color: var(--fase-color); }
+  .check-item.done .check-box::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
+  .check-text { font-size: 0.83rem; color: var(--white-dim); line-height: 1.45; }
+  .check-item.done .check-text { color: var(--white); }
+
+  /* DIAGRAM */
+  .diagram-wrap { background: var(--bg-card); border: 1px solid var(--border); border-top: 2px solid var(--fase-color); border-radius: 2px; padding: 1.75rem; margin: 1.5rem 0; overflow-x: auto; }
+  .diagram-title { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--fase-color); text-transform: uppercase; margin-bottom: 1.25rem; }
+
+  /* DATA TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 1.25rem 0; }
+  .data-table th { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--white-dim); padding: 0.65rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-panel); white-space: nowrap; }
+  .data-table td { padding: 0.75rem 0.85rem; border-bottom: 1px solid var(--border); background: var(--bg-card); vertical-align: top; line-height: 1.5; font-size: 0.8rem; }
+  .data-table tr:hover td { background: var(--bg-card2); }
+  .data-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--amber); white-space: nowrap; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; white-space: nowrap; }
+  .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .badge-red   { background: var(--red-glow);  color: var(--red);   border: 1px solid rgba(196,30,58,0.3); }
+  .badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-purple{ background: var(--purple-dim);color: var(--purple);border: 1px solid rgba(168,85,247,0.3); }
+
+  /* VIDEO */
+  .video-wrap { margin: 1.5rem 0; background: var(--bg-card); border: 1px solid var(--border); border-top: 2px solid var(--red); border-radius: 2px; overflow: hidden; }
+  .video-wrap iframe { width: 100%; aspect-ratio: 16/9; display: block; border: none; }
+  .video-caption { padding: 0.75rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--white-dim); letter-spacing: 0.08em; border-top: 1px solid var(--border); }
+
+  /* QUIZ */
+  .quiz-section { background: var(--bg-panel); border: 1px solid rgba(196,30,58,0.4); border-radius: 2px; overflow: hidden; margin-top: 1rem; }
+  .quiz-header { background: var(--red-glow); border-bottom: 1px solid rgba(196,30,58,0.4); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 10px; }
+  .quiz-header h3 { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.1em; }
+  .quiz-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; padding: 2px 8px; background: rgba(196,30,58,0.2); border: 1px solid rgba(196,30,58,0.4); color: var(--red); border-radius: 2px; }
+  .quiz-body { padding: 1.5rem; }
+  .quiz-q { margin-bottom: 1.5rem; }
+  .quiz-q-num { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--red); margin-bottom: 4px; letter-spacing: 0.15em; }
+  .quiz-q-text { font-size: 0.88rem; font-weight: 500; margin-bottom: 0.75rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-direction: column; gap: 6px; }
+  .quiz-opt { display: flex; align-items: center; gap: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px; padding: 0.65rem 1rem; cursor: pointer; transition: all 0.2s; font-size: 0.82rem; color: var(--white-dim); }
+  .quiz-opt:hover { background: var(--bg-card2); color: var(--white); }
+  .quiz-opt.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .quiz-opt.wrong   { border-color: var(--red);   background: var(--red-glow);  color: var(--red); }
+  .opt-letter { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 700; min-width: 20px; }
+  .quiz-result { display: none; margin-top: 1.5rem; padding: 1rem 1.25rem; border-radius: 2px; font-size: 0.85rem; line-height: 1.5; }
+  .quiz-result.show { display: block; }
+  .quiz-result.pass { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+  .quiz-result.fail { background: var(--red-glow); border: 1px solid rgba(196,30,58,0.4); color: var(--red); }
+  .btn-quiz { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.65rem 1.5rem; border: none; cursor: pointer; background: var(--red); color: #fff; clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); transition: background 0.2s; margin-top: 1rem; }
+  .btn-quiz:hover { background: #E02040; }
+
+  /* NEXT */
+  .next-fase { background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid #EC4899; padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+  .next-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--white-dim); letter-spacing: 0.15em; margin-bottom: 4px; }
+  .next-title { font-family: 'Rajdhani', sans-serif; font-size: 1.2rem; font-weight: 600; }
+  .btn-next { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.65rem 1.5rem; background: #EC4899; color: #fff; text-decoration: none; clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); transition: background 0.2s; white-space: nowrap; }
+  .btn-next:hover { background: #DB2777; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: #8B1528; border-radius: 2px; }
+
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .vf-body { grid-template-columns: 1fr; }
+    .vf-tree { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="logo-badge">NOTIFIER</span><span>Curso Técnico</span></div>
+  <div class="header-nav">
+    <a href="index.html" class="back-link">← Mapa</a>
+    <a href="fase3.html" class="back-link">← Fase 3</a>
+    <div class="fase-indicator"><div class="led"></div>FASE 04 — ACTIVA</div>
+  </div>
+</header>
+
+<div class="fase-hero">
+  <div class="fase-hero-grid"></div>
+  <div class="fase-hero-inner">
+    <div class="fase-eyebrow">FASE 04 DE 07</div>
+    <h1>Software VeriFire Tools</h1>
+    <p>Programación completa del panel NOTIFIER — desde cero hasta transferencia. Base de datos, direcciones SLC, zonas, lógica Cause & Effect y diagnóstico.</p>
+    <div class="fase-meta">
+      <div class="meta-item"><span class="meta-label">Duración</span><span class="meta-value">~6 horas</span></div>
+      <div class="meta-item"><span class="meta-label">Módulos</span><span class="meta-value">7 temas</span></div>
+      <div class="meta-item"><span class="meta-label">Simuladores</span><span class="meta-value">3 mockups VF</span></div>
+      <div class="meta-item"><span class="meta-label">Nivel</span><span class="meta-value">Intermedio–Avanzado</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-title">// contenido</div>
+    <ul class="sidebar-nav">
+      <li><a href="#m1" class="active"><span class="nav-num">01</span> ¿Qué es VeriFire Tools?</a></li>
+      <li><a href="#m2"><span class="nav-num">02</span> Instalación y navegación</a></li>
+      <li><a href="#m3"><span class="nav-num">03</span> Nueva base de datos</a></li>
+      <li><a href="#m4"><span class="nav-num">04</span> Programar dispositivos SLC</a></li>
+      <li><a href="#m5"><span class="nav-num">05</span> Zonas y grupos</a></li>
+      <li><a href="#m6"><span class="nav-num">06</span> Lógica Cause & Effect</a></li>
+      <li><a href="#m7"><span class="nav-num">07</span> Transferencia y diagnóstico</a></li>
+      <li><a href="#quiz"><span class="nav-num">✓</span> Evaluación Fase 4</a></li>
+    </ul>
+    <div class="progress-mini">
+      <div class="progress-mini-label">Tu avance</div>
+      <div class="progress-bar"><div class="progress-fill" id="sidebarProgress" style="width:0%"></div></div>
+      <div class="progress-pct" id="sidebarPct">0%</div>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- M1 ─── QUÉ ES VERIFIRE -->
+    <section class="modulo" id="m1">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 01</span>
+        <div><h2>¿Qué es VeriFire Tools?</h2><p>El software oficial de programación, diagnóstico y mantenimiento de paneles NOTIFIER</p></div>
+      </div>
+      <div class="prose">
+        <p><strong>VeriFire Tools (VFT)</strong> es la plataforma de software de Honeywell NOTIFIER para Windows que permite crear, editar, transferir y diagnosticar la base de datos de programación de los paneles NFS2-640, NFS2-3030, AFP y la familia completa de paneles NOTIFIER.</p>
+        <p>Sin VeriFire Tools no es posible programar un panel NOTIFIER moderno. Toda la lógica del sistema — qué hace el panel cuando un detector activa, qué sirenas suenan, qué módulos se disparan — se define aquí y se descarga al panel.</p>
+        <div class="highlight-box">
+          <strong>VeriFire Tools NO es un simulador.</strong> Las bases de datos creadas se transfieren directamente al panel mediante cable USB o RS-232. Un error de programación en VFT se convierte en un error real en el sistema instalado.
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Función</th><th>Descripción</th><th>Cuándo se usa</th></tr></thead>
+        <tbody>
+          <tr><td>Programming</td><td>Crear y editar la base de datos del panel — dispositivos, zonas, C&E</td><td>Diseño inicial y modificaciones</td></tr>
+          <tr><td>Download</td><td>Transferir la base de datos desde PC al panel</td><td>Comisionamiento y actualizaciones</td></tr>
+          <tr><td>Upload</td><td>Leer la base de datos actual del panel hacia el PC</td><td>Auditorías, respaldos, diagnóstico</td></tr>
+          <tr><td>Verify</td><td>Comparar base de datos PC con la del panel para detectar diferencias</td><td>Control de cambios, auditorías</td></tr>
+          <tr><td>Walk Test</td><td>Poner el panel en modo prueba dispositivo por dispositivo</td><td>Comisionamiento y mantenimiento</td></tr>
+          <tr><td>Status Monitor</td><td>Ver en tiempo real el estado de cada dispositivo del SLC</td><td>Diagnóstico de fallas</td></tr>
+          <tr><td>History</td><td>Leer el registro de eventos del panel (alarmas, fallas, resets)</td><td>Investigación post-evento</td></tr>
+          <tr><td>Battery Calc</td><td>Calcular la capacidad de batería requerida según la carga del sistema</td><td>Diseño y verificación</td></tr>
+        </tbody>
+      </table>
+
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/L15TaOJ-K8c"
+          title="NOTIFIER Panel Programming - VeriFire Tool"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+        </iframe>
+        <div class="video-caption">// VIDEO 05 — Programación panel NOTIFIER con VeriFire Tool · NFS2-3030</div>
+      </div>
+    </section>
+
+    <!-- M2 ─── INSTALACIÓN Y NAVEGACIÓN -->
+    <section class="modulo" id="m2">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 02</span>
+        <div><h2>Instalación y Navegación</h2><p>Requisitos del sistema, instalación y estructura de la interfaz</p></div>
+      </div>
+
+      <div class="prose">
+        <p>VeriFire Tools corre exclusivamente en <strong>Windows</strong>. La versión más reciente requiere Windows 10 o superior de 64 bits. Honeywell distribuye el software mediante su portal de soporte técnico — requiere registro como instalador certificado.</p>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Requisito</th><th>Mínimo</th><th>Recomendado</th></tr></thead>
+        <tbody>
+          <tr><td>Sistema operativo</td><td>Windows 10 64-bit</td><td>Windows 11 64-bit</td></tr>
+          <tr><td>Procesador</td><td>Intel Core i3</td><td>Intel Core i5 o superior</td></tr>
+          <tr><td>RAM</td><td>4 GB</td><td>8 GB</td></tr>
+          <tr><td>Disco</td><td>2 GB libres</td><td>10 GB SSD</td></tr>
+          <tr><td>Puerto</td><td>USB-A o RS-232</td><td>USB-A + adaptador RS-232/USB</td></tr>
+          <tr><td>.NET Framework</td><td>4.7.2 o superior</td><td>Última versión</td></tr>
+          <tr><td>Permisos</td><td>Administrador local</td><td>Administrador local</td></tr>
+        </tbody>
+      </table>
+
+      <!-- MOCKUP INTERFAZ VFT -->
+      <div class="vf-screen">
+        <div class="vf-titlebar">
+          <div class="vf-dot" style="background:#EF4444"></div>
+          <div class="vf-dot" style="background:#F59E0B; margin-left:4px"></div>
+          <div class="vf-dot" style="background:#22C55E; margin-left:4px"></div>
+          <span class="vf-title">VeriFire Tools — NFS2-640 — Panel_Edificio_Principal.vfd</span>
+        </div>
+        <div class="vf-menubar">
+          <span class="vf-menu">File</span>
+          <span class="vf-menu">Panel</span>
+          <span class="vf-menu">View</span>
+          <span class="vf-menu">Tools</span>
+          <span class="vf-menu">Download</span>
+          <span class="vf-menu">Upload</span>
+          <span class="vf-menu">Walk Test</span>
+          <span class="vf-menu">Help</span>
+        </div>
+        <div class="vf-body">
+          <div class="vf-tree">
+            <div class="vf-tree-item folder open">▼ 📁 Panel Configuration</div>
+            <div class="vf-tree-item selected" style="padding-left:1.75rem">  ▸ System Settings</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">  ▸ SLC Loop 1</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">  ▸ SLC Loop 2</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">  ▸ NAC Circuits</div>
+            <div class="vf-tree-item folder" style="margin-top:4px">▶ 📁 Zones</div>
+            <div class="vf-tree-item folder">▶ 📁 Cause & Effect</div>
+            <div class="vf-tree-item folder">▶ 📁 Custom Controls</div>
+            <div class="vf-tree-item folder">▶ 📁 Battery Calc</div>
+            <div class="vf-tree-item folder">▶ 📁 Reports</div>
+          </div>
+          <div class="vf-content">
+            <div class="vf-section-title">System Settings — Panel Identity</div>
+            <div class="vf-field-row">
+              <span class="vf-label">Panel Model:</span>
+              <span class="vf-input">NFS2-640</span>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Panel Label:</span>
+              <span class="vf-input highlight">Panel_Edificio_Principal</span>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Site Name:</span>
+              <span class="vf-input">Proyecto Minero Norte</span>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">NFN Node ID:</span>
+              <span class="vf-input">01</span>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Password Level:</span>
+              <div class="vf-select">Level 2 — Installer</div>
+            </div>
+            <div class="vf-section-title">SLC Configuration</div>
+            <div class="vf-field-row">
+              <span class="vf-label">Loop 1 Class:</span>
+              <div class="vf-select">Class A (Style 6)</div>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Loop 2 Class:</span>
+              <div class="vf-select">Class A (Style 6)</div>
+            </div>
+          </div>
+        </div>
+        <div class="vf-statusbar">
+          <span class="vf-status-item vf-status-ok">● CONNECTED — COM3</span>
+          <span class="vf-status-item">Panel: NFS2-640 v3.2</span>
+          <span class="vf-status-item">DB: 127 devices</span>
+          <span class="vf-status-item">Last download: 14/08/26 09:42</span>
+        </div>
+      </div>
+
+      <div class="prose">
+        <div class="info-box">
+          La estructura en árbol de la izquierda es el corazón de la navegación. Todo se configura desde ahí: primero el panel, luego los lazos SLC con sus dispositivos, luego zonas, y finalmente la lógica Cause & Effect.
+        </div>
+      </div>
+    </section>
+
+    <!-- M3 ─── NUEVA BASE DE DATOS -->
+    <section class="modulo" id="m3">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 03</span>
+        <div><h2>Crear Nueva Base de Datos</h2><p>Flujo correcto desde archivo en blanco hasta panel configurado</p></div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h4>Crear archivo nuevo</h4>
+            <p>Ir a <code>File → New</code>. VeriFire solicita seleccionar el modelo del panel. Elegir el modelo exacto instalado — <code>NFS2-640</code>, <code>NFS2-3030</code>, etc. Un modelo incorrecto genera errores de transferencia.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h4>Configurar Panel Identity</h4>
+            <p>En <code>Panel Configuration → System Settings</code> definir: nombre del panel, nombre del sitio, nivel de contraseña, y si el panel pertenece a una red NFN asignar el Node ID único.</p>
+            <div class="sub-steps">
+              <div class="sub-step"><strong>Panel Label:</strong> Nombre descriptivo — "Panel_Piso3_Norte". Sin espacios, usar guion bajo.</div>
+              <div class="sub-step"><strong>NFN Node ID:</strong> Del 1 al 103. Cada panel en la red debe tener ID único. Si es panel standalone, dejar en 01.</div>
+              <div class="sub-step"><strong>Password:</strong> Configurar contraseñas Level 1 (operador) y Level 2 (instalador). Documentar y guardar en lugar seguro.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h4>Configurar lazos SLC</h4>
+            <p>En <code>SLC Loop 1</code> y <code>SLC Loop 2</code> seleccionar la clase del circuito: <code>Class A (Style 6)</code> para proyectos industriales o <code>Class B (Style 4)</code> para proyectos estándar.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <h4>Guardar el archivo</h4>
+            <p>Usar extensión <code>.vfd</code>. Nombrar el archivo con formato claro: <code>PROYECTO_PANEL_FECHA.vfd</code>. Ejemplo: <code>MinaNorte_PanelMain_20260815.vfd</code>. Mantener historial de versiones.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <div class="warning-box">
+          Nunca trabajar directamente sobre la base de datos activa de un panel en operación. Siempre hacer <strong>Upload</strong> primero para obtener la versión actual, guardar una copia de respaldo y trabajar sobre la copia.
+        </div>
+      </div>
+    </section>
+
+    <!-- M4 ─── PROGRAMAR DISPOSITIVOS SLC -->
+    <section class="modulo" id="m4">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 04</span>
+        <div><h2>Programar Dispositivos SLC</h2><p>Agregar, configurar y asignar direcciones a cada dispositivo del lazo</p></div>
+      </div>
+
+      <div class="prose">
+        <p>Esta es la tarea más crítica de la programación. Cada dispositivo físico instalado en el lazo SLC debe tener una entrada correspondiente en la base de datos de VFT, con su <strong>dirección exacta</strong>, tipo de dispositivo correcto y etiqueta descriptiva.</p>
+      </div>
+
+      <!-- MOCKUP DISPOSITIVO SLC -->
+      <div class="vf-screen">
+        <div class="vf-titlebar">
+          <div class="vf-dot" style="background:#EF4444"></div>
+          <div class="vf-dot" style="background:#F59E0B; margin-left:4px"></div>
+          <div class="vf-dot" style="background:#22C55E; margin-left:4px"></div>
+          <span class="vf-title">VeriFire Tools — SLC Loop 1 — Device 027</span>
+        </div>
+        <div class="vf-menubar">
+          <span class="vf-menu">File</span><span class="vf-menu">Panel</span><span class="vf-menu">View</span><span class="vf-menu">Tools</span><span class="vf-menu">Download</span>
+        </div>
+        <div class="vf-body">
+          <div class="vf-tree">
+            <div class="vf-tree-item folder open">▼ 📁 SLC Loop 1 (Class A)</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">001 — NFXI-PHOTO</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">002 — NFXI-PHOTO</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">003 — NBG-12LX</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">...</div>
+            <div class="vf-tree-item selected" style="padding-left:1.75rem">027 — NFXI-PHOTO</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">028 — FRM-1</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem">029 — FCM-1</div>
+            <div class="vf-tree-item" style="padding-left:1.75rem; color:rgba(232,237,248,0.2)">030 — [empty]</div>
+          </div>
+          <div class="vf-content">
+            <div class="vf-section-title">Device Identity — Loop 1, Address 027</div>
+            <div class="vf-field-row">
+              <span class="vf-label">Device Type:</span>
+              <div class="vf-select">NFXI-PHOTO (Photoelectric Detector)</div>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Address:</span>
+              <span class="vf-input highlight">027</span>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Label:</span>
+              <span class="vf-input highlight">DET-FOTO-PISO3-SALA-B</span>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Zone Assignment:</span>
+              <div class="vf-select">Zone 03 — Piso 3 Norte</div>
+            </div>
+            <div class="vf-section-title">Detector Settings</div>
+            <div class="vf-field-row">
+              <span class="vf-label">Sensitivity:</span>
+              <div class="vf-select">Medium (default)</div>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Alarm Verification:</span>
+              <div class="vf-select">Enabled — 10 sec</div>
+            </div>
+            <div class="vf-field-row">
+              <span class="vf-label">Drift Compensation:</span>
+              <div class="vf-select">Enabled (Auto-clean alert)</div>
+            </div>
+          </div>
+        </div>
+        <div class="vf-statusbar">
+          <span class="vf-status-item">Loop 1: 127 of 318 addresses used</span>
+          <span class="vf-status-item vf-status-ok">● No errors in database</span>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Cada dispositivo requiere tres datos mínimos:</p>
+      </div>
+
+      <div class="checklist" id="checklist4">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Tipo de dispositivo (Device Type)</strong> — Debe coincidir exactamente con el modelo físico instalado. Un detector NFXI-PHOTO programado como NFXI-HFS (calor) responderá de forma incorrecta.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Dirección (Address)</strong> — Debe coincidir con la dirección física configurada en el dispositivo (mediante DIP switches o programador de direcciones). La dirección errónea hace que el panel no reconozca el dispositivo.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Etiqueta (Label)</strong> — Descripción clara de la ubicación física. Máximo 40 caracteres. Ejemplo: <code>DET-FOTO-PISO3-SALA-B</code>. Esta etiqueta aparece en el display del panel durante una alarma.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Zona (Zone)</strong> — Asignar el dispositivo a la zona de detección correspondiente. La zona agrupa dispositivos por área geográfica o función.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Alarm Verification</strong> — Para detectores fotoeléctricos en ambientes con polvo o vapor, activar verificación de 10–30 segundos para reducir falsas alarmas.</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <div class="highlight-box">
+          <strong>Convención de etiquetas recomendada:</strong><br>
+          <code>TIPO-TECNOLOGÍA-PISO-ÁREA-NÚMERO</code><br><br>
+          Ejemplos: <code>DET-FOTO-P3-SALA-B</code> · <code>MOD-FRM-P1-HVAC-01</code> · <code>MAN-PULL-P2-EXIT-N</code><br><br>
+          Una etiqueta bien hecha permite que cualquier técnico encuentre el dispositivo en campo sin planos.
+        </div>
+      </div>
+    </section>
+
+    <!-- M5 ─── ZONAS Y GRUPOS -->
+    <section class="modulo" id="m5">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 05</span>
+        <div><h2>Zonas y Grupos</h2><p>Organización lógica del sistema — cómo agrupar dispositivos para el control</p></div>
+      </div>
+
+      <div class="prose">
+        <p>Las <strong>zonas</strong> agrupan dispositivos de detección por área geográfica o función. Cuando cualquier dispositivo de una zona activa, el panel reporta la zona completa en su display. Las zonas son la base sobre la cual se construye la lógica Cause & Effect.</p>
+        <p>El NFS2-640 soporta hasta <strong>250 zonas</strong>. El NFS2-3030 hasta <strong>3.000 zonas</strong>.</p>
+      </div>
+
+      <table class="ce-table">
+        <thead><tr><th>Zona</th><th>Nombre</th><th>Dispositivos incluidos</th><th>Tipo</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Z-001</td>
+            <td>Piso 1 — Lobby y accesos</td>
+            <td>DET 001–015, MAN 016, MAN 017</td>
+            <td><span class="badge badge-purple">Alarm</span></td>
+          </tr>
+          <tr>
+            <td>Z-002</td>
+            <td>Piso 1 — Sala de servidores</td>
+            <td>DET 018–025 (BEAM)</td>
+            <td><span class="badge badge-purple">Alarm</span></td>
+          </tr>
+          <tr>
+            <td>Z-003</td>
+            <td>Piso 3 — Oficinas norte</td>
+            <td>DET 027–045</td>
+            <td><span class="badge badge-purple">Alarm</span></td>
+          </tr>
+          <tr>
+            <td>Z-010</td>
+            <td>Válvulas sprinkler — Piso 1</td>
+            <td>MMX 100–103 (water flow)</td>
+            <td><span class="badge badge-amber">Supervisory</span></td>
+          </tr>
+          <tr>
+            <td>Z-020</td>
+            <td>HVAC — Control general</td>
+            <td>FCM 110–115</td>
+            <td><span class="badge badge-green">Control</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        <div class="info-box">
+          Los dispositivos de <strong>tipo Supervisory</strong> (válvulas, presión) se programan en zonas separadas de las zonas de alarma. Esto permite que el panel maneje cada tipo de señal con su propio protocolo de respuesta.
+        </div>
+      </div>
+    </section>
+
+    <!-- M6 ─── CAUSE & EFFECT -->
+    <section class="modulo" id="m6">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 06</span>
+        <div><h2>Lógica Cause & Effect</h2><p>El cerebro del sistema — definir qué hace el panel cuando activa un dispositivo</p></div>
+      </div>
+
+      <div class="prose">
+        <p>La <strong>lógica Cause & Effect (C&E)</strong> es la programación que define exactamente qué acciones toma el panel cuando ocurre un evento. Es la parte más crítica de la programación — un C&E mal configurado puede hacer que el sistema no responda en una emergencia real.</p>
+        <p>En VeriFire Tools, el C&E se configura en una <strong>matriz de causa-acción</strong>: cada fila es una causa (zona o dispositivo que activa), cada columna es una acción (NAC, módulo, transmisión).</p>
+      </div>
+
+      <!-- MOCKUP C&E -->
+      <div class="vf-screen">
+        <div class="vf-titlebar">
+          <div class="vf-dot" style="background:#EF4444"></div>
+          <div class="vf-dot" style="background:#F59E0B; margin-left:4px"></div>
+          <div class="vf-dot" style="background:#22C55E; margin-left:4px"></div>
+          <span class="vf-title">VeriFire Tools — Cause & Effect Matrix</span>
+        </div>
+        <div class="vf-menubar">
+          <span class="vf-menu">File</span><span class="vf-menu">Panel</span><span class="vf-menu">C&amp;E</span><span class="vf-menu">Tools</span>
+        </div>
+        <div class="vf-body" style="display:block;">
+          <div style="padding:1rem; overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:0.68rem;">
+              <thead>
+                <tr style="background:#141828;">
+                  <th style="padding:6px 10px; text-align:left; color:rgba(232,237,248,0.4); border-bottom:1px solid rgba(255,255,255,0.06); white-space:nowrap;">CAUSA (INPUT)</th>
+                  <th style="padding:6px 8px; color:#C41E3A; border-bottom:1px solid rgba(255,255,255,0.06); white-space:nowrap;">NAC-1</th>
+                  <th style="padding:6px 8px; color:#C41E3A; border-bottom:1px solid rgba(255,255,255,0.06); white-space:nowrap;">NAC-2</th>
+                  <th style="padding:6px 8px; color:#F59E0B; border-bottom:1px solid rgba(255,255,255,0.06); white-space:nowrap;">FRM-028</th>
+                  <th style="padding:6px 8px; color:#F59E0B; border-bottom:1px solid rgba(255,255,255,0.06); white-space:nowrap;">FCM-029</th>
+                  <th style="padding:6px 8px; color:#3B82F6; border-bottom:1px solid rgba(255,255,255,0.06); white-space:nowrap;">RELAY-1</th>
+                  <th style="padding:6px 8px; color:#22C55E; border-bottom:1px solid rgba(255,255,255,0.06); white-space:nowrap;">TRANSMIT</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background:#161E30;">
+                  <td style="padding:6px 10px; color:#A855F7; border-bottom:1px solid rgba(255,255,255,0.04);">Z-001 ALARM (Piso 1)</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                </tr>
+                <tr style="background:#1C2540;">
+                  <td style="padding:6px 10px; color:#A855F7; border-bottom:1px solid rgba(255,255,255,0.04);">Z-002 ALARM (Servidores)</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                </tr>
+                <tr style="background:#161E30;">
+                  <td style="padding:6px 10px; color:#A855F7; border-bottom:1px solid rgba(255,255,255,0.04);">Z-003 ALARM (Piso 3)</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#22C55E;">✓</td>
+                </tr>
+                <tr style="background:#1C2540;">
+                  <td style="padding:6px 10px; color:#F59E0B; border-bottom:1px solid rgba(255,255,255,0.04);">Z-010 SUPERVISORY (Válvulas)</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);">—</td>
+                  <td style="padding:6px 8px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); color:#F59E0B;">SUP</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="vf-statusbar">
+          <span class="vf-status-item">C&amp;E Rules: 24 defined</span>
+          <span class="vf-status-item vf-status-ok">● Matrix validated — no conflicts</span>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Ejemplos de reglas C&E típicas en proyectos industriales:</p>
+      </div>
+
+      <table class="ce-table">
+        <thead><tr><th>CAUSA</th><th>ACCIÓN</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Z-001 ALARM</td>
+            <td>NAC-1 + NAC-2 ON</td>
+            <td>Activar todas las sirenas del edificio si alarma en Piso 1</td>
+          </tr>
+          <tr>
+            <td>Z-002 ALARM</td>
+            <td>FCM-029 ON</td>
+            <td>Apagar HVAC de sala de servidores para contener humo</td>
+          </tr>
+          <tr>
+            <td>Z-001 OR Z-002</td>
+            <td>RELAY-1 ON</td>
+            <td>Liberar puertas magnéticas de emergencia en Piso 1</td>
+          </tr>
+          <tr>
+            <td>ANY ALARM</td>
+            <td>TRANSMIT</td>
+            <td>Enviar señal a central de monitoreo remoto</td>
+          </tr>
+          <tr>
+            <td>Z-002 ALARM + 30 sec</td>
+            <td>FRM-028 ON</td>
+            <td>Activar sistema de supresión sala servidores con retardo de 30 seg</td>
+          </tr>
+          <tr>
+            <td>Z-010 SUPERVISORY</td>
+            <td>TRANSMIT (SUP)</td>
+            <td>Reportar válvula cerrada a central — solo supervisory, no alarma</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        <div class="warning-box">
+          El C&E con retardo temporal (timers) es especialmente crítico en sistemas de supresión. Un timer mal configurado puede activar la supresión con personas adentro o no activarla cuando es necesario. Siempre verificar timers en campo durante el Walk Test.
+        </div>
+      </div>
+    </section>
+
+    <!-- M7 ─── TRANSFERENCIA Y DIAGNÓSTICO -->
+    <section class="modulo" id="m7">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 07</span>
+        <div><h2>Transferencia y Diagnóstico</h2><p>Download al panel, verificación y lectura de estado en tiempo real</p></div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h4>Conectar PC al panel</h4>
+            <p>Conectar cable USB al puerto frontal del panel (NFS2-640) o RS-232/USB al puerto de programación. En VFT ir a <code>Panel → Communications → Select Port</code> y elegir el COM correcto. Verificar que VFT detecta el modelo del panel.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h4>Validar la base de datos antes del download</h4>
+            <p>Usar <code>Tools → Validate Database</code>. VFT revisa errores: direcciones duplicadas, tipos de dispositivo inválidos, zonas sin dispositivos, C&E sin acciones. <strong>Resolver todos los errores antes de descargar.</strong></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h4>Ejecutar Download</h4>
+            <p>Ir a <code>Download → Full Download</code>. El proceso toma entre 2 y 15 minutos según el tamaño de la base de datos. El panel se reinicia automáticamente al finalizar. No desconectar durante la transferencia.</p>
+            <div class="sub-steps">
+              <div class="sub-step"><strong>Full Download:</strong> Reemplaza toda la base de datos del panel. Usar para instalación nueva o cambios mayores.</div>
+              <div class="sub-step"><strong>Partial Download:</strong> Solo descarga los elementos modificados. Más rápido, pero requiere verificar qué cambió.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <h4>Verificar con Upload + Compare</h4>
+            <p>Después del download, usar <code>Upload → Compare</code>. VFT lee la base de datos del panel y la compara con la del PC. Si hay diferencias, lo reporta. Cero diferencias = download exitoso.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-body">
+            <h4>Monitor de estado en tiempo real</h4>
+            <p>Con el panel conectado, usar <code>Tools → Status Monitor</code>. Muestra el estado actual de cada dispositivo del SLC: <code>NORMAL</code>, <code>ALARM</code>, <code>TROUBLE</code>, <code>MISSING</code>. Herramienta esencial para diagnóstico de fallas sin operar el panel físicamente.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">06</div>
+          <div class="step-body">
+            <h4>Leer historial de eventos</h4>
+            <p>Usar <code>Upload → History</code>. El panel almacena los últimos eventos con fecha, hora, tipo y dispositivo. Imprescindible para investigar incidentes, falsas alarmas o inspecciones de mantenimiento.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/1ok3la9Ui3Y"
+          title="NFS2-3030 NOTIFIER Programming - VeriFire Tool - Logic Equation"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+        </iframe>
+        <div class="video-caption">// VIDEO 06 — NFS2-3030 Programación VeriFire Tool · Logic Equation - Jun 2025</div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="modulo" id="quiz">
+      <div class="modulo-header">
+        <span class="modulo-num" style="border-color:rgba(196,30,58,0.4);color:var(--red);background:var(--red-glow)">EVAL</span>
+        <div><h2>Evaluación — Fase 4</h2><p>VeriFire Tools — verifica antes de pasar a Comisionamiento</p></div>
+      </div>
+
+      <div class="quiz-section">
+        <div class="quiz-header">
+          <div class="led" style="background:var(--red);box-shadow:0 0 6px var(--red)"></div>
+          <h3>QUIZ FASE 04</h3>
+          <span class="quiz-badge">6 PREGUNTAS</span>
+        </div>
+        <div class="quiz-body">
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 01 / 06</div>
+            <div class="quiz-q-text">¿Qué función de VeriFire Tools permite leer la base de datos actual instalada en el panel?</div>
+            <div class="quiz-options" data-correct="b">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Download</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="b"><span class="opt-letter">B</span> Upload</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> Walk Test</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> Validate</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 02 / 06</div>
+            <div class="quiz-q-text">Antes de ejecutar un Download al panel, ¿qué paso es obligatorio?</div>
+            <div class="quiz-options" data-correct="c">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Desconectar las baterías del panel</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> Activar el modo Walk Test</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="c"><span class="opt-letter">C</span> Validar la base de datos con Tools → Validate Database para detectar errores</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> Apagar el panel completamente</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 03 / 06</div>
+            <div class="quiz-q-text">En la lógica Cause & Effect, ¿qué representa la "Causa"?</div>
+            <div class="quiz-options" data-correct="a">
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="a"><span class="opt-letter">A</span> El evento que dispara la acción — zona en alarma, dispositivo que activa, señal supervisory</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> La sirena que suena cuando hay alarma</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> El módulo FRM-1 que activa el ventilador</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> La contraseña de nivel 2 del instalador</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 04 / 06</div>
+            <div class="quiz-q-text">¿Cuántas zonas soporta como máximo el panel NFS2-3030?</div>
+            <div class="quiz-options" data-correct="d">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> 250 zonas</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> 500 zonas</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> 1.000 zonas</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="d"><span class="opt-letter">D</span> 3.000 zonas</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 05 / 06</div>
+            <div class="quiz-q-text">Un detector fotoeléctrico NFXI-PHOTO está programado en VFT como NFXI-HFS (calor). ¿Cuál es la consecuencia?</div>
+            <div class="quiz-options" data-correct="b">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Ninguna — el panel los trata igual</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="b"><span class="opt-letter">B</span> El dispositivo responderá de forma incorrecta y puede generar fallas de comunicación o respuesta errónea ante alarma</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> El panel lo ignorará completamente</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> Solo afecta la etiqueta en el display</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 06 / 06</div>
+            <div class="quiz-q-text">¿Qué herramienta de VFT permite verificar en tiempo real el estado de cada dispositivo del SLC sin operar físicamente el panel?</div>
+            <div class="quiz-options" data-correct="c">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Walk Test mode</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> Battery Calculator</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="c"><span class="opt-letter">C</span> Status Monitor</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> Validate Database</div>
+            </div>
+          </div>
+
+          <button class="btn-quiz" onclick="evaluateQuiz()">EVALUAR RESPUESTAS</button>
+          <div class="quiz-result" id="quizResult"></div>
+        </div>
+      </div>
+
+      <div class="next-fase">
+        <div>
+          <div class="next-label">// SIGUIENTE MÓDULO</div>
+          <div class="next-title">Fase 5 — Comisionamiento</div>
+        </div>
+        <a href="fase5.html" class="btn-next">Ir a Fase 5 →</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    updateProgress();
+  }
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const done  = document.querySelectorAll('.check-item.done').length;
+    const pct   = Math.round((done / total) * 100);
+    document.getElementById('sidebarProgress').style.width = pct + '%';
+    document.getElementById('sidebarPct').textContent = pct + '%';
+  }
+
+  const answers = {};
+  function answerQ(el) {
+    const group = el.closest('.quiz-options');
+    if (!group) return;
+    group.querySelectorAll('.quiz-opt').forEach(o => { o.style.background=''; o.style.borderColor=''; o.style.color=''; });
+    const qIndex = Array.from(document.querySelectorAll('.quiz-q')).indexOf(el.closest('.quiz-q'));
+    answers[qIndex] = el.dataset.value || el.querySelector('.opt-letter').textContent.toLowerCase();
+    el.style.background = 'rgba(168,85,247,0.12)';
+    el.style.borderColor = 'rgba(168,85,247,0.4)';
+    el.style.color = '#E8EDF8';
+  }
+
+  function evaluateQuiz() {
+    const questions = document.querySelectorAll('.quiz-q');
+    let correct = 0;
+    const total = questions.length;
+    questions.forEach((q, i) => {
+      const opts = q.querySelector('.quiz-options');
+      if (!opts) return;
+      const correctVal = opts.dataset.correct;
+      opts.querySelectorAll('.quiz-opt').forEach(o => {
+        o.style.background=''; o.style.borderColor=''; o.style.color='';
+        o.style.pointerEvents = 'none';
+        const val = o.dataset.value || o.querySelector('.opt-letter').textContent.toLowerCase();
+        if (val === correctVal) o.classList.add('correct');
+      });
+      if (answers[i] === correctVal) correct++;
+    });
+    const result = document.getElementById('quizResult');
+    result.classList.add('show');
+    const needed = Math.ceil(total * 0.8);
+    if (correct >= needed) {
+      result.classList.remove('fail'); result.classList.add('pass');
+      result.innerHTML = `✓ APROBADO — ${correct}/${total} correctas. Puedes avanzar a la Fase 5: Comisionamiento.`;
+      try {
+        const p = JSON.parse(localStorage.getItem('notifier_course_progress') || '{"completed":[]}');
+        if (!p.completed.includes(4)) { p.completed.push(4); localStorage.setItem('notifier_course_progress', JSON.stringify(p)); }
+      } catch(e){}
+    } else {
+      result.classList.remove('pass'); result.classList.add('fail');
+      result.innerHTML = `✗ ${correct}/${total} correctas. Mínimo: ${needed}/${total}. Repasa los módulos de VeriFire Tools.`;
+    }
+  }
+
+  const sections = document.querySelectorAll('.modulo');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

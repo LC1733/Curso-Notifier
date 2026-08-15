@@ -1,4 +1,1055 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fase 5 — Comisionamiento | NOTIFIER Pro</title><script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script></head><body><script>
-(async()=>{const files=["payload/f5-00.txt","payload/f5-01.txt","payload/f5-02.txt","payload/f5-03.txt","payload/f5-04.txt"];const parts=await Promise.all(files.map(f=>fetch(f).then(r=>{if(!r.ok)throw new Error(f);return r.text()})));const b64=parts.join("");const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));const html=pako.ungzip(bytes,{to:"string"});document.open();document.write(html);document.close();})().catch(e=>{document.body.innerHTML="<main style='font-family:sans-serif;padding:2rem'><h1>Error cargando la fase</h1><p>"+e+"</p></main>"});
-</script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fase 5 — Comisionamiento | NOTIFIER Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep:    #070B14;
+    --bg-panel:   #0F1624;
+    --bg-card:    #161E30;
+    --bg-card2:   #1C2540;
+    --red:        #C41E3A;
+    --red-glow:   rgba(196,30,58,0.22);
+    --amber:      #F59E0B;
+    --amber-dim:  rgba(245,158,11,0.12);
+    --green:      #22C55E;
+    --green-dim:  rgba(34,197,94,0.12);
+    --blue:       #3B82F6;
+    --blue-dim:   rgba(59,130,246,0.12);
+    --teal:       #14B8A6;
+    --teal-dim:   rgba(20,184,166,0.12);
+    --teal-border:rgba(20,184,166,0.35);
+    --pink:       #EC4899;
+    --white:      #E8EDF8;
+    --white-dim:  rgba(232,237,248,0.55);
+    --border:     rgba(255,255,255,0.07);
+    --fase-color: #EC4899;
+    --fase-dim:   rgba(236,72,153,0.10);
+    --fase-border:rgba(236,72,153,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg-deep); color: var(--white); min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px); pointer-events: none; z-index: 9999; }
+
+  /* HEADER */
+  header { position: sticky; top: 0; background: rgba(7,11,20,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--fase-border); z-index: 100; padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.12em; display: flex; align-items: center; gap: 10px; }
+  .logo-badge { background: var(--red); color: #fff; padding: 2px 8px; font-size: 0.7rem; letter-spacing: 0.2em; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); }
+  .header-nav { display: flex; align-items: center; gap: 1.2rem; }
+  .back-link { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--white-dim); text-decoration: none; letter-spacing: 0.1em; transition: color 0.2s; }
+  .back-link:hover { color: var(--white); }
+  .fase-indicator { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--fase-color); letter-spacing: 0.2em; display: flex; align-items: center; gap: 6px; }
+  .led { width: 7px; height: 7px; border-radius: 50%; background: var(--fase-color); box-shadow: 0 0 6px var(--fase-color); animation: blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* HERO */
+  .fase-hero { background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 3rem 2rem 2.5rem; position: relative; overflow: hidden; }
+  .fase-hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(236,72,153,0.025) 1px,transparent 1px), linear-gradient(90deg,rgba(236,72,153,0.025) 1px,transparent 1px); background-size: 40px 40px; }
+  .fase-hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+  .fase-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: var(--fase-color); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+  .fase-eyebrow::before { content: ''; display: block; width: 24px; height: 1px; background: var(--fase-color); }
+  .fase-hero h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(2rem,5vw,3.5rem); line-height: 1; letter-spacing: 0.02em; margin-bottom: 1rem; }
+  .fase-hero p { font-size: 0.95rem; color: var(--white-dim); max-width: 580px; line-height: 1.65; font-weight: 300; }
+  .fase-meta { display: flex; gap: 2rem; margin-top: 1.75rem; flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--white-dim); text-transform: uppercase; }
+  .meta-value { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; }
+
+  /* LAYOUT */
+  .layout { max-width: 960px; margin: 0 auto; padding: 3rem 2rem; display: grid; grid-template-columns: 220px 1fr; gap: 2.5rem; align-items: start; }
+
+  /* SIDEBAR */
+  .sidebar { position: sticky; top: 80px; }
+  .sidebar-title { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--white-dim); text-transform: uppercase; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  .sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .sidebar-nav li a { display: flex; align-items: center; gap: 8px; padding: 0.55rem 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--white-dim); text-decoration: none; border-radius: 2px; border-left: 2px solid transparent; transition: all 0.2s; }
+  .sidebar-nav li a:hover, .sidebar-nav li a.active { color: var(--white); background: var(--bg-card); border-left-color: var(--fase-color); }
+  .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--fase-color); min-width: 18px; }
+  .progress-mini { margin-top: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px; padding: 1rem; }
+  .progress-mini-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--white-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+  .progress-fill { height: 100%; background: var(--fase-color); border-radius: 2px; transition: width 0.5s ease; }
+  .progress-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--fase-color); }
+
+  /* CONTENT */
+  .content { display: flex; flex-direction: column; gap: 3rem; }
+  .modulo { scroll-margin-top: 80px; }
+  .modulo-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .modulo-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--fase-color); background: var(--fase-dim); border: 1px solid var(--fase-border); padding: 4px 10px; border-radius: 2px; white-space: nowrap; margin-top: 4px; }
+  .modulo-header h2 { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1.5rem; letter-spacing: 0.04em; line-height: 1.2; }
+  .modulo-header p { font-size: 0.82rem; color: var(--white-dim); margin-top: 4px; line-height: 1.5; }
+
+  /* PROSE */
+  .prose { font-size: 0.88rem; line-height: 1.75; color: var(--white-dim); }
+  .prose p { margin-bottom: 1rem; }
+  .prose strong { color: var(--white); font-weight: 600; }
+  .highlight-box { background: var(--bg-card); border-left: 3px solid var(--fase-color); padding: 1rem 1.25rem; margin: 1.25rem 0; border-radius: 0 2px 2px 0; font-size: 0.85rem; color: var(--white); }
+  .warning-box { background: rgba(196,30,58,0.07); border-left: 3px solid var(--red); padding: 1rem 1.25rem; margin: 1.25rem 0; border-radius: 0 2px 2px 0; font-size: 0.85rem; color: var(--white); }
+  .warning-box::before { content: '🔴 CRÍTICO — '; color: var(--red); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; }
+  .info-box { background: rgba(59,130,246,0.07); border-left: 3px solid var(--blue); padding: 1rem 1.25rem; margin: 1.25rem 0; border-radius: 0 2px 2px 0; font-size: 0.85rem; color: var(--white); }
+  .info-box::before { content: '💡 NOTA — '; color: var(--blue); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; }
+  .success-box { background: rgba(34,197,94,0.07); border-left: 3px solid var(--green); padding: 1rem 1.25rem; margin: 1.25rem 0; border-radius: 0 2px 2px 0; font-size: 0.85rem; color: var(--white); }
+  .success-box::before { content: '✓ APROBADO SI — '; color: var(--green); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; position: relative; }
+  .steps::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 1px; background: var(--fase-border); }
+  .step { display: flex; gap: 1.25rem; padding: 1.25rem 0; position: relative; }
+  .step-num { width: 40px; height: 40px; border-radius: 2px; background: var(--bg-card); border: 1px solid var(--fase-border); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: var(--fase-color); flex-shrink: 0; position: relative; z-index: 1; }
+  .step-num.done { background: var(--fase-color); color: #fff; border-color: var(--fase-color); }
+  .step-body { flex: 1; padding-top: 8px; }
+  .step-body h4 { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--white); }
+  .step-body p { font-size: 0.82rem; color: var(--white-dim); line-height: 1.6; }
+  .step-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; background: var(--bg-panel); border: 1px solid var(--border); padding: 1px 6px; border-radius: 2px; color: var(--amber); }
+
+  /* CHECKLIST INTERACTIVA */
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin: 1rem 0; }
+  .check-item { display: flex; align-items: flex-start; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); padding: 0.75rem 1rem; border-radius: 2px; cursor: pointer; transition: all 0.2s; user-select: none; }
+  .check-item:hover { background: var(--bg-card2); }
+  .check-item.done { border-color: var(--fase-border); background: var(--fase-dim); }
+  .check-box { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 1px; }
+  .check-item.done .check-box { background: var(--fase-color); border-color: var(--fase-color); }
+  .check-item.done .check-box::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
+  .check-text { font-size: 0.83rem; color: var(--white-dim); line-height: 1.45; }
+  .check-item.done .check-text { color: var(--white); }
+  .check-cat { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--fase-color); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 1.25rem; margin-bottom: 4px; padding-left: 2px; }
+
+  /* WALK TEST TRACKER */
+  .wt-panel { background: var(--bg-card); border: 1px solid var(--fase-border); border-radius: 4px; overflow: hidden; margin: 1.5rem 0; }
+  .wt-header { background: var(--fase-dim); border-bottom: 1px solid var(--fase-border); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+  .wt-title { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.1em; display: flex; align-items: center; gap: 8px; }
+  .wt-counter { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--white-dim); }
+  .wt-counter span { color: var(--fase-color); font-size: 1rem; font-weight: 700; }
+  .wt-body { padding: 1.25rem; }
+  .wt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .wt-device { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 2px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s; user-select: none; display: flex; align-items: center; gap: 10px; }
+  .wt-device:hover { background: var(--bg-card2); }
+  .wt-device.tested { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.06); }
+  .wt-device.failed { border-color: rgba(196,30,58,0.4); background: rgba(196,30,58,0.06); }
+  .wt-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.15); flex-shrink: 0; transition: all 0.2s; }
+  .wt-device.tested .wt-dot { background: var(--green); box-shadow: 0 0 5px var(--green); }
+  .wt-device.failed .wt-dot { background: var(--red); box-shadow: 0 0 5px var(--red); }
+  .wt-info { flex: 1; min-width: 0; }
+  .wt-addr { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--fase-color); }
+  .wt-label { font-size: 0.78rem; color: var(--white-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wt-device.tested .wt-label { color: var(--white); }
+  .wt-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+  .wt-progress-wrap { flex: 1; min-width: 150px; }
+  .wt-progress-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+  .wt-progress-fill { height: 100%; background: linear-gradient(90deg, var(--fase-color), var(--green)); border-radius: 2px; transition: width 0.4s ease; }
+  .wt-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--white-dim); }
+  .wt-btn-row { display: flex; gap: 8px; }
+  .wt-btn { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem 1rem; border: none; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+  .wt-btn-reset { background: rgba(255,255,255,0.07); color: var(--white-dim); }
+  .wt-btn-reset:hover { background: rgba(255,255,255,0.12); color: var(--white); }
+  .wt-btn-complete { background: var(--fase-color); color: #fff; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); }
+  .wt-btn-complete:hover { background: #DB2777; }
+
+  /* DIAGRAM */
+  .diagram-wrap { background: var(--bg-card); border: 1px solid var(--border); border-top: 2px solid var(--fase-color); border-radius: 2px; padding: 1.75rem; margin: 1.5rem 0; overflow-x: auto; }
+  .diagram-title { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--fase-color); text-transform: uppercase; margin-bottom: 1.25rem; }
+
+  /* DATA TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 1.25rem 0; }
+  .data-table th { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--white-dim); padding: 0.65rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-panel); white-space: nowrap; }
+  .data-table td { padding: 0.75rem 0.85rem; border-bottom: 1px solid var(--border); background: var(--bg-card); vertical-align: top; line-height: 1.5; font-size: 0.8rem; }
+  .data-table tr:hover td { background: var(--bg-card2); }
+  .data-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--amber); white-space: nowrap; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; white-space: nowrap; }
+  .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-red   { background: var(--red-glow);  color: var(--red);   border: 1px solid rgba(196,30,58,0.3); }
+  .badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-pink  { background: var(--fase-dim);  color: var(--fase-color); border: 1px solid var(--fase-border); }
+
+  /* VIDEO */
+  .video-wrap { margin: 1.5rem 0; background: var(--bg-card); border: 1px solid var(--border); border-top: 2px solid var(--red); border-radius: 2px; overflow: hidden; }
+  .video-wrap iframe { width: 100%; aspect-ratio: 16/9; display: block; border: none; }
+  .video-caption { padding: 0.75rem 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--white-dim); letter-spacing: 0.08em; border-top: 1px solid var(--border); }
+
+  /* ACTA FORM */
+  .acta-panel { background: var(--bg-card); border: 1px solid var(--border); border-top: 2px solid var(--teal); border-radius: 2px; overflow: hidden; margin: 1.5rem 0; }
+  .acta-header { background: var(--teal-dim); border-bottom: 1px solid var(--teal-border); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 10px; }
+  .acta-title { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.1em; }
+  .acta-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; padding: 2px 8px; background: rgba(20,184,166,0.15); border: 1px solid var(--teal-border); color: var(--teal); border-radius: 2px; }
+  .acta-body { padding: 1.25rem 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .acta-field { display: flex; flex-direction: column; gap: 4px; }
+  .acta-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--white-dim); letter-spacing: 0.12em; text-transform: uppercase; }
+  .acta-input { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 2px; padding: 0.5rem 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--white); outline: none; transition: border-color 0.2s; }
+  .acta-input:focus { border-color: var(--teal); }
+  .acta-input::placeholder { color: rgba(232,237,248,0.2); }
+  .acta-full { grid-column: 1 / -1; }
+  .acta-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.75rem; }
+  .acta-btn { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.55rem 1.25rem; border: none; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+  .acta-btn-clear { background: rgba(255,255,255,0.06); color: var(--white-dim); }
+  .acta-btn-clear:hover { background: rgba(255,255,255,0.1); }
+  .acta-btn-print { background: var(--teal); color: #000; clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%); }
+  .acta-btn-print:hover { background: #0D9488; color: #fff; }
+
+  /* QUIZ */
+  .quiz-section { background: var(--bg-panel); border: 1px solid rgba(196,30,58,0.4); border-radius: 2px; overflow: hidden; margin-top: 1rem; }
+  .quiz-header { background: var(--red-glow); border-bottom: 1px solid rgba(196,30,58,0.4); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 10px; }
+  .quiz-header h3 { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.1em; }
+  .quiz-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; padding: 2px 8px; background: rgba(196,30,58,0.2); border: 1px solid rgba(196,30,58,0.4); color: var(--red); border-radius: 2px; }
+  .quiz-body { padding: 1.5rem; }
+  .quiz-q { margin-bottom: 1.5rem; }
+  .quiz-q-num { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--red); margin-bottom: 4px; letter-spacing: 0.15em; }
+  .quiz-q-text { font-size: 0.88rem; font-weight: 500; margin-bottom: 0.75rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-direction: column; gap: 6px; }
+  .quiz-opt { display: flex; align-items: center; gap: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px; padding: 0.65rem 1rem; cursor: pointer; transition: all 0.2s; font-size: 0.82rem; color: var(--white-dim); }
+  .quiz-opt:hover { background: var(--bg-card2); color: var(--white); }
+  .quiz-opt.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .quiz-opt.wrong   { border-color: var(--red);   background: var(--red-glow);  color: var(--red); }
+  .opt-letter { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 700; min-width: 20px; }
+  .quiz-result { display: none; margin-top: 1.5rem; padding: 1rem 1.25rem; border-radius: 2px; font-size: 0.85rem; line-height: 1.5; }
+  .quiz-result.show { display: block; }
+  .quiz-result.pass { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+  .quiz-result.fail { background: var(--red-glow); border: 1px solid rgba(196,30,58,0.4); color: var(--red); }
+  .btn-quiz { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.65rem 1.5rem; border: none; cursor: pointer; background: var(--red); color: #fff; clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); transition: background 0.2s; margin-top: 1rem; }
+  .btn-quiz:hover { background: #E02040; }
+
+  /* NEXT */
+  .next-fase { background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--teal); padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+  .next-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--white-dim); letter-spacing: 0.15em; margin-bottom: 4px; }
+  .next-title { font-family: 'Rajdhani', sans-serif; font-size: 1.2rem; font-weight: 600; }
+  .btn-next { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.65rem 1.5rem; background: var(--teal); color: #000; text-decoration: none; clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); transition: background 0.2s; white-space: nowrap; }
+  .btn-next:hover { background: #0D9488; color: #fff; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: #8B1528; border-radius: 2px; }
+
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .acta-body { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="logo-badge">NOTIFIER</span><span>Curso Técnico</span></div>
+  <div class="header-nav">
+    <a href="index.html" class="back-link">← Mapa</a>
+    <a href="fase4.html" class="back-link">← Fase 4</a>
+    <div class="fase-indicator"><div class="led"></div>FASE 05 — ACTIVA</div>
+  </div>
+</header>
+
+<div class="fase-hero">
+  <div class="fase-hero-grid"></div>
+  <div class="fase-hero-inner">
+    <div class="fase-eyebrow">FASE 05 DE 07</div>
+    <h1>Comisionamiento</h1>
+    <p>Puesta en marcha oficial del sistema. Walk Test dispositivo por dispositivo, verificación de salidas, integración con sistemas auxiliares y documentación de entrega.</p>
+    <div class="fase-meta">
+      <div class="meta-item"><span class="meta-label">Duración</span><span class="meta-value">~5 horas</span></div>
+      <div class="meta-item"><span class="meta-label">Módulos</span><span class="meta-value">6 temas</span></div>
+      <div class="meta-item"><span class="meta-label">Herramientas</span><span class="meta-value">Walk Test tracker + Acta digital</span></div>
+      <div class="meta-item"><span class="meta-label">Nivel</span><span class="meta-value">Intermedio–Avanzado</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-title">// contenido</div>
+    <ul class="sidebar-nav">
+      <li><a href="#m1" class="active"><span class="nav-num">01</span> Qué es el comisionamiento</a></li>
+      <li><a href="#m2"><span class="nav-num">02</span> Pre-comisionamiento</a></li>
+      <li><a href="#m3"><span class="nav-num">03</span> Walk Test</a></li>
+      <li><a href="#m4"><span class="nav-num">04</span> Verificación de salidas</a></li>
+      <li><a href="#m5"><span class="nav-num">05</span> Integración con sistemas auxiliares</a></li>
+      <li><a href="#m6"><span class="nav-num">06</span> Documentación y entrega</a></li>
+      <li><a href="#quiz"><span class="nav-num">✓</span> Evaluación Fase 5</a></li>
+    </ul>
+    <div class="progress-mini">
+      <div class="progress-mini-label">Tu avance</div>
+      <div class="progress-bar"><div class="progress-fill" id="sidebarProgress" style="width:0%"></div></div>
+      <div class="progress-pct" id="sidebarPct">0%</div>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- M1 — QUÉ ES -->
+    <section class="modulo" id="m1">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 01</span>
+        <div><h2>¿Qué es el Comisionamiento?</h2><p>Definición, alcance y quién lo ejecuta</p></div>
+      </div>
+      <div class="prose">
+        <p>El <strong>comisionamiento</strong> es el proceso formal de verificar que un sistema de alarma de incendio recién instalado funciona correctamente, tal como fue diseñado y programado, antes de ser entregado al cliente y declarado operativo.</p>
+        <p>No es simplemente "encender el sistema y ver que no haya errores". Es una <strong>verificación sistemática, dispositivo por dispositivo</strong>, que incluye pruebas de alarma, pruebas de salidas de control, verificación de integración con otros sistemas y documentación completa.</p>
+        <div class="highlight-box">
+          <strong>NFPA 72 Cap. 14</strong> exige que todo sistema sea comisionado por un técnico calificado antes de ser puesto en servicio. El acta de comisionamiento es un documento legal — puede ser requerido por la autoridad competente, compañías de seguros o el cliente en caso de incidente.
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Etapa</th><th>Responsable</th><th>Qué se verifica</th><th>Resultado esperado</th></tr></thead>
+        <tbody>
+          <tr><td>Pre-comisionamiento</td><td>Técnico instalador</td><td>Cableado, direcciones físicas, panel sin errores</td><td>Panel en SYSTEM NORMAL</td></tr>
+          <tr><td>Walk Test</td><td>Técnico + asistente</td><td>Cada dispositivo activa y el panel lo reconoce</td><td>100% dispositivos verificados</td></tr>
+          <tr><td>Prueba de salidas</td><td>Técnico senior</td><td>NAC, FRM-1, FCM-1 activan correctamente</td><td>C&E funciona según diseño</td></tr>
+          <tr><td>Integración</td><td>Técnico + contratistas</td><td>HVAC, acceso, PA, supresión responden al sistema</td><td>Todos los sistemas coordinados</td></tr>
+          <tr><td>Documentación</td><td>Técnico + supervisor</td><td>Acta firmada, planos as-built, base de datos respaldada</td><td>Entrega formal al cliente</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- M2 — PRE-COMISIONAMIENTO -->
+    <section class="modulo" id="m2">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 02</span>
+        <div><h2>Pre-Comisionamiento</h2><p>Lista de verificación antes de iniciar las pruebas — evita el 80% de los problemas</p></div>
+      </div>
+      <div class="prose">
+        <p>El pre-comisionamiento es la etapa más subestimada. Resolver problemas aquí toma minutos; resolverlos durante el walk test toma horas.</p>
+      </div>
+
+      <div class="check-cat">// Verificación física</div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Todos los dispositivos instalados</strong> — Comparar lista de dispositivos programados en VFT contra dispositivos físicamente instalados en campo. Cero diferencias.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Direcciones físicas verificadas</strong> — Confirmar que la dirección configurada en cada dispositivo (DIP switches o programador) coincide con la dirección en la base de datos VFT.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Continuidad de cableado</strong> — Medir resistencia del lazo SLC completo. Para NFS2-640: máximo 40 Ω. Verificar que no hay cortocircuitos ni circuitos abiertos antes de energizar.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Resistencias EOL en posición correcta</strong> — EOL al final de cada circuito NAC Class B. Verificar valor (4.7 kΩ) con multímetro antes de conectar.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Alimentación eléctrica</strong> — Verificar tensión AC en el panel: 120 VAC ± 10%. Circuito dedicado, protección correcta.</div>
+        </div>
+      </div>
+
+      <div class="check-cat">// Verificación del panel</div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Panel arranca en SYSTEM NORMAL</strong> — Al energizar, el panel no debe mostrar ningún TROUBLE ni ALARM pendiente. LED verde de POWER encendido fijo.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Baterías conectadas y cargando</strong> — Panel reporta baterías como NORMAL. Verificar tensión en bornes de batería: 26.5–27.6 VDC con cargador activo.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Base de datos descargada y verificada</strong> — Usar VFT Upload + Compare para confirmar que la base de datos del panel coincide con la versión aprobada del proyecto.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Fecha y hora del panel correctas</strong> — El panel registra eventos con timestamp. Sincronizar fecha/hora antes de iniciar pruebas. Error común: el panel queda con fecha de fábrica.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>SLC polling sin errores</strong> — El panel debe reconocer todos los dispositivos del lazo sin reportar ningún dispositivo como MISSING o en TROUBLE.</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <div class="warning-box">
+          Si el panel reporta dispositivos MISSING o TROUBLE antes de iniciar el walk test, detener el proceso. Resolver primero las fallas de comunicación del SLC — de lo contrario el walk test no tiene validez.
+        </div>
+      </div>
+    </section>
+
+    <!-- M3 — WALK TEST -->
+    <section class="modulo" id="m3">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 03</span>
+        <div><h2>Walk Test</h2><p>Verificación dispositivo por dispositivo — el núcleo del comisionamiento</p></div>
+      </div>
+
+      <div class="prose">
+        <p>El <strong>Walk Test</strong> es la prueba donde se activa cada dispositivo del sistema manualmente y se verifica que el panel lo recibe y registra correctamente. El nombre viene de "caminar" por el edificio activando detector por detector.</p>
+        <p>Se ejecuta con el panel en <strong>modo Walk Test</strong> (activado desde VeriFire Tools o directamente en el panel), que suprime la activación del NAC para no molestar a los ocupantes mientras se prueban los detectores.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h4>Activar modo Walk Test en el panel</h4>
+            <p>En VFT: <code>Walk Test → Start Walk Test → Select All Devices</code>. En el panel físico: menú de nivel 2 → Walk Test. El panel muestra "WALK TEST ACTIVE" y suprime los NAC.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h4>Activar cada detector con aerosol de prueba</h4>
+            <p>Usar aerosol de humo sintético (HFE-based) específico para detectores fotoeléctricos. Para detectores de calor usar pistola de calor. Nunca usar llama abierta ni humo real para pruebas.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h4>Verificar respuesta en el panel y en VFT</h4>
+            <p>El asistente en el panel confirma que el dispositivo correcto aparece en alarma con su dirección y etiqueta exactas. En VFT Status Monitor se puede ver la activación en tiempo real. Marcar como verificado en la lista.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <h4>Registrar resultado</h4>
+            <p>Para cada dispositivo anotar: dirección, etiqueta, resultado (<code>OK</code> / <code>FAIL</code>), observaciones. Los dispositivos FAIL deben resolverse antes de finalizar el comisionamiento.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-body">
+            <h4>Finalizar Walk Test</h4>
+            <p>Una vez probados todos los dispositivos: <code>Walk Test → End Walk Test</code>. El panel vuelve a modo normal. Verificar que el registro de walk test en el historial del panel queda guardado.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- WALK TEST TRACKER INTERACTIVO -->
+      <div class="wt-panel">
+        <div class="wt-header">
+          <div class="wt-title">
+            <div class="led"></div>
+            Walk Test Tracker — Demo interactivo
+          </div>
+          <div class="wt-counter">Verificados: <span id="wtCount">0</span> / <span id="wtTotal">12</span></div>
+        </div>
+        <div class="wt-body">
+          <p style="font-size:0.78rem; color:var(--white-dim); margin-bottom:1rem;">Haz clic en cada dispositivo para marcarlo como verificado (verde) o con falla (clic derecho / doble clic = FAIL).</p>
+          <div class="wt-grid" id="wtGrid">
+            <!-- generado por JS -->
+          </div>
+        </div>
+        <div class="wt-footer">
+          <div class="wt-progress-wrap">
+            <div class="wt-pct" id="wtPct">0% completado</div>
+            <div class="wt-progress-bar"><div class="wt-progress-fill" id="wtFill" style="width:0%"></div></div>
+          </div>
+          <div class="wt-btn-row">
+            <button class="wt-btn wt-btn-reset" onclick="resetWT()">Reiniciar</button>
+            <button class="wt-btn wt-btn-complete" onclick="completeWT()">Marcar todos OK</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <div class="info-box">
+          En proyectos grandes (más de 100 dispositivos) es común dividir el Walk Test por zonas o por pisos y realizarlo en varios días. La clave es mantener registro escrito de qué se probó en cada sesión y en qué estado quedó el sistema al finalizar el día.
+        </div>
+      </div>
+
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/ljMM5OO26fQ"
+          title="Notifier Onyx NFS2-3030 Walk Test Mode - Step by Step"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+        </iframe>
+        <div class="video-caption">// VIDEO 07 — Notifier NFS2-3030 Walk Test Mode · Guía paso a paso - Feb 2025</div>
+      </div>
+    </section>
+
+    <!-- M4 — VERIFICACIÓN SALIDAS -->
+    <section class="modulo" id="m4">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 04</span>
+        <div><h2>Verificación de Salidas de Control</h2><p>NAC, FRM-1, FCM-1 — confirmar que el C&E funciona en campo</p></div>
+      </div>
+
+      <div class="prose">
+        <p>Una vez verificados todos los dispositivos de entrada (detectores, manuales), se deben verificar las <strong>salidas de control</strong>. Esta es la prueba más crítica desde el punto de vista de seguridad — es donde se confirma que el sistema realmente activa los equipos correctos en una emergencia.</p>
+        <div class="warning-box">
+          Las pruebas de salidas de control deben coordinarse con los operadores del edificio. Activar el FCM-1 del HVAC puede apagar sistemas críticos. Activar el relé de puertas puede trabarlas en posición abierta. Coordinar siempre con el cliente antes de ejecutar estas pruebas.
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Salida</th><th>Método de prueba</th><th>Verificación en campo</th><th>Criterio de aprobación</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>NAC-1 (sirenas)</td>
+            <td>Activar alarma desde detector o manual de prueba</td>
+            <td>Confirmar audición de sirenas en todas las áreas del circuito</td>
+            <td>≥15 dB sobre ruido ambiental o ≥75 dB a 3m en cada punto</td>
+          </tr>
+          <tr>
+            <td>NAC strobes</td>
+            <td>Activar alarma</td>
+            <td>Confirmar destello visual en zonas definidas por NFPA 72 §18</td>
+            <td>Visible desde cualquier punto de la zona cubierta</td>
+          </tr>
+          <tr>
+            <td>FRM-1 (relé)</td>
+            <td>Activar zona correspondiente según C&E</td>
+            <td>Medir continuidad en contactos del relé con multímetro</td>
+            <td>Contacto NA cierra / NC abre según programación</td>
+          </tr>
+          <tr>
+            <td>FCM-1 (ventilador)</td>
+            <td>Activar zona correspondiente</td>
+            <td>Confirmar arranque/detención del ventilador + señal de feedback OK en panel</td>
+            <td>Panel confirma feedback dentro de tiempo programado</td>
+          </tr>
+          <tr>
+            <td>Shunt Trip MCCB</td>
+            <td>Activar zona con panel en modo prueba aislado</td>
+            <td>Confirmar disparo del interruptor eléctrico</td>
+            <td>MCCB dispara en ≤2 segundos desde activación del relé</td>
+          </tr>
+          <tr>
+            <td>Transmisión central</td>
+            <td>Activar alarma real o de prueba</td>
+            <td>Confirmar recepción en central de monitoreo remoto</td>
+            <td>Central confirma recepción en ≤90 segundos (NFPA 72)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- SVG DIAGRAMA PRUEBA SALIDAS -->
+      <div class="diagram-wrap">
+        <div class="diagram-title">// DIAGRAMA 06 — Secuencia de verificación de salidas C&E</div>
+        <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
+          <rect width="700" height="260" fill="#0F1624" rx="4"/>
+
+          <!-- Detector activa -->
+          <circle cx="60" cy="90" r="28" fill="#161E30" stroke="#EC4899" stroke-width="1.5"/>
+          <text x="60" y="86" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#EC4899">DET</text>
+          <text x="60" y="98" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#EC4899">ALARM</text>
+          <text x="60" y="135" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(236,72,153,0.5)">①  ACTIVA</text>
+
+          <!-- Flecha al panel -->
+          <line x1="88" y1="90" x2="148" y2="90" stroke="#EC4899" stroke-width="1.5" marker-end="url(#arrowPink)"/>
+          <defs>
+            <marker id="arrowPink" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#EC4899"/>
+            </marker>
+            <marker id="arrowGreen" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#22C55E"/>
+            </marker>
+            <marker id="arrowAmber" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#F59E0B"/>
+            </marker>
+            <marker id="arrowRed" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#C41E3A"/>
+            </marker>
+          </defs>
+
+          <!-- Panel -->
+          <rect x="148" y="55" width="110" height="70" rx="2" fill="#161E30" stroke="#EC4899" stroke-width="1.5"/>
+          <text x="203" y="78" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#EC4899">PANEL</text>
+          <text x="203" y="93" text-anchor="middle" font-family="Rajdhani" font-size="12" font-weight="700" fill="#E8EDF8">NFS2</text>
+          <text x="203" y="108" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(236,72,153,0.5)">②  PROCESA C&amp;E</text>
+          <text x="203" y="140" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(232,237,248,0.3)">Evalúa lógica</text>
+
+          <!-- Flechas salidas -->
+          <!-- NAC -->
+          <line x1="258" y1="70" x2="318" y2="70" stroke="#C41E3A" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+          <rect x="318" y="55" width="80" height="32" rx="2" fill="#161E30" stroke="rgba(196,30,58,0.5)" stroke-width="1"/>
+          <text x="358" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#C41E3A">NAC → SIRENAS</text>
+          <text x="358" y="80" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(232,237,248,0.3)">③ Sonido+Luz</text>
+          <!-- Verificación NAC -->
+          <text x="410" y="68" font-family="JetBrains Mono" font-size="7" fill="rgba(34,197,94,0.6)">  ← medir dBA</text>
+
+          <!-- FRM -->
+          <line x1="258" y1="90" x2="318" y2="110" stroke="#F59E0B" stroke-width="1.5" marker-end="url(#arrowAmber)"/>
+          <rect x="318" y="97" width="80" height="32" rx="2" fill="#161E30" stroke="rgba(245,158,11,0.5)" stroke-width="1"/>
+          <text x="358" y="110" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#F59E0B">FRM-1 → RELÉ</text>
+          <text x="358" y="122" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(232,237,248,0.3)">④ Contacto cierra</text>
+          <text x="410" y="110" font-family="JetBrains Mono" font-size="7" fill="rgba(34,197,94,0.6)">  ← medir Ω</text>
+
+          <!-- FCM -->
+          <line x1="258" y1="110" x2="318" y2="152" stroke="#22C55E" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+          <rect x="318" y="140" width="80" height="32" rx="2" fill="#161E30" stroke="rgba(34,197,94,0.5)" stroke-width="1"/>
+          <text x="358" y="153" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#22C55E">FCM-1 → HVAC</text>
+          <text x="358" y="165" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(232,237,248,0.3)">⑤ Ventilador OFF</text>
+          <text x="410" y="153" font-family="JetBrains Mono" font-size="7" fill="rgba(34,197,94,0.6)">  ← confirmar físico</text>
+
+          <!-- Feedback FCM -->
+          <line x1="398" y1="156" x2="440" y2="156" stroke="rgba(34,197,94,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+          <rect x="440" y="144" width="90" height="26" rx="2" fill="#161E30" stroke="rgba(34,197,94,0.3)" stroke-width="1"/>
+          <text x="485" y="155" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#22C55E">FEEDBACK OK</text>
+          <text x="485" y="165" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(34,197,94,0.5)">⑥ Panel confirma</text>
+
+          <!-- Transmisión -->
+          <line x1="203" y1="125" x2="203" y2="190" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+          <rect x="150" y="190" width="110" height="32" rx="2" fill="#161E30" stroke="rgba(59,130,246,0.5)" stroke-width="1"/>
+          <text x="205" y="203" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#3B82F6">TRANSMISIÓN</text>
+          <text x="205" y="215" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(232,237,248,0.3)">⑦ Central remota</text>
+
+          <!-- Central -->
+          <line x1="260" y1="206" x2="320" y2="206" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+          <rect x="320" y="192" width="110" height="28" rx="2" fill="#161E30" stroke="rgba(59,130,246,0.4)" stroke-width="1"/>
+          <text x="375" y="207" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#3B82F6">CENTRAL OK</text>
+          <text x="375" y="218" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(59,130,246,0.5)">≤90 segundos</text>
+
+          <!-- Label paso -->
+          <rect x="20" y="20" width="660" height="18" rx="2" fill="rgba(236,72,153,0.05)" stroke="rgba(236,72,153,0.15)" stroke-width="1"/>
+          <text x="350" y="32" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(236,72,153,0.6)" letter-spacing="1">FLUJO COMPLETO DE VERIFICACIÓN DE SALIDAS — NFPA 72 CAP. 14</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- M5 — INTEGRACIÓN SISTEMAS AUXILIARES -->
+    <section class="modulo" id="m5">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 05</span>
+        <div><h2>Integración con Sistemas Auxiliares</h2><p>HVAC, control de acceso, PA, ascensores y supresión</p></div>
+      </div>
+
+      <div class="prose">
+        <p>El sistema NOTIFIER no opera en aislamiento — en proyectos industriales y edificios complejos se integra con múltiples sistemas. Cada integración debe ser verificada durante el comisionamiento con los responsables de cada sistema presente.</p>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Sistema</th><th>Módulo NOTIFIER</th><th>Acción en alarma</th><th>Verificación requerida</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>HVAC / Ventilación</td>
+            <td>FCM-1</td>
+            <td>Apagar/encender según zona. Activar modos de presurización o extracción de humos</td>
+            <td>Confirmar operación del equipo + señal de feedback en panel</td>
+          </tr>
+          <tr>
+            <td>Control de acceso</td>
+            <td>FRM-1 (relé libre)</td>
+            <td>Liberar puertas de emergencia magnéticas o electromecánicas</td>
+            <td>Confirmar apertura física de puertas con personal de seguridad</td>
+          </tr>
+          <tr>
+            <td>Sistema PA (anuncio)</td>
+            <td>FRM-1 o contacto de control</td>
+            <td>Activar mensaje pregrabado de evacuación o silenciar música/anuncios</td>
+            <td>Confirmar reproducción del mensaje correcto en todas las zonas PA</td>
+          </tr>
+          <tr>
+            <td>Ascensores</td>
+            <td>FRM-1 (recall)</td>
+            <td>Enviar todos los ascensores al piso de recepción y mantenerlos abiertos</td>
+            <td>Confirmar recall con empresa de ascensores presente. Crítico para bomberos</td>
+          </tr>
+          <tr>
+            <td>Supresión (sprinkler/gas)</td>
+            <td>MMX-1 (supervisión) + FRM-1 (activación)</td>
+            <td>Recibir señal de flujo de agua / activar supresión con gas en área protegida</td>
+            <td>Solo prueba en seco (sin agente) durante comisionamiento. Verificar con empresa de supresión</td>
+          </tr>
+          <tr>
+            <td>Generador de emergencia</td>
+            <td>MMX-1 (monitoreo)</td>
+            <td>Monitorear estado del generador; reportar falla al panel como supervisory</td>
+            <td>Simular falla de generador y verificar señal supervisory en panel</td>
+          </tr>
+          <tr>
+            <td>BMS / BACnet</td>
+            <td>Protocolo BACnet integrado en panel</td>
+            <td>Reportar estado del sistema de incendio al BMS del edificio</td>
+            <td>Verificar con el integrador del BMS que los puntos de datos son correctos</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        <div class="highlight-box">
+          <strong>Coordinar siempre con anticipación:</strong> Las pruebas de integración con HVAC, ascensores y supresión deben avisarse al cliente con al menos 24 horas de anticipación. Algunos sistemas requieren que su fabricante o instalador esté presente durante la prueba.
+        </div>
+      </div>
+    </section>
+
+    <!-- M6 — DOCUMENTACIÓN -->
+    <section class="modulo" id="m6">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 06</span>
+        <div><h2>Documentación y Entrega</h2><p>Acta de comisionamiento, as-builts y entrega formal al cliente</p></div>
+      </div>
+
+      <div class="prose">
+        <p>El comisionamiento no termina cuando el sistema funciona — termina cuando <strong>todo está documentado y firmado</strong>. La documentación es el respaldo legal del instalador y la guía operacional del cliente.</p>
+      </div>
+
+      <div class="check-cat">// Documentos obligatorios de entrega</div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Acta de comisionamiento firmada</strong> — Documento que certifica que el sistema fue instalado, programado y probado según NFPA 72. Debe ser firmado por el técnico responsable y el representante del cliente.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Planos as-built</strong> — Planos actualizados que reflejan la instalación real, incluyendo cualquier cambio respecto al diseño original. Formato PDF y DWG si el cliente lo requiere.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Base de datos VFT respaldada</strong> — Copia del archivo .vfd entregada al cliente en USB y/o correo. Esta es la "llave" del sistema — sin ella no se puede reprogramar el panel.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Registro de walk test</strong> — Lista firmada con resultado de prueba de cada dispositivo: dirección, etiqueta, resultado (OK/FAIL), fecha y técnico responsable.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Manual de operación para el cliente</strong> — Guía simplificada de operación cotidiana: cómo responder a una alarma, cómo silenciar, cómo resetear, qué significa cada LED, a quién llamar en caso de falla.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Programa de mantenimiento</strong> — Calendario de mantenimiento preventivo según NFPA 72 Cap. 14: pruebas semestrales de detectores, prueba anual del sistema completo, reemplazo de baterías.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Contraseñas del panel documentadas</strong> — Nivel 1 (operador) y Nivel 2 (instalador) entregadas en sobre cerrado o sistema seguro de gestión de credenciales.</div>
+        </div>
+      </div>
+
+      <!-- ACTA DIGITAL INTERACTIVA -->
+      <div class="acta-panel">
+        <div class="acta-header">
+          <div class="led" style="background:var(--teal); box-shadow:0 0 6px var(--teal)"></div>
+          <span class="acta-title">Acta de Comisionamiento — Generador</span>
+          <span class="acta-badge">NFPA 72 CAP. 14</span>
+        </div>
+        <div class="acta-body">
+          <div class="acta-field">
+            <label class="acta-label">Proyecto</label>
+            <input class="acta-input" type="text" placeholder="Nombre del proyecto" id="actaProyecto"/>
+          </div>
+          <div class="acta-field">
+            <label class="acta-label">Fecha</label>
+            <input class="acta-input" type="date" id="actaFecha"/>
+          </div>
+          <div class="acta-field">
+            <label class="acta-label">Panel instalado</label>
+            <input class="acta-input" type="text" placeholder="Ej: NFS2-640 S/N 4829201" id="actaPanel"/>
+          </div>
+          <div class="acta-field">
+            <label class="acta-label">Versión base de datos</label>
+            <input class="acta-input" type="text" placeholder="Ej: v2.1 — 15/08/2026" id="actaDB"/>
+          </div>
+          <div class="acta-field">
+            <label class="acta-label">Total dispositivos probados</label>
+            <input class="acta-input" type="text" placeholder="Ej: 127 / 127" id="actaDisp"/>
+          </div>
+          <div class="acta-field">
+            <label class="acta-label">Resultado Walk Test</label>
+            <input class="acta-input" type="text" placeholder="Ej: 127 OK — 0 FAIL" id="actaWT"/>
+          </div>
+          <div class="acta-field acta-full">
+            <label class="acta-label">Observaciones</label>
+            <input class="acta-input" type="text" placeholder="Ej: Dispositivo 043 reemplazado por falla de comunicación. Sistema aprobado." id="actaObs"/>
+          </div>
+          <div class="acta-field">
+            <label class="acta-label">Técnico responsable</label>
+            <input class="acta-input" type="text" placeholder="Nombre y firma" id="actaTec"/>
+          </div>
+          <div class="acta-field">
+            <label class="acta-label">Representante cliente</label>
+            <input class="acta-input" type="text" placeholder="Nombre y firma" id="actaCliente"/>
+          </div>
+        </div>
+        <div class="acta-footer">
+          <button class="acta-btn acta-btn-clear" onclick="clearActa()">Limpiar</button>
+          <button class="acta-btn acta-btn-print" onclick="printActa()">Imprimir / Guardar PDF</button>
+        </div>
+      </div>
+
+      <div class="prose">
+        <div class="success-box">
+          El sistema está listo para entrega cuando: panel en SYSTEM NORMAL, 100% dispositivos verificados en walk test, todas las salidas C&E verificadas en campo, todos los documentos firmados y entregados al cliente.
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="modulo" id="quiz">
+      <div class="modulo-header">
+        <span class="modulo-num" style="border-color:rgba(196,30,58,0.4);color:var(--red);background:var(--red-glow)">EVAL</span>
+        <div><h2>Evaluación — Fase 5</h2><p>Comisionamiento — verifica antes de pasar a Operación & Mantenimiento</p></div>
+      </div>
+
+      <div class="quiz-section">
+        <div class="quiz-header">
+          <div class="led" style="background:var(--red);box-shadow:0 0 6px var(--red)"></div>
+          <h3>QUIZ FASE 05</h3>
+          <span class="quiz-badge">6 PREGUNTAS</span>
+        </div>
+        <div class="quiz-body">
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 01 / 06</div>
+            <div class="quiz-q-text">¿Qué norma NFPA establece los requisitos de inspección, prueba y mantenimiento de sistemas de alarma de incendio?</div>
+            <div class="quiz-options" data-correct="b">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> NFPA 72 Capítulo 10</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="b"><span class="opt-letter">B</span> NFPA 72 Capítulo 14</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> NFPA 13</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> UL 864</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 02 / 06</div>
+            <div class="quiz-q-text">Durante el Walk Test, ¿qué función del panel se activa para suprimir los NAC mientras se prueban los detectores?</div>
+            <div class="quiz-options" data-correct="c">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Modo de silencio de alarma</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> Modo de mantenimiento general</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="c"><span class="opt-letter">C</span> Modo Walk Test — suprime NAC pero registra cada activación</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> Desconectar físicamente los NAC del panel</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 03 / 06</div>
+            <div class="quiz-q-text">¿Por qué es crítico verificar la señal de feedback del módulo FCM-1 durante el comisionamiento?</div>
+            <div class="quiz-options" data-correct="d">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Para confirmar que el cableado SLC está correcto</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> Para registrar el consumo eléctrico del ventilador</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> Es solo un requisito estético sin impacto funcional</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="d"><span class="opt-letter">D</span> Confirma que el equipo controlado (ventilador) realmente respondió — sin feedback el panel reportaría trouble aunque el relé haya activado</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 04 / 06</div>
+            <div class="quiz-q-text">¿Qué debe verificarse ANTES de iniciar el Walk Test si el panel reporta dispositivos en TROUBLE o MISSING?</div>
+            <div class="quiz-options" data-correct="a">
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="a"><span class="opt-letter">A</span> Detener el proceso y resolver las fallas de comunicación del SLC — el walk test no es válido si hay dispositivos sin comunicación</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> Continuar el walk test e ignorar los dispositivos en trouble</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> Resetear el panel tres veces hasta que los errores desaparezcan</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> Descargar de nuevo la base de datos sin revisar el hardware</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 05 / 06</div>
+            <div class="quiz-q-text">Según NFPA 72, ¿en cuánto tiempo máximo debe confirmar la central de monitoreo la recepción de una señal de alarma?</div>
+            <div class="quiz-options" data-correct="c">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> 30 segundos</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> 60 segundos</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="c"><span class="opt-letter">C</span> 90 segundos</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> 5 minutos</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 06 / 06</div>
+            <div class="quiz-q-text">¿Cuál de los siguientes documentos NO forma parte de la entrega formal del comisionamiento?</div>
+            <div class="quiz-options" data-correct="d">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Acta de comisionamiento firmada por técnico y cliente</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> Planos as-built actualizados</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> Base de datos VFT en USB (.vfd)</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="d"><span class="opt-letter">D</span> Factura de compra de los equipos NOTIFIER</div>
+            </div>
+          </div>
+
+          <button class="btn-quiz" onclick="evaluateQuiz()">EVALUAR RESPUESTAS</button>
+          <div class="quiz-result" id="quizResult"></div>
+        </div>
+      </div>
+
+      <div class="next-fase">
+        <div>
+          <div class="next-label">// SIGUIENTE MÓDULO</div>
+          <div class="next-title">Fase 6 — Operación & Mantenimiento</div>
+        </div>
+        <a href="fase6.html" class="btn-next">Ir a Fase 6 →</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // WALK TEST TRACKER
+  const devices = [
+    {addr:'001',label:'DET-FOTO-P1-LOBBY-A'},{addr:'002',label:'DET-FOTO-P1-LOBBY-B'},
+    {addr:'003',label:'MAN-PULL-P1-EXIT-N'},{addr:'004',label:'DET-FOTO-P1-PASILLO'},
+    {addr:'005',label:'DET-CALOR-P1-COCINA'},{addr:'006',label:'MAN-PULL-P1-EXIT-S'},
+    {addr:'027',label:'DET-FOTO-P3-SALA-B'},{addr:'028',label:'FRM-RELAY-P1-HVAC'},
+    {addr:'029',label:'FCM-FAN-P1-AHU-01'},{addr:'030',label:'DET-FOTO-P3-PASILLO'},
+    {addr:'031',label:'MAN-PULL-P3-EXIT-E'},{addr:'032',label:'DET-MULTI-P3-SALA-A'}
+  ];
+
+  const wtGrid = document.getElementById('wtGrid');
+  const wtCount = document.getElementById('wtCount');
+  const wtTotal = document.getElementById('wtTotal');
+  const wtPct   = document.getElementById('wtPct');
+  const wtFill  = document.getElementById('wtFill');
+  wtTotal.textContent = devices.length;
+
+  function buildWT() {
+    wtGrid.innerHTML = '';
+    devices.forEach((d, i) => {
+      const el = document.createElement('div');
+      el.className = 'wt-device';
+      el.dataset.index = i;
+      el.innerHTML = `
+        <div class="wt-dot"></div>
+        <div class="wt-info">
+          <div class="wt-addr">L1:${d.addr}</div>
+          <div class="wt-label">${d.label}</div>
+        </div>`;
+      el.addEventListener('click', () => {
+        if (el.classList.contains('failed')) { el.classList.remove('failed'); }
+        else if (el.classList.contains('tested')) { el.classList.remove('tested'); el.classList.add('failed'); }
+        else { el.classList.add('tested'); }
+        updateWT();
+      });
+      el.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        el.classList.remove('tested');
+        el.classList.add('failed');
+        updateWT();
+      });
+      wtGrid.appendChild(el);
+    });
+    updateWT();
+  }
+
+  function updateWT() {
+    const tested = wtGrid.querySelectorAll('.wt-device.tested').length;
+    const total  = devices.length;
+    const pct    = Math.round((tested / total) * 100);
+    wtCount.textContent = tested;
+    wtPct.textContent   = `${pct}% completado`;
+    wtFill.style.width  = pct + '%';
+  }
+
+  function resetWT() {
+    wtGrid.querySelectorAll('.wt-device').forEach(el => {
+      el.classList.remove('tested','failed');
+    });
+    updateWT();
+  }
+
+  function completeWT() {
+    wtGrid.querySelectorAll('.wt-device').forEach(el => {
+      el.classList.remove('failed');
+      el.classList.add('tested');
+    });
+    updateWT();
+  }
+
+  buildWT();
+
+  // CHECKLIST
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const done  = document.querySelectorAll('.check-item.done').length;
+    const pct   = Math.round((done / total) * 100);
+    document.getElementById('sidebarProgress').style.width = pct + '%';
+    document.getElementById('sidebarPct').textContent = pct + '%';
+  }
+
+  // ACTA
+  function clearActa() {
+    ['actaProyecto','actaFecha','actaPanel','actaDB','actaDisp','actaWT','actaObs','actaTec','actaCliente']
+      .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  }
+
+  function printActa() {
+    const fields = {
+      'Proyecto':           document.getElementById('actaProyecto')?.value || '—',
+      'Fecha':              document.getElementById('actaFecha')?.value || '—',
+      'Panel':              document.getElementById('actaPanel')?.value || '—',
+      'Base de datos':      document.getElementById('actaDB')?.value || '—',
+      'Dispositivos':       document.getElementById('actaDisp')?.value || '—',
+      'Walk Test':          document.getElementById('actaWT')?.value || '—',
+      'Observaciones':      document.getElementById('actaObs')?.value || '—',
+      'Técnico':            document.getElementById('actaTec')?.value || '—',
+      'Rep. Cliente':       document.getElementById('actaCliente')?.value || '—'
+    };
+    const rows = Object.entries(fields).map(([k,v]) =>
+      `<tr><td style="padding:8px 12px;font-weight:600;color:#555;white-space:nowrap;border-bottom:1px solid #eee">${k}</td><td style="padding:8px 12px;border-bottom:1px solid #eee">${v}</td></tr>`
+    ).join('');
+    const w = window.open('','_blank');
+    w.document.write(`<!DOCTYPE html><html><head><title>Acta de Comisionamiento</title>
+    <style>body{font-family:Arial,sans-serif;padding:40px;max-width:700px;margin:0 auto}
+    h1{font-size:22px;margin-bottom:4px}h2{font-size:14px;color:#888;font-weight:normal;margin-bottom:24px}
+    table{width:100%;border-collapse:collapse}@media print{button{display:none}}</style></head>
+    <body>
+    <h1>Acta de Comisionamiento</h1>
+    <h2>Sistema de Alarma de Incendio NOTIFIER — NFPA 72 Cap. 14</h2>
+    <table>${rows}</table>
+    <br><hr><br>
+    <p style="font-size:12px;color:#888">Este documento certifica que el sistema fue instalado, programado y probado conforme a NFPA 72 y las especificaciones del proyecto.</p>
+    <br><button onclick="window.print()" style="padding:10px 24px;background:#14B8A6;color:#fff;border:none;cursor:pointer;font-size:14px">Imprimir / Guardar PDF</button>
+    </body></html>`);
+    w.document.close();
+  }
+
+  // QUIZ
+  const answers = {};
+  function answerQ(el) {
+    const group = el.closest('.quiz-options');
+    if (!group) return;
+    group.querySelectorAll('.quiz-opt').forEach(o => { o.style.background=''; o.style.borderColor=''; o.style.color=''; });
+    const qIndex = Array.from(document.querySelectorAll('.quiz-q')).indexOf(el.closest('.quiz-q'));
+    answers[qIndex] = el.dataset.value || el.querySelector('.opt-letter').textContent.toLowerCase();
+    el.style.background = 'rgba(236,72,153,0.1)';
+    el.style.borderColor = 'rgba(236,72,153,0.4)';
+    el.style.color = '#E8EDF8';
+  }
+
+  function evaluateQuiz() {
+    const questions = document.querySelectorAll('.quiz-q');
+    let correct = 0; const total = questions.length;
+    questions.forEach((q, i) => {
+      const opts = q.querySelector('.quiz-options');
+      if (!opts) return;
+      const correctVal = opts.dataset.correct;
+      opts.querySelectorAll('.quiz-opt').forEach(o => {
+        o.style.background=''; o.style.borderColor=''; o.style.color='';
+        o.style.pointerEvents = 'none';
+        const val = o.dataset.value || o.querySelector('.opt-letter').textContent.toLowerCase();
+        if (val === correctVal) o.classList.add('correct');
+      });
+      if (answers[i] === correctVal) correct++;
+    });
+    const result = document.getElementById('quizResult');
+    result.classList.add('show');
+    const needed = Math.ceil(total * 0.8);
+    if (correct >= needed) {
+      result.classList.remove('fail'); result.classList.add('pass');
+      result.innerHTML = `✓ APROBADO — ${correct}/${total} correctas. Puedes avanzar a la Fase 6: Operación & Mantenimiento.`;
+      try {
+        const p = JSON.parse(localStorage.getItem('notifier_course_progress') || '{"completed":[]}');
+        if (!p.completed.includes(5)) { p.completed.push(5); localStorage.setItem('notifier_course_progress', JSON.stringify(p)); }
+      } catch(e){}
+    } else {
+      result.classList.remove('pass'); result.classList.add('fail');
+      result.innerHTML = `✗ ${correct}/${total} correctas. Mínimo: ${needed}/${total}. Repasa los módulos de comisionamiento.`;
+    }
+  }
+
+  // SIDEBAR ACTIVE
+  const sections = document.querySelectorAll('.modulo');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.25 });
+  sections.forEach(s => observer.observe(s));
+
+  // Set fecha default hoy
+  const fechaInput = document.getElementById('actaFecha');
+  if (fechaInput) fechaInput.value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>

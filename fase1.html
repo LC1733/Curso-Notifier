@@ -1,19 +1,1356 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fase 1 - Fundamentos Teoricos | NOTIFIER Pro</title>
-<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fase 1 — Fundamentos Teóricos | NOTIFIER Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep:    #070B14;
+    --bg-panel:   #0F1624;
+    --bg-card:    #161E30;
+    --bg-card2:   #1C2540;
+    --red:        #C41E3A;
+    --red-dim:    #8B1528;
+    --red-glow:   rgba(196,30,58,0.25);
+    --amber:      #F59E0B;
+    --amber-dim:  rgba(245,158,11,0.15);
+    --green:      #22C55E;
+    --green-dim:  rgba(34,197,94,0.15);
+    --blue:       #3B82F6;
+    --blue-dim:   rgba(59,130,246,0.12);
+    --white:      #E8EDF8;
+    --white-dim:  rgba(232,237,248,0.55);
+    --border:     rgba(255,255,255,0.07);
+    --border-red: rgba(196,30,58,0.4);
+    --fase-color: #22C55E;
+    --fase-dim:   rgba(34,197,94,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-deep);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: sticky; top: 0;
+    background: rgba(7,11,20,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-red);
+    z-index: 100;
+    padding: 0 2rem;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .logo-badge {
+    background: var(--red);
+    color: #fff;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .header-nav {
+    display: flex; align-items: center; gap: 1.5rem;
+  }
+
+  .back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--white-dim);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    display: flex; align-items: center; gap: 6px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--white); }
+
+  .fase-indicator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--fase-color);
+    letter-spacing: 0.2em;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .led {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--fase-color);
+    box-shadow: 0 0 6px var(--fase-color);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ─── FASE HERO ─── */
+  .fase-hero {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .fase-hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(34,197,94,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,197,94,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .fase-hero-inner {
+    max-width: 900px; margin: 0 auto;
+    position: relative; z-index: 1;
+  }
+
+  .fase-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--fase-color);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .fase-eyebrow::before {
+    content: ''; display: block; width: 24px; height: 1px;
+    background: var(--fase-color);
+  }
+
+  .fase-hero h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .fase-hero p {
+    font-size: 0.95rem;
+    color: var(--white-dim);
+    max-width: 580px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .fase-meta {
+    display: flex; gap: 2rem; margin-top: 1.75rem; flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .meta-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--white-dim);
+    text-transform: uppercase;
+  }
+
+  .meta-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  /* ─── LAYOUT ─── */
+  .layout {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  /* ─── SIDEBAR NAV ─── */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+  }
+
+  .sidebar-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--white-dim);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-nav li a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0.55rem 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: var(--white-dim);
+    text-decoration: none;
+    border-radius: 2px;
+    border-left: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .sidebar-nav li a:hover,
+  .sidebar-nav li a.active {
+    color: var(--white);
+    background: var(--bg-card);
+    border-left-color: var(--fase-color);
+  }
+
+  .sidebar-nav li a .nav-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--fase-color);
+    min-width: 18px;
+  }
+
+  .progress-mini {
+    margin-top: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1rem;
+  }
+
+  .progress-mini-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--white-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--fase-color);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .progress-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--fase-color);
+  }
+
+  /* ─── CONTENIDO ─── */
+  .content { display: flex; flex-direction: column; gap: 3rem; }
+
+  /* ─── MÓDULO ─── */
+  .modulo {
+    scroll-margin-top: 80px;
+  }
+
+  .modulo-header {
+    display: flex; align-items: flex-start; gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modulo-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--fase-color);
+    background: var(--fase-dim);
+    border: 1px solid rgba(34,197,94,0.25);
+    padding: 4px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  .modulo-header h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+
+  .modulo-header p {
+    font-size: 0.82rem;
+    color: var(--white-dim);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* ─── TEXTO ─── */
+  .prose {
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--white-dim);
+  }
+
+  .prose p { margin-bottom: 1rem; }
+
+  .prose strong {
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .prose .highlight-box {
+    background: var(--bg-card);
+    border-left: 3px solid var(--fase-color);
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    border-radius: 0 2px 2px 0;
+    font-size: 0.85rem;
+    color: var(--white);
+  }
+
+  .prose .warning-box {
+    background: rgba(245,158,11,0.08);
+    border-left: 3px solid var(--amber);
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    border-radius: 0 2px 2px 0;
+    font-size: 0.85rem;
+    color: var(--white);
+  }
+
+  .prose .warning-box::before {
+    content: '⚠ IMPORTANTE — ';
+    color: var(--amber);
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* ─── COMPARISON CARDS ─── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .compare-card {
+    background: var(--bg-card);
+    padding: 1.5rem;
+  }
+
+  .compare-card h4 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .compare-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .compare-card ul li {
+    font-size: 0.8rem;
+    color: var(--white-dim);
+    display: flex; align-items: flex-start; gap: 8px;
+    line-height: 1.45;
+  }
+
+  .compare-card ul li::before {
+    content: '—';
+    color: var(--white-dim);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ─── SVG DIAGRAMA ─── */
+  .diagram-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--fase-color);
+    border-radius: 2px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+
+  .diagram-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--fase-color);
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ─── CHECKLIST ─── */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 1rem 0;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .check-item:hover { background: var(--bg-card2); }
+
+  .check-item.done {
+    border-color: rgba(34,197,94,0.3);
+    background: rgba(34,197,94,0.05);
+  }
+
+  .check-box {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 2px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    margin-top: 1px;
+  }
+
+  .check-item.done .check-box {
+    background: var(--fase-color);
+    border-color: var(--fase-color);
+  }
+
+  .check-item.done .check-box::after {
+    content: '✓';
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .check-text {
+    font-size: 0.83rem;
+    color: var(--white-dim);
+    line-height: 1.45;
+  }
+
+  .check-item.done .check-text {
+    color: var(--white);
+  }
+
+  /* ─── TABLA NORMATIVA ─── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin: 1rem 0;
+  }
+
+  .data-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-panel);
+  }
+
+  .data-table td {
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-card);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .data-table tr:hover td { background: var(--bg-card2); }
+
+  .data-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--amber);
+    white-space: nowrap;
+  }
+
+  /* ─── VIDEO EMBED ─── */
+  .video-wrap {
+    margin: 1.5rem 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--red);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .video-wrap iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: block;
+    border: none;
+  }
+
+  .video-caption {
+    padding: 0.75rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--white-dim);
+    letter-spacing: 0.08em;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── QUIZ ─── */
+  .quiz-section {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-red);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+
+  .quiz-header {
+    background: var(--red-glow);
+    border-bottom: 1px solid var(--border-red);
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .quiz-header h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .quiz-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    background: rgba(196,30,58,0.2);
+    border: 1px solid var(--border-red);
+    color: var(--red);
+    border-radius: 2px;
+  }
+
+  .quiz-body { padding: 1.5rem; }
+
+  .quiz-q {
+    margin-bottom: 1.5rem;
+  }
+
+  .quiz-q-text {
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .quiz-q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--red);
+    margin-bottom: 4px;
+    letter-spacing: 0.15em;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .quiz-opt {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0.65rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.82rem;
+    color: var(--white-dim);
+  }
+
+  .quiz-opt:hover { background: var(--bg-card2); color: var(--white); }
+
+  .quiz-opt.correct {
+    border-color: var(--green);
+    background: var(--green-dim);
+    color: var(--green);
+  }
+
+  .quiz-opt.wrong {
+    border-color: var(--red);
+    background: var(--red-glow);
+    color: var(--red);
+  }
+
+  .quiz-opt .opt-letter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 20px;
+  }
+
+  .quiz-result {
+    display: none;
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: 2px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .quiz-result.show { display: block; }
+  .quiz-result.pass {
+    background: var(--green-dim);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+  .quiz-result.fail {
+    background: var(--red-glow);
+    border: 1px solid var(--border-red);
+    color: var(--red);
+  }
+
+  .btn-quiz {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.5rem;
+    border: none;
+    cursor: pointer;
+    background: var(--red);
+    color: #fff;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: background 0.2s;
+    margin-top: 1rem;
+  }
+
+  .btn-quiz:hover { background: #E02040; }
+
+  /* ─── NEXT FASE ─── */
+  .next-fase {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    padding: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .next-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--white-dim);
+    letter-spacing: 0.15em;
+    margin-bottom: 4px;
+  }
+
+  .next-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .btn-next {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.5rem;
+    background: var(--blue);
+    color: #fff;
+    text-decoration: none;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-next:hover { background: #2563EB; }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--red-dim); border-radius: 2px; }
+
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="logo">
+    <span class="logo-badge">NOTIFIER</span>
+    <span>Curso Técnico</span>
+  </div>
+  <div class="header-nav">
+    <a href="index.html" class="back-link">← Volver al mapa</a>
+    <div class="fase-indicator">
+      <div class="led"></div>
+      FASE 01 — ACTIVA
+    </div>
+  </div>
+</header>
+
+<!-- ─── HERO FASE ─── -->
+<div class="fase-hero">
+  <div class="fase-hero-grid"></div>
+  <div class="fase-hero-inner">
+    <div class="fase-eyebrow">FASE 01 DE 07</div>
+    <h1>Fundamentos Teóricos</h1>
+    <p>Base conceptual imprescindible antes de operar cualquier equipo. Normativa, tipos de sistema, arquitectura y vocabulario técnico oficial.</p>
+    <div class="fase-meta">
+      <div class="meta-item">
+        <span class="meta-label">Duración estimada</span>
+        <span class="meta-value">~3 horas</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Módulos</span>
+        <span class="meta-value">5 temas</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Evaluación</span>
+        <span class="meta-value">Quiz final</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Nivel</span>
+        <span class="meta-value">Cero a básico</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── LAYOUT ─── -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">// contenido</div>
+    <ul class="sidebar-nav" id="sidebarNav">
+      <li><a href="#m1" class="active"><span class="nav-num">01</span> ¿Qué es un sistema de detección?</a></li>
+      <li><a href="#m2"><span class="nav-num">02</span> Normativa NFPA 72</a></li>
+      <li><a href="#m3"><span class="nav-num">03</span> Convencional vs Direccionable</a></li>
+      <li><a href="#m4"><span class="nav-num">04</span> Topología del sistema</a></li>
+      <li><a href="#m5"><span class="nav-num">05</span> Vocabulario técnico esencial</a></li>
+      <li><a href="#quiz"><span class="nav-num">✓</span> Evaluación Fase 1</a></li>
+    </ul>
+
+    <div class="progress-mini">
+      <div class="progress-mini-label">Tu avance</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="sidebarProgress" style="width:0%"></div>
+      </div>
+      <div class="progress-pct" id="sidebarPct">0%</div>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="content">
+
+    <!-- ─── MÓDULO 1 ─── -->
+    <section class="modulo" id="m1">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 01</span>
+        <div>
+          <h2>¿Qué es un sistema de detección de incendio?</h2>
+          <p>Definición, propósito y componentes fundamentales</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Un <strong>sistema de detección y alarma de incendio (SDAI)</strong> es una red electrónica diseñada para identificar condiciones de incendio en forma temprana, alertar a los ocupantes de un edificio y activar respuestas automáticas para controlar o suprimir el fuego.</p>
+
+        <p>Su función principal no es apagar el fuego — para eso existen los sistemas de supresión — sino <strong>detectarlo lo antes posible</strong> para minimizar daños a personas, bienes e instalaciones.</p>
+
+        <div class="highlight-box">
+          Un sistema NOTIFIER bien instalado puede detectar un incendio incipiente <strong>entre 2 y 7 minutos antes</strong> de que sea visible para el ojo humano, gracias a la detección de partículas de combustión o variaciones de temperatura.
+        </div>
+
+        <p>Todo sistema de detección tiene <strong>cuatro funciones básicas</strong>:</p>
+      </div>
+
+      <div class="checklist" id="checklist1">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Detectar</strong> — Identificar señales físicas de incendio: humo, calor, llama o gases de combustión.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Procesar</strong> — El panel central evalúa la señal recibida y determina si es una alarma real o una condición de falla.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Notificar</strong> — Activar alarmas sonoras y visuales para alertar a los ocupantes del edificio.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <div class="check-text"><strong>Controlar</strong> — Enviar señales a otros sistemas: presurización, acceso, HVAC, ascensores, supresión.</div>
+        </div>
+      </div>
+
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/oJmo_Ib22E0"
+          title="Fire Alarm Training Video - Notifier NFS2-3030"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+        <div class="video-caption">// VIDEO 01 — Fire Alarm Training - Notifier NFS2-3030 · Introducción y conceptos base</div>
+      </div>
+    </section>
+
+    <!-- ─── MÓDULO 2 ─── -->
+    <section class="modulo" id="m2">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 02</span>
+        <div>
+          <h2>Normativa NFPA 72</h2>
+          <p>El código que rige todo sistema de alarma de incendio</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>La <strong>NFPA 72 — National Fire Alarm and Signaling Code</strong> es el estándar internacional más importante para el diseño, instalación, prueba y mantenimiento de sistemas de alarma de incendio. Publicada por la National Fire Protection Association de EE.UU., es adoptada como referencia técnica en Chile, Perú y toda Latinoamérica.</p>
+
+        <div class="warning-box">
+          Todo sistema NOTIFIER instalado en un proyecto minero, industrial u hospitalario debe cumplir NFPA 72. En Chile, el DS N°594 y la Ordenanza General de Urbanismo y Construcción exigen adherencia a esta normativa.
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Capítulo NFPA 72</th>
+            <th>Contenido</th>
+            <th>Relevancia práctica</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CAP. 1–3</td>
+            <td>Alcance, definiciones y fundamentos</td>
+            <td>Vocabulario técnico obligatorio</td>
+          </tr>
+          <tr>
+            <td>CAP. 10</td>
+            <td>Equipos y sistemas de alarma de incendio</td>
+            <td>Tipos de panel y certificaciones requeridas</td>
+          </tr>
+          <tr>
+            <td>CAP. 12</td>
+            <td>Circuitos de comunicación</td>
+            <td>Clases de cableado (A, B, C, D, E, F, N, X)</td>
+          </tr>
+          <tr>
+            <td>CAP. 14</td>
+            <td>Inspección, prueba y mantenimiento</td>
+            <td>Walk test, frecuencias de mantenimiento</td>
+          </tr>
+          <tr>
+            <td>CAP. 17</td>
+            <td>Iniciadores automáticos (detectores)</td>
+            <td>Ubicación y espaciado de detectores</td>
+          </tr>
+          <tr>
+            <td>CAP. 18</td>
+            <td>Dispositivos de notificación</td>
+            <td>Sounders, strobes, requisitos sonoros</td>
+          </tr>
+          <tr>
+            <td>CAP. 24</td>
+            <td>Sistemas de emergencia y evacuación</td>
+            <td>Integración con PA y voz de emergencia</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        <p>Complementariamente, la <strong>UL 864</strong> (Underwriters Laboratories) certifica que los paneles de control cumplen requisitos de seguridad eléctrica y funcionalidad. Todos los paneles NOTIFIER llevan certificación UL 864 de fábrica.</p>
+      </div>
+    </section>
+
+    <!-- ─── MÓDULO 3 ─── -->
+    <section class="modulo" id="m3">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 03</span>
+        <div>
+          <h2>Convencional vs Direccionable</h2>
+          <p>La diferencia fundamental que define todo el sistema</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Esta es la primera decisión técnica en cualquier proyecto: ¿qué tipo de sistema se necesita? La diferencia no es solo tecnológica — define el costo, la capacidad de diagnóstico y el nivel de control que tendrá el sistema.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4 style="color: var(--amber)">⬡ Sistema Convencional</h4>
+          <ul>
+            <li>Los dispositivos se agrupan en zonas. Cuando uno activa, solo sabes la zona, no el dispositivo exacto.</li>
+            <li>Cableado simple: un par de cables por zona hacia el panel.</li>
+            <li>Menor costo de instalación inicial.</li>
+            <li>Capacidad limitada de expansión.</li>
+            <li>Sin información de falla por dispositivo individual.</li>
+            <li>Uso típico: bodegas pequeñas, oficinas simples, proyectos de bajo presupuesto.</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <h4 style="color: var(--fase-color)">⬡ Sistema Direccionable (NOTIFIER)</h4>
+          <ul>
+            <li>Cada dispositivo tiene una dirección única. El panel identifica exactamente cuál detector activó.</li>
+            <li>Un solo par de cables (lazo SLC) puede conectar hasta 318 dispositivos.</li>
+            <li>Mayor costo inicial, menor costo de operación y mantenimiento.</li>
+            <li>Expansión modular: se agregan lazos según crecimiento.</li>
+            <li>Diagnóstico completo: fallas por dispositivo, contaminación de detectores, cortocircuitos.</li>
+            <li>Uso típico: minería, hospitales, industria, edificios críticos, proyectos Sandvik/DSI.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="prose">
+        <div class="highlight-box">
+          <strong>Regla práctica:</strong> Para proyectos con más de 20 dispositivos, o donde se requiere identificación exacta del punto de alarma (como en instalaciones mineras o industriales), siempre se especifica sistema direccionable NOTIFIER.
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── MÓDULO 4 ─── -->
+    <section class="modulo" id="m4">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 04</span>
+        <div>
+          <h2>Topología del sistema</h2>
+          <p>Cómo se conectan y relacionan todos los componentes</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>Un sistema NOTIFIER tiene una arquitectura jerárquica clara. Entender esta topología es imprescindible antes de tocar cualquier cable o pantalla del panel.</p>
+      </div>
+
+      <!-- SVG DIAGRAMA TOPOLOGÍA -->
+      <div class="diagram-wrap">
+        <div class="diagram-title">// DIAGRAMA 01 — Arquitectura general del sistema NOTIFIER</div>
+        <svg viewBox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:780px; display:block; margin:0 auto;">
+          <!-- Fondo -->
+          <rect width="780" height="420" fill="#0F1624" rx="4"/>
+
+          <!-- Panel Central -->
+          <rect x="300" y="20" width="180" height="80" rx="3" fill="#1C2540" stroke="#22C55E" stroke-width="1.5"/>
+          <text x="390" y="52" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#22C55E" letter-spacing="1">PANEL CENTRAL</text>
+          <text x="390" y="68" text-anchor="middle" font-family="Rajdhani" font-size="14" font-weight="600" fill="#E8EDF8">NFS2-640</text>
+          <text x="390" y="84" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="rgba(232,237,248,0.4)">NFS2-3030 / AFP</text>
+
+          <!-- Línea central hacia abajo -->
+          <line x1="390" y1="100" x2="390" y2="140" stroke="rgba(34,197,94,0.4)" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+          <!-- SLC BUS -->
+          <rect x="260" y="140" width="260" height="36" rx="2" fill="#161E30" stroke="rgba(34,197,94,0.3)" stroke-width="1"/>
+          <text x="390" y="155" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#22C55E" letter-spacing="1">LAZO SLC</text>
+          <text x="390" y="168" text-anchor="middle" font-family="Inter" font-size="9" fill="rgba(232,237,248,0.5)">Signaling Line Circuit — hasta 318 disp.</text>
+
+          <!-- Líneas hacia dispositivos -->
+          <!-- Izquierda -->
+          <line x1="300" y1="176" x2="150" y2="220" stroke="rgba(34,197,94,0.3)" stroke-width="1.5"/>
+          <line x1="300" y1="176" x2="150" y2="290" stroke="rgba(34,197,94,0.3)" stroke-width="1.5"/>
+          <!-- Centro izq -->
+          <line x1="350" y1="176" x2="280" y2="220" stroke="rgba(34,197,94,0.3)" stroke-width="1.5"/>
+          <line x1="350" y1="176" x2="280" y2="290" stroke="rgba(34,197,94,0.3)" stroke-width="1.5"/>
+          <!-- Derecha -->
+          <line x1="480" y1="176" x2="630" y2="220" stroke="rgba(245,158,11,0.3)" stroke-width="1.5"/>
+          <line x1="480" y1="176" x2="630" y2="290" stroke="rgba(245,158,11,0.3)" stroke-width="1.5"/>
+          <!-- Centro der -->
+          <line x1="430" y1="176" x2="500" y2="220" stroke="rgba(245,158,11,0.3)" stroke-width="1.5"/>
+          <line x1="430" y1="176" x2="500" y2="290" stroke="rgba(245,158,11,0.3)" stroke-width="1.5"/>
+
+          <!-- Detectores (verde = iniciadores) -->
+          <!-- Det 1 -->
+          <circle cx="150" cy="220" r="22" fill="#161E30" stroke="#22C55E" stroke-width="1.5"/>
+          <text x="150" y="216" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#22C55E">DET</text>
+          <text x="150" y="228" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(232,237,248,0.5)">001</text>
+
+          <!-- Det 2 -->
+          <circle cx="150" cy="290" r="22" fill="#161E30" stroke="#22C55E" stroke-width="1.5"/>
+          <text x="150" y="286" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#22C55E">DET</text>
+          <text x="150" y="298" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(232,237,248,0.5)">002</text>
+
+          <!-- Det 3 -->
+          <circle cx="280" cy="220" r="22" fill="#161E30" stroke="#22C55E" stroke-width="1.5"/>
+          <text x="280" y="216" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#22C55E">MAN</text>
+          <text x="280" y="228" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(232,237,248,0.5)">003</text>
+
+          <!-- Det 4 -->
+          <circle cx="280" cy="290" r="22" fill="#161E30" stroke="#22C55E" stroke-width="1.5"/>
+          <text x="280" y="286" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#22C55E">DET</text>
+          <text x="280" y="298" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(232,237,248,0.5)">004</text>
+
+          <!-- Módulos control (amber = salidas) -->
+          <!-- Mod 1 -->
+          <rect x="478" y="198" width="44" height="44" rx="2" fill="#161E30" stroke="#F59E0B" stroke-width="1.5"/>
+          <text x="500" y="218" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#F59E0B">FRM</text>
+          <text x="500" y="230" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(232,237,248,0.5)">005</text>
+
+          <!-- Mod 2 -->
+          <rect x="478" y="268" width="44" height="44" rx="2" fill="#161E30" stroke="#F59E0B" stroke-width="1.5"/>
+          <text x="500" y="288" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#F59E0B">FCM</text>
+          <text x="500" y="300" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(232,237,248,0.5)">006</text>
+
+          <!-- Notificadores -->
+          <!-- Not 1 -->
+          <rect x="608" y="198" width="44" height="44" rx="2" fill="#161E30" stroke="#C41E3A" stroke-width="1.5"/>
+          <text x="630" y="218" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#C41E3A">NAC</text>
+          <text x="630" y="230" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(232,237,248,0.5)">007</text>
+
+          <!-- Not 2 -->
+          <rect x="608" y="268" width="44" height="44" rx="2" fill="#161E30" stroke="#C41E3A" stroke-width="1.5"/>
+          <text x="630" y="288" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#C41E3A">STB</text>
+          <text x="630" y="300" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(232,237,248,0.5)">008</text>
+
+          <!-- Leyenda -->
+          <rect x="20" y="360" width="10" height="10" rx="5" fill="none" stroke="#22C55E" stroke-width="1.5"/>
+          <text x="36" y="370" font-family="JetBrains Mono" font-size="9" fill="rgba(232,237,248,0.6)">Iniciadores (detectores, manuales)</text>
+          <rect x="240" y="360" width="10" height="10" rx="2" fill="none" stroke="#F59E0B" stroke-width="1.5"/>
+          <text x="256" y="370" font-family="JetBrains Mono" font-size="9" fill="rgba(232,237,248,0.6)">Módulos de control (FRM/FCM)</text>
+          <rect x="460" y="360" width="10" height="10" rx="2" fill="none" stroke="#C41E3A" stroke-width="1.5"/>
+          <text x="476" y="370" font-family="JetBrains Mono" font-size="9" fill="rgba(232,237,248,0.6)">Notificadores (sirenas, strobes)</text>
+
+          <!-- Labels externos -->
+          <text x="80" y="264" text-anchor="middle" font-family="Inter" font-size="9" fill="rgba(232,237,248,0.35)">ZONA DETECTORES</text>
+          <text x="570" y="264" text-anchor="middle" font-family="Inter" font-size="9" fill="rgba(232,237,248,0.35)">SALIDAS CONTROL</text>
+        </svg>
+      </div>
+
+      <div class="prose">
+        <p>En la topología NOTIFIER, <strong>todos los dispositivos comparten el mismo par de cables del lazo SLC</strong>. Cada uno responde solo cuando el panel consulta su dirección específica — esto se llama <strong>comunicación polling</strong>.</p>
+        <p>Las <strong>salidas de control</strong> (módulos FRM-1, FCM-1) activan equipos externos como ventiladores, cortes de alimentación o anuncios. Los <strong>notificadores</strong> (NAC) son las sirenas y strobes que alertan a los ocupantes.</p>
+      </div>
+    </section>
+
+    <!-- ─── MÓDULO 5 ─── -->
+    <section class="modulo" id="m5">
+      <div class="modulo-header">
+        <span class="modulo-num">MOD 05</span>
+        <div>
+          <h2>Vocabulario técnico esencial</h2>
+          <p>Términos que debes dominar antes de pasar a la Fase 2</p>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Término</th>
+            <th>Definición</th>
+            <th>Ejemplo en NOTIFIER</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SLC</td>
+            <td>Signaling Line Circuit — circuito de lazo que conecta todos los dispositivos direccionables al panel</td>
+            <td>El NFS2-640 tiene 2 lazos SLC; el NFS2-3030 hasta 10</td>
+          </tr>
+          <tr>
+            <td>NAC</td>
+            <td>Notification Appliance Circuit — circuito de salida que alimenta sirenas y strobes</td>
+            <td>El panel activa el NAC cuando confirma una alarma</td>
+          </tr>
+          <tr>
+            <td>Initiating Device</td>
+            <td>Dispositivo que genera una señal de entrada: detectores de humo, calor, manuales, monitores de flujo</td>
+            <td>Detector fotoeléctrico NFXI-PHOTO dirección 027</td>
+          </tr>
+          <tr>
+            <td>Control Module</td>
+            <td>Módulo que ejecuta una acción de salida: activar un relé, cortar energía, abrir/cerrar un contacto</td>
+            <td>FRM-1 activa ventilador de presurización</td>
+          </tr>
+          <tr>
+            <td>EOL</td>
+            <td>End Of Line resistor — resistencia de fin de línea que supervisa la integridad del circuito</td>
+            <td>Se instala en el último dispositivo del NAC (típico: 4.7 kΩ)</td>
+          </tr>
+          <tr>
+            <td>Trouble</td>
+            <td>Condición de falla en el sistema — no es alarma, pero requiere atención técnica</td>
+            <td>LED amarillo en panel, LED parpadeando en dispositivo afectado</td>
+          </tr>
+          <tr>
+            <td>Supervisory</td>
+            <td>Señal de monitoreo de condiciones de sistemas auxiliares (válvulas, presión, temperatura)</td>
+            <td>Válvula de rociador cerrada = señal supervisory</td>
+          </tr>
+          <tr>
+            <td>Walk Test</td>
+            <td>Prueba operacional donde se activa dispositivo por dispositivo para verificar funcionamiento</td>
+            <td>Se ejecuta con VeriFire Tools en modo test</td>
+          </tr>
+          <tr>
+            <td>Polling</td>
+            <td>El panel consulta cada dispositivo del SLC en secuencia para obtener su estado</td>
+            <td>El NFS2-640 hace polling cada ~3 segundos por lazo</td>
+          </tr>
+          <tr>
+            <td>Cause & Effect</td>
+            <td>Lógica programada que define qué acciones ejecutar cuando se activa determinado dispositivo</td>
+            <td>Si DET-001 activa → activar FRM-1 + NAC zona norte</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ─── QUIZ ─── -->
+    <section class="modulo" id="quiz">
+      <div class="modulo-header">
+        <span class="modulo-num" style="border-color: rgba(196,30,58,0.4); color: var(--red); background: var(--red-glow)">EVAL</span>
+        <div>
+          <h2>Evaluación — Fase 1</h2>
+          <p>Verifica tu comprensión antes de avanzar a la Fase 2</p>
+        </div>
+      </div>
+
+      <div class="quiz-section">
+        <div class="quiz-header">
+          <div class="led" style="background:var(--red); box-shadow: 0 0 6px var(--red)"></div>
+          <h3>QUIZ FASE 01</h3>
+          <span class="quiz-badge">5 PREGUNTAS</span>
+        </div>
+        <div class="quiz-body">
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 01 / 05</div>
+            <div class="quiz-q-text">¿Cuál es la principal diferencia entre un sistema de alarma convencional y uno direccionable?</div>
+            <div class="quiz-options" data-correct="b">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> El sistema direccionable es más barato de instalar</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="b"><span class="opt-letter">B</span> El sistema direccionable identifica exactamente qué dispositivo activó, no solo la zona</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> El sistema convencional requiere más cableado que el direccionable</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> No existe diferencia práctica entre ambos</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 02 / 05</div>
+            <div class="quiz-q-text">¿Qué significa el término SLC en un sistema NOTIFIER?</div>
+            <div class="quiz-options" data-correct="c">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Safety Loop Controller</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> Supervised Line Circuit</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="c"><span class="opt-letter">C</span> Signaling Line Circuit</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> System Loop Control</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 03 / 05</div>
+            <div class="quiz-q-text">¿Cuántos dispositivos direccionables puede conectar UN lazo SLC del panel NFS2-640?</div>
+            <div class="quiz-options" data-correct="b">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> 100 dispositivos</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="b"><span class="opt-letter">B</span> 318 dispositivos</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> 636 dispositivos</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> 1.000 dispositivos</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 04 / 05</div>
+            <div class="quiz-q-text">¿Qué norma internacional rige el diseño e instalación de sistemas de alarma de incendio?</div>
+            <div class="quiz-options" data-correct="a">
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="a"><span class="opt-letter">A</span> NFPA 72</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> ISO 9001</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">C</span> IEC 61511</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> NFPA 13</div>
+            </div>
+          </div>
+
+          <div class="quiz-q">
+            <div class="quiz-q-num">PREGUNTA 05 / 05</div>
+            <div class="quiz-q-text">En un sistema NOTIFIER, ¿qué hace un módulo FRM-1?</div>
+            <div class="quiz-options" data-correct="c">
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">A</span> Detecta humo y envía señal al panel</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">B</span> Alimenta eléctricamente las sirenas del NAC</div>
+              <div class="quiz-opt" onclick="answerQ(this)" data-value="c"><span class="opt-letter">C</span> Activa un relé para controlar equipos externos como ventiladores o cortes de energía</div>
+              <div class="quiz-opt" onclick="answerQ(this)"><span class="opt-letter">D</span> Programar las direcciones del lazo SLC</div>
+            </div>
+          </div>
+
+          <button class="btn-quiz" onclick="evaluateQuiz()">EVALUAR RESPUESTAS</button>
+
+          <div class="quiz-result" id="quizResult"></div>
+
+        </div>
+      </div>
+
+      <!-- Siguiente fase -->
+      <div class="next-fase">
+        <div>
+          <div class="next-label">// SIGUIENTE MÓDULO</div>
+          <div class="next-title">Fase 2 — Hardware & Componentes</div>
+        </div>
+        <a href="fase2.html" class="btn-next">Ir a Fase 2 →</a>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
 <script>
-const b64=`H4sICADOgGoAA2Zhc2UxICgxKS5odG1sANRcS3PjRpK+96+oYYfHkpekSJDUgy1xzJYoW7PdUluP3pm9bBSBIlluEAUDoNRqT2/4tOeNsE8bc1gffXDETviwEXPZCOuf+JdsZhUeBaBAUt3qCdttSSRQqMrMyseXWVXY/93R2eHln1+MyCyau4NH+/iHuNSbHtRYWMMLjDrwZ84iSuwZDUIWHdSuLo8bu7Xkskfn7KB2zdmNL4KoRmzhRcyDZjfciWYHDrvmNmvIL3XCPR5x6jZCm7rsoN1sYTcRj1w2OKYhI23yyzffkeOF50CvXiRCcsnufgq4DZ/+Qk7PLk+OT0bn5EUg9rfUY4/2Xe69IrOATQ5qsyjyw/7W1gRoCJtTIaYuoz4Pm7aYb9lhaP1hQufcvT04p186M+rx/s10Fn3aabWedOGnBz/b8LPTav0+bngCzATGVkmLP7LoaUC5F/7Tc+EJ1TRu9nuHh75Lbw/CG+rXSMDcg1oY3bosnDEWIevy2+ARIf1AiIh8DZ8IaTTG04bDmN/Hb49bO62n7e6T7JZPPeb25a3j9ral37Jp4Kin2tvtUadVuGXJp9qHVq+b3gqYekI+ddiFp4barYbD56rD3aftnrWr35q64gbvBdMx3Wjvbdc7rXpvt95qWr3NpB2dj0F+ce/Hvb1R62nuVty/7MLq9upt6KDdhj7aWR/TgDEv6cOyDnu9Ue6W3kenW2/v7dT3uvkuxu6CJVw+7jzdtY639VsJl7KL3l69DZxY3W3sw0r7uJnxKOnk8Wh3dHS8m7uVY6Vj1a3ODnSC8uhphIjASQSiWvZ69eSn1WztFFqq6SlJuJs2m4DZNGzhCui0IBx5S+fMIJy3j+DXJ3XySb8/ZhMRMPmRTkDryddkLF43Qv6Ge9M+iemBS0/InAZTDlPSekJ86jjyPnx+C31JF/I1Ce1AuG5jzGb0miNt4RwUfPZEDTgWzm2s7GiqDWVKffKxNLeP6ySkXtgIWcAnipkxtV9NAwF+oU+uabCRmkgsh1gA6pacjfjGnHuNGeNglH3SbrWuZ+qyuGbBBNS38bpPZtxxmJcKA2lLhBHTGLs0oO9j9bgvQvBjAiQw4a+Z8wT8GnhGlEGJ2oD5jEYgoQb4KUYDUFnqcOhto+WwaZ1EAbDq0wCu5L4Qy39dV9PWqst/zVZns+Jq13+9mVDGUYQNdg19hH3iCY+pO28a3HMY8LsH/6Xcbn1CfvnuG/U/+Xw0PALvml34ZAtnFGIAakOB8zDi9qvbJyQSvplxJHIHjdlCMvcSG8A2TiD8xoS76FsJGGCw0bZSFlJFiyIButv2X5NQuNxJJj61i80CYzC/sRBSnSRWwObqYqIF2y3/tboSe2eYRJeBUlOXT70GqM4c5GYzFOMT8uUC+JzcNlIVgOmBcDZm0Q3TlKbpiqkwanQSaQxKLRvexGTtJMTLq2B04GraKfEui3BWcXDFGDim5N46bEypj/JRnGcUN8bUmSZaXraxTMaJg5lMJgURw7yR3USiGu2t5s4S6lPibZf7ENCiWR9Uy72dCm9jG3psfVTH6fxIfgCsYG/Ibw0CNzflnTrckh8yN9ZUmtrw6HXM0vqiafZialVPKIuGBBamOU1DPsGQDzM7hz9SMZaKoeyk0DvHEo7Y6wg8mi0Cquwrs1zD5N977reTKZIuJjZhSRDORqg41xnvz9BHgic3udZYSjLAgPFxm0YieH9RbffMsspi3OZKhbqvRGJjYE5MvgSqYI5wN3UZ8kvid8B7L6CvXuujqtBUIleG0Rl1EC614B9qeEVT8BTzWAHGUv+skDAl5oZYRBBoJoihWUr6p6/Y7SQAtBzGD3yNNoOG8bVA8US3/fZbpDb92mp23hqc//HwYgQR4Pys6P/VNM9YICodRQJK7+PBNwuOpANzL901sZqZHmTxBtAzCOaa5QN4KXxn1EKk5U4pbNExkLIAAVbG7AbMwJT1HymkV4zaJSCF8beNUVkP3nBhs17Rw54K/Ot3VCJQ2UsX3Ln8ZeKde14as+f0dSNW670Wts/wG6GLSFRKWguthTHYLRsH4uZBTd5g1L313IH0nVJqANpA4Ra+zwIbWsUYUHKbqWPwHpGzIIAlQDHrfewK+9WTxLNYXd21tBO/vNKNFGaYzNoPjjdsl879DbTBOuld39RJR1pi4nRBjzMsXTVnrdQTV4i9yIevs5GoxV5FJChGTU21e7spsMtTCjpm4L+j+NeokdUMI26QOiCRZMKUBL3t5o4kU7Zq3ATYCn9n/WKXUqHM/crnHB4wO43Hi7mXjKcbtuzIpWPmPoDJrYXLVmKVKnvTCL6mkFu/k5YW8W9u6rYT1a3I+sqx7dnwz2dXl6XABlOBMbXsJbMcwegpSyGr4E4w8KhL+KkB8w/XI2nMML/gXCwLfXd7EsSt5HxrUS/nicKIBpGZr4uTo9HT4Tk5Hb4sMRdyh41pZd6mJhLVeDcXQuLHGrK69qtXtpKXacU2qU+UdjO7tz5GycslSy5cHgKfWMDTwXrexJVAzGauTb1pAnAgl5MKl1Qdq9JkLMuCmz3kOy+b9eouubncfe9MpoChrTT4qesum0Qqo1RToQGhcvJCXVdLXUySUylM3XSrSW1EOGnYrqgeGZEuFlI3S3Q3lkGUipltwqeGt5g/pJktR0pYDoudXHtX1zo/ENOAhWEDWvDUI+qxTjOdtaSyAvdXqUKqtXm8kKPv4SPhUoU25N8pML2vd+qZucocdQJbOiZgaKoY764QqClTKhG2bdSFCXfdAlmYWN4j7zWTpJux1EYUjMpzDVT4dvQPKy2UQ+zh2enl6PTkqJwWx2AfEu77wLqORIzlcZ7ffXt09aw8ylw4CzfJvOOqum6Y+eitWjdyJdtlkUOSqgBGnOkEVfC9WR1X2+8cVWN6H8QHVhTaylppVtzM3sv+q5SrpytcqbvqIqBrFQJaSfOVa5EcYFxMsoW8r+1Wz+jMeq+kb9tUZG4uS8Fb3fRePqmyqkg05nO71rr5XEkMpZF7ZkO9HP3psmw+4EVCZqQoQzOF/nd6KwlNPRT0DfwaU91cozAKhDddBTdMc6X30pzBLRdv4zLcsmqcGaPIqJIzyJJx5MIvTnOv4BD6ycW0cJZX9ZbEb/hTVjWQ+rK8viTa5g0NPOVoTNyWF42LwdDMtFx4/rXzW1lZ+uW//pucPH9xdn45hMgk90t8bBhBZ3KJD3hfV1u5NmGKpM9fDM9PLs5OyeHw/OjCEFDnCPb1uu36KTUk04WEeklpzYBEV8DVTBkyXVBTl1CNJremSWZKV8CDub5m3fcpnTRXFU+WJc73TTYN1C/cB0+Tt5cN5nKjl18v7NwLIu1WxKVubxl11fb8zXcm+y2SqMiYBbg0R/JTqBI0TTj5GtHLz8jRyfCz8+HzYcnkHE6nAZ3L4uW94sl62Z2kzFoVc1amgpbBJ+suWd/NkZTp1Dwk/D1UNWvpasUHWazIIpLBo34+OvznZycX5cqmPWP2K7Q8Yw5wL3PThF70fDhIdXlbXqoyJc1NW0v89P01T6t6SYdWTk5KemYvghAnLN47U85R9VITIYsQ5525ILjMoxUlki6fVzJlpcvo2VNNB7pL7FBRGytTKQPpGLKZ8pKitskrHiaDUnodKMvvd/MpTNl816rimLzVO223iW+smJIqR1gSbUkI61cxVtf3qgdLd9QVff9fv837/sctU4aWIhnTCp4+NvoWYxjsrFnpWhLRzMxpI669GnM5fPpsSE7Pzp8PL09eGoISjWgjouPUYyeamtWe0ilxqR8y6bzkJxMELwePgh/TxotmDxAkrGXoeN3K4dJ50pzcdlza1zIN2bM0rz7BDCgns7U2ZazY4VEWW7rPouh9c4S9NwlaMADvGnGbugmjYPtGHe6ZCQ5iB42Ur+Ojc8z2JzwAUGvPuOs8QN2qojaiZ3AVdaOybb08ORqdkdHzp6Ojkl1dc4cJHeqZ0dQHB4DZtsL71KzVPGg8cLntqcpF0NCHAN2Qa1BwfXtrrxCF1K6MHEf5YK6GsqmPEadKvwtZ1sMWp1cvRLR2C7aVhMClZdecxnxxdfKvJVX5asHfAMaxNdbX3PW1xobdd1qpUIzlsmVJZK7UbdzCKs8pvOPe4mJ56B1S5PyuW53mWecD7o1YXphRdOi7fx9kGc28K7gEUXNnRe6rPTkLWaVUOrPyzEGp9qI3+Sq/8Fle+tDbVoOtXfPU9NapvFRHr3jUh1kurgg5mTgLNGa1+EpEo1EppMsM3z/3zPd5703drQfNLFeWKRIwlpnmPTPLd1gyyUtovaxzyY7upKOmLQKcHWMuqh6UR68qwVp6MMtktdmjhVFvtFUS05iaua/y9MbnCvrUhF8NpdEPWhsyb7TU9l5Y5ZgQsHDhllQ8K5hWbcZYsoBRmZxXrFCs8D2KwmY4w32/pd2tb4vtfBqGlWG5qB5rLLl2VmlSYfwJ5e79YMG7Bp/4yEjkNXD8B1+gzc9R9VmQFQll2U2VdsPp+mZ0Xfc6ImQ42rO77GjPrvloT95hZhRUlX/y53jiSTE6xsejltXqtky7MU5Hf7pUJyKKyNhDKWP55wOUy83LlXhAtXrh6KGOsRFt/4dpQ3NeylZOylImD7Una82dAstKK2bwotFavRyw7uqatRR+Z8rnFUDib8cjlPU608OSrS/Z8/mPcwPLiiTpZJg9gdXb7oyemjzBxeH52bNnuMm64An6fZij8SsOkyJ3ZcktfEkdQp7xeGtuhTNiv6oCaepQc/Wzs8V8bHw2Pqy/WTqpZilaoMNP58zhlGxoW9138EDQZqyh6Yb4JYvsijR9f3lubzlMv502yS/or+z07aP9rfiFCPtb8ZsnMGsbPHq0/7tGY9lB5UYjflkFC/BtCvsOv8bTLGF4UMNzrrWBJGgfdMPTr6sMuDZIXiwB40MLrfHgEMMgubz7wfa4LbL7+1swRHGo7PxpMiCNX0whj1E18Wx8LWmcnrSsDX75j/8kL4WLekld8F4+3d+icQ9a9/njlvEQBWaZUxuktOF/Moi11Hs1hodYb1f9pvSrD0rgKL2yrM/PiqFQirtIGZ7mqRVFkj+Np9FmbiSPrdUqWI/PXNUGCU9H8HtH43Z/1h4Y3x0C3LXjJv7gKQZvCIQ286MFyJvPfYCMNgoWy7sUImRIHEYEOEvQbxvaAISAuWHwxxdNcgrOFA/I0TqJ4IJsHPIQNBuu0ABaRZA6LQJKbsm1sOl44dKACxLFWkTEhNucus39Lb+CVTw+Y5zg9ERRureg1tlJodrgCGiw+d1PHmEQ/ufUobqCmx+VZ3Zqg3/vkBk48zD/QE6z3pms53c/4YbBcG1iegRl+0FoGeEQSkhrk/MFovwJ96j7ISg65dfMXZuWQzxCR8n47vsw558K9JTNXf4p2nrpnFTR0FWAADawK3w2OYGEDdHfYVRIGscRwmDOuUNGtcHWVrwmyh2hE71wiw+gayXcSS+cpq4Wmrt8kDrcx/N26mnVWQ/wPboQ46MXtUGrHUuN/Px/XyzufgBbIQsvMWi0bYeBPUsV+QP65f0tGMg8plU5iJUMkjoPcnr8Ykh2rBVddiq77CRdHgrvmnk2RGDwZtchOcLCmvwK/mxF993K7rtJ95cCcJuY3v2IwnATwazot1fZby/p96XJNbIQOUHLWtY9pnRVA/zy12+TETTjJur1Uvlu97cWrlTlvHbmzpoYvbDhNEptcLkg9JpCWKn0A/pxD90VmJrg2Yucqr+I79SIxEjx+7X6rY8KAX/16L4d5XuG74PWR2Z3IS06s/fsOERs8XNI7JIR4uyylsg071ySEw7tgn9R/i1ea0pcnNxSrqgESzY6VX3XeaVjTc8XQNg5OyKpseeEn31DDGENVjsC/MZhqgEzCHAK8IzehT84YviaBtm0TkDw/t1PgJEFAALExJAbSZAxSbAKdVmYgoHyJMbO2jilIdN59wdXHkhA7jYfmCm/BYxJA3U5YYFsXBwNTzYRfssnFeuUQE5B5EanAJ4E2Im1Bnb3NwASkDwCvgHV8CIOaAZxkkBkCnOo0FPaNfMIZp8UY7gPKRxiJJcFETxCCaAAIuyFn4IuEDjkKIiPUFjSc0NDUFt/ARiGhnJ/3/zue1z7DxURqHWQHkEzQcKFH/A5B6zmgnTZVCiMpQvoYoFyV7KAxvDJB7fpoeshgLynNHtYgmY5BoMkgL1GeXqS5li0CvotED/K/rB9yKGvZAqk3IFVV8BjMbTEdEk65kTYcgT0JHP+BkZ36N3fYAgQMYPcw6NhnYw5Q7GiVEEILlViLvKmZyL6QYGarpxXmUanr9PD7pOuHUFA1InK4CwtvGwypbjwLRYsZRG+BIxYMFs7yMQCgbdkNGMQevtqAYJilFxzyXwsVZeILwWBlJZ6og75ITCGU0xcWrA1aB7d/WhDtJAiByMaY0UL7wrMfznNNA/1DJA7AvBm0aB0RbgUwKvZRiKUd8ohZADwQWmNHEShLZpx2NeMt9pa002Zyq+lX9sVsSDbclUjkK643H51UIvEdOqyQ7y1Ec14uJmb3fLjcv5z7sTcDis4GFIVQ0fx5GdziKp9opm79AMuOrG7H6UwdKPv45wKWdcRQZ24LgURCzKFGFycv2aBtuLXX4c8IPjaLCzKY+QSuQFCllkD8CIMAMfd36X+KvmA57L5mDuYCqJ+BWAhcI8nDjZ2xQGDpkJeid1orPcTCrL7bYjoVMSqkZfRMHbhilPwnMLDvBJTYx4upAZJX1AdE9w0Ivw2BHGYxKOCsnjXXLcbMAi4m4WSPsEwsgggBsS4gdqgc2BFn78cHsK3ELQsFNCmroWcpSKpdkXZNird98Q7qsLAzl6lenNz08ScbzFm8i2qbD5mzpb441z828nYskatmiYamc8d1I4hASFDnHByiYV/7k3JSxyRNIhSExZA+nNhNTqtTq4DUHdxgxmbDbAjEHMmVy8w5uMSxxNZTB4LGjhAO74FC9CFHdz6EXMasrb5hExvQai28OGez7EKI1+dFX8sDTVZuG5o4yKiLkIlB7Ni5XaFydRVbbmLS2wm1k1Mk5//l5ygnjiLFJfFNSnQiTE4yipQD1qlsPJylG3dF2VbD4iyrXVQtiETLuFo8LD23U8OByyGCCLgU4jvhbhdhrMPBKWf0RQCxBTKKT6VSxzgsLW5pp5DLvgUruKEHwqH5bA0+rAwuvse4H5A5HqqR+N8HbBsiCVIAd4PYVUCjBTSFvUM8sW5xAJSNlCWOZUFkzmCMaFVIEOzSJrkxWIMXlBCdxFghMrzAREuirVjGIYCgJj8DF2MRs2rq2Zd4mNH+BF2AZ5AQNSasECm60n+ThHtH864y+rkBQvu/g6EwnRR8gxfgSro/O6HAFotAa7aCcicc86BtRS4ZpgVxl0gnhe3wIRAIAruA4XnAM4AeOiSBZmJ0OfYHisOkPkCDlnMfZcHiQI2wUkn5MMUHF2Q05//p7fXBS5AXmcBwB/qvaHkM0CHGO5BOFfBmHo8nGO2Ao4fxkrsGdKFKVBFnVkiJEwj8IXZid6X0KlRR9Wm41g82TZkXVUjtViiWU4U6F9lk8Eh9e9+jPBlAqm9wdVys6wSZ7p9Do4ZqxzAjx/cfW9jIlZsCd8D3QAL9O1HalVnKb3O4HD4oknav3zzbQd6cMr3h66N1ZY6TINKtiU2v82yaqwwmx40Fp4EWMcU11XQfeSfyrOzlNqWecSRXDlA4pZbqfnpy2SRQYFNCBS49x2xVsxzwMA5BoAySwzfg3TLPPghD+wFj0SC2xeeHFfWy43t3RTko5qibW4M6+RpnQCGOaqTUZ0c18lpnfxp8z2I7ZoHP/Fw1/dSV2l+8F+o+woSxzCqkwlA9oU0WMnF0ofvQfFOFcW4FOQgrNNKGyDtDZV/442SoNSjV+NkJoBHJtf/Udpp6o6PvgfBu+ZRj3io1nuvlUp4IlHFSpW4wGVqFiBuhZA4RgCLGstDqVYyISib6vqUWhXKcKGZGpuzYKq88C1mafZiGcH4NqxpsnQGqIyAu8SlvDf5rpaTDN90Nwdf0R7WxR6HAiITk7VBiF74FxydmwGSq2dkd7ubgYyNKxSxBMVBCOF2jDsx/r+5Y1lu4zje/RUTlBMAEQTiTUoU4YJAWGICEQxBqVJ2qaIlsARXWu5CuwAlSmaOvuXiHHLJRUdXRYeUbr64yrznI/wl6e557OwLXJIAZV0EArszPT3dPT39BGEG1BOIC9Kh8HpFgkRexem2wo9COK+0nUGlwpzMUbCgGRAk5QxPby5iufqCP5XpcPZDA6sT2qbTQpdYiFMOPV1wLz4cBiqBRNVVld36VZXd+hKV3XoWZfcSH01M8e2jrVWpV5qhmPaQTjyhCesumaWovT1UUmAPbTzhLaB2PKJGFrdw6ope4BmXetd99svPr9F0jn5xTSkFOmKOCbdZUL++YuG1ccur74JeAlLLce2LTxOcAFVtsU60sLj+zCUOgKsXUBGSJEo6y5g4F5+wpiFqYPCgg+5TnbARXyDBx6CsaLhKoLcki50WwJJmpNMy/cPmhOOG9NQkpHXl2r/+5wMTIirkwQNiaITGQR8V0/6hK6yP7KlLYkCwMfHQaII78w7NxmXWncO9BM1KrrCklziefeOQ7y8+V6IdsPXhQHeF59HcEjjggrm78lz3LRQZ90nxRru1OPJ9umDg0OwYzyQcnORCynhPTDgA+AZzXSi47zDS64y0N7uKFGw4oOliggL67RQDxbhxJOm1oYUDk1MibGgjwHU8YEwIXPjnqRA89VGF/DgF8sMOGWNzgl4JVMcu/ouGe4r0cNDsRbjyS4pVSLweGi9dbvYh90Yc49xDmcjTNyRDLYM5TIshycQKUpIXM9Fll/ZAwyC3pKNhc8zHRXxf/IQipBzYTwM/Eic9fuCBgLn4YCtthtPwxae0rXA4cYdJsWAb71w27HeLwq0BYoG7NY4NlHP16kaIkdJo1DhTNCpossROwoRL8UJSHwupjSmD9hShMjpUDGyTQnwMZOQwhBwZewLoYiM0JC8cbVsXhSNSH1AgE2H7UcoukXg00BqtWCDQGvFXb+aOpOqfhfjpxn3xEcSJvGbjOOr+XVJGXB/WAvdQVHJ1bhiCqDq1Xq1tD3euwgVXONkyucekfrVvTmzthns/0LT20EATwI3qIdlwAIO1SoiWgP3Z2HVIjeJ6FZx5Gq1LOwESPNm5p3NhyxE3wwKZWQLfnLjuEaphT13NvAF6Hgh3C12sNJ2JFyHOUcpUFmJsydeLjRD8YyYdrHFVHayxRB2skUUHSwtkiSlf3YtPgHdfCQtkaCyKT8hzSO3i6q7mzF+e+z5m5QpkaCi48CXw2wf8AvYYBvRQoKLQwdRSMjTNgvWafmqYI/B5KMqRBCdDOYrqpi0oU5zfaToThYLphYYOBnuD/uDRxT86ihjCa9crD6Vwaah4D5na1fAyoFXHx0RZ5ewYDqMnp386Ydiy7qH7diuHLTnWNyqsUavk2NsT2/G5+0N4P97Uy643WatVKpU1eC8Sf0MZ51rx8HUqyKmSMkR2lMi0F1XEwxIHcfe1i4pagCn6gRLweBe9HAybE0VatnIEKAYIbeVEC7gc82AhjdyaZlYVQ+/RCdsVHsqkKeDNegVGPNvK4cBixqo+I37GGepqXt5ELkdX+leADdF7TH5xV45SbiJQ2pSUNotD3eNTNms5UbHCGR27HjC3NR7Dfuv5Elu5cA5JLsiGgCkCZEgYwjkR8EiuvdfZ7fVZt7d7sN/pw2UcZlwIVmsjC1gyiyMMUCOn53DAWJUARN44LtcmT1CrUckAykbjhhi6J2dP6E3XKApYyCu1xjpf70mQopTUv/jomIZydnPl3iAdNkJWmEnI3lblEqq4SchbNflNDbGkUU8s2w/ASqAk+dXY8I8NzzNg2Y1SPYnqQeNjD58O0+i91uKoJSDEBPSdJPh6ixN8LSB4aqi4AOR6HORLSL/abC5rZxeRfr/zzQARkoHUqtnInsrFZyaxJpBY4BzrI20IqzIJ8bAiXl5Mfb4gu9DlN7LJ+PTOOzrN4DaSSpoVSZrrLU6a1aYgzVrtivscE3KZZrl301koIBO5ETTBd6/TV9qMwlDbWMFKF8yylJVug/Y8Ok7f0MZGFIBWPXWZobKxV1rnomli67zyNNqWoh6XutZ6FIhmZRVrXTDNNdca31V562SFU2BYk22JGzY5RYpJzA3vsGr0B7ytoqP0rWCx0ZnAhYf/p4rxK+stnH9hzGrrhsJ7Iyq829u9gwVCWs1cyySks8ycIq0rGCedLIYR97VMuL+3QtxvfDbc31s97muLcF9fgHsSuKuiey7NV0P3Tzq7C3CvZr4Fuq8vwn0jE+5XQPcKA7dO92rmW6D7RhruZcKg8ukUyIkCJ4VPLsjkU+KJO46fEvIC0Fjf4Aovrkvgv9HQrtiNy/R/0c08+yY25R27ujRUShjaX+8/WbCJamaEf8Wb2EzdRNiO2MER3Y5a6/a3Y2MF29HNsh10N1jxdrTStkOGa/PQkwT2gQfS2adVuTH7dBvwRSf7fnEte7nsI2Bo73YWXY7VzLfAPusL9iudfeR23IB9rr0dS2QfuR3Dg4cZtuM22Gcj1RphnplO3Lqg7EsCxJZmT9WsS1VhTm1KALBcyk1sqS0+3XplOUbBFixej0wr6L7BE8OhvI1iwh6p9TeyIaCWgoCrCvNacwUYUGqHFk1SgJN2DcT7osU3Wjdb/FVZsbG+gsWHz4eCb3kmpSKKEL5iKmNgMrTP4DfTc+K2OQmzVCtbmWzbV7M31pF3vxnsdhjotr3uwWC/N1x0HK+vGpZhp7+z3RlS8vT+IOZ9eIBupeuFamGUgO7nk/6uknJkB87KkMmUx4tgOqtpsxMKYA8HTqAXTcZOKOd3mVGABwYUYUou921j0MWIRxqZKiHOdbAIn8H8uR74QV7pi49HMr4LY17Qz8oTBFW+pR5ljEWj0G4cwBD2tGKonB+kPPP7gMaxWojkieRn4OG71RIDNr5bLYrQKEeUd9FIl7zvp+ittzkb8LgIUwRvWxSQNxJJqCAUMYErqDHMzVLwuDoXaaCAwbGKma/Modwg4i3MDhfMRTlroiDOTRfE3S9RsnPbTfrOA27Sd5bZpF9wKkRmr/785hssqvQCmRiJ6LM8TGzx4z3uqRGI0kJDnAPRXHq3/sGqLxSc+VUV2nkB+Q0GX+G5WZQMEu9pP0bVhdgnyk2nLtzBUYlCiGqSGbgUMneCFQigRDZKgOdekeQoqJ9wmNovldkQTZkeBeDuoNiJtzDFdlK2EmOphHLhCORAoNShKJCaTh0ba08KsSDkkORjISiybF44VyFDhVyiyfX6SsICVi9szA2Kq4fvNFGw7kIs8YLl3OeXNh5asiDbnyYjcixocFngjAmXuB9sGdtaBhn+nCgBV0YjHf5oR20unNlXBSUZamMANG3oRdnnWLz064PqyZfH58e6Zqk3N+5WQSDtuucorAqQIO1AQgD/ipuzUKI/Pp9ArPd2dGDFDBPpAWahMfBICcDbiNLjjKFv+2sm933RjhLxzKLCFFJVihRiXURCLVEufKfZD8gYySNC12LHF4LTsdI4wIVAIhdfROY2rp9N03dEZgAd8jCbcv/SDkjY2lRIIZO1nYhDCgRMlPvLhFly83cntEEF6/mklmSHcpR42K5tsFf/75u7VROd+95sWLTu/WwpvoRMpRchRuTJIcSKFTyzw4tz/QzClJ43nz/S4WCfgQXkgxVJIp4EQIXhz2CVTUHLCvPKTeDCuEABa92tKulMrpPnXxcth+JvxbGeNKv0Y16iejZj9sYGoSj28W4+OJd4VkeFqTr1in4sR0FB00v5Gvbre8L5ZMQoIEr3lMAJigFfauJU6nUOlmc+ECeiakwm81K5RpTDKdlQX4N0xjiV717iWa50SoYqlJlXe3YWSxVMJn0JL1NF7rnnoSNFycEeFafdab4nyn6eq2wig91MZ3Ajx2E2DQASqMo4MU1vGKJYQxsf8w0tb7HyHhugNKVFL4b6jxYVGbloJIjC5Ld3LLMzZrBEP2eDC2SLAj6TtSV0FJaBByLq5TRUuWKYkrjlmvhK82rrrw7ysBKyqchsQi+0Wq9HUvyHP/9XpCeEeP+cRBpVTLjoYNytsGwJNyB118syHoA4au0BfACVNplzr51+H0g7fUEBnTA+7wj3UnfwElP6FvsW+nlwdFiDPBMu41S8lAzMwhl5ymC4iTz9yKPAk97e3tGn0JCo37NTkAWr3RhTeFwJHvsa4TfGVAKBHl7IByR7hXcW1/GGDQ3BececjFtdohd52iqgqZXMlNfWOb5OBk/rPDkdfPHi6Lx3llmU4gKW6I6WUjKmlG7yupTisUwD4XEqGDBVeI18z9T8cl8VJ7l8/48+VZ5ERXDykDCtak2cepU8Hk5m7Zt6qd81BUsSzs4vlgFFXqFSYuRzyts4YHFTs89/UzvyxnCDK+7/Sh13k1i0+PaLUrcXnZnoFBQMYOEB1jkMDaws1Sq1/Jz53BIuMUs60pTmWAjm04VgFpQSkWxPGE+imIiq3yiEJcvh7j+ZYuj7OdAnqCUyHAnTUQE9OR5OcqKPCed+fFipPPVOJ/2oKEYygTEZYvl2lqYzEiV1BtuDcHfzDtxNpzsG9siVdOKgeU7RGWXpzLJlGPdhW/PR2fYMnIHwmh163pRJn9bh/mMSScSKypPgViIy9MBSwVyGr/JjVB+FVc6ukVwSC/Cj8UTrjhqPDk2fF6VLlVC+OIq2COIqocjY/2nruUY9Waz3YyixdPHpR9E96631jzZoxB2NWn0xvj8Oc7TvqjDo3KbU6V10IFl8WhdLla8vPJbrPjxilB6OXI1lWCY6NuojKJWDs2O2RWnIH4ElDgZ9tt7oNBofx6hCNDZaPxoDdG7NAINcg6iiDvugoM4My6BFnJyCGj9tc0meb0t7FHhuiHuJu+cywhjvRX0EQu+p7aH4gB3hseg7wzLq/WOYVOL81mhDI33k9uJNc+Zpu+ZqG+SjMNqJjPL5hMvIlMkkN9yJD4ezMIwjZuqeOQ1cTsGmkONtIWUZpHrRO2Wng7OTF4Mzio6ITuYzuLjOMA7GnYrv3cyJ1nMiTlQRaY9m4uRuur0uvyo7ut2uNCeSlm4v7z9YW2NnB1+8OBgcnQ9UwsHcw3Pjq9hKXRFCo6jcl4ZvXRk+xnL7en393KN/1dUQCHszddGSvPmr1D3AeJ0a6c//FV2ylMRXMoa6u4Y3HGg3pgSmb08pewcmHMdS+18O+v92eHCm3Z4CTTD+T5FV/ehh7qgLt7hTIyAPQbTWRJPyigUzXpF3ns2mwLBcXf1Qjq+bjDpOt5A9Yzw/hFHxxKg9ZnnmDKVKDc8JvD6jI/09v+c45ZVafFLyymrN4e4oHO9oXSA0bOkuagL4nH6mZsiwn+dGOK5ReLJcpr7XBJSr7DO0yeW8o9FGPByIc9CeXh9Y5ZXUZRgwFIU9a5QkB93jMJ+zlU9XluzHDKEL1HLi2Msw3YW4EG6tMIb+RM1PSKcA3n/3fiexQkpuxcsu3sAg7RTaExF4AQ9CQKWuFhURUMM8vKvGMIULzx8Y5rjssb2uHIUxT6Mun0+8S6AuqWRXKit02a4aAxsLTMoLPwcow3E6K3hkgUTn+1V9SW3rDTzvYR127cL3JmUBaGoyrwE6PJrIVQsA5GI7FvywmpL/8r8aXZZ2fFHOIgb6khBIdP8WYPidwCFqtoCHNVJu7I9/xN8SOINOYjWRXHXgvUMP+utDD2U5ArwuEKLdNQjYoA2Lzlal0apXmu31Ct47ubqSfoX2OPq4jZH/TjvziqkayxMCVrKsntQoCVp6jcdH0Z3b8zlVYTG6OpKpi573WH1HyL+or4ioyq8rzF7VKUuMCugMGHH16wyq8whZvSfHfEmyCTuJFk8+STY3HOd4SrRIbecywo7SefKlfMaIqT25uCs72QbJpcxpYc55lmEmTPXV2okJXgpEZEnYuxcF43/2BStT93t7GtpXNUwkxYRhWbGM0Pp5Lz+9jzGMR59HG92BLS49cGS4yKIzZ2RHxpMYmIhxf5eBSX7+/PNY2GgkLi/I3iuW6bF1pCCXV0Gnpoc3WEeUgjApHujusXaMmszLSoTizdIxbvLHwNuvM23odsMvz58fwiz+8MNfv2a9k9Pjp739Y7J7/uWdhOP9Wke/8UYhMajtDv3uCYbggrz9x+0Cy6n2h514xb6YQRvKR2KOZxrOGZCVMeKyQehfa5QhFTcA+8uz4yMU4kBb+lu4Ageg9csrrjzg/vemN4NWv59G+hnJeOVdSR5Ixq3S9m9/934lRaE/m9aiBoAl05nBHMuN1VW8XVR7NJ0FY/h5JwF7LVgIRUXMAI/Kckf2xXV5urq6E9M0M40QRARffSd+eg9iObrgeQ4h5C5yihByiSVFCP8jufbxgrNTjqmrlD0ZZS/jHrRvk2t1zS5n3LnkTMSl8LDYGpje37r2xItOhcYcqbWOooL3uUaNusaPbggd5Jg30iRepF/Efr+Yr3jRNS4PbffVohe1C/6YIZlTKplhwP1LqvZ0+RWj9HsJzbF8VMaNKBvwEYl4+UMk/fH7ta4BkOrox5odxF26I10yKtCjXgzswcghBHHDYGSc6CYSGic0DqwNsEvNttJtxMuF+Cn/IYmc38o78P7lnW29L/3uDylWEr3JrHaepkYFqHrnvWbWva8At4XQO8hHx8JboVtKBqvVjzBBqFYrU5MfygEiANwn6SHBR5GosruGDln3yf8HIUlqbHC6AAA=`;
-const bytes=Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
-const html=pako.ungzip(bytes,{to:'string'});
-document.open();
-document.write(html);
-document.close();
+  // ─── CHECKLIST ───
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const done  = document.querySelectorAll('.check-item.done').length;
+    const pct   = Math.round((done / total) * 100);
+    document.getElementById('sidebarProgress').style.width = pct + '%';
+    document.getElementById('sidebarPct').textContent = pct + '%';
+  }
+
+  // ─── QUIZ ───
+  const answers = {};
+
+  function answerQ(el) {
+    const group = el.closest('.quiz-options');
+    group.querySelectorAll('.quiz-opt').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = 'auto';
+    });
+    const idx = Array.from(group.closest('.quiz-q').parentElement.children)
+                     .indexOf(el.closest('.quiz-q'));
+    answers[idx] = el.dataset.value || el.querySelector('.opt-letter').textContent.toLowerCase();
+    el.style.background = 'rgba(59,130,246,0.15)';
+    el.style.borderColor = 'rgba(59,130,246,0.4)';
+    el.style.color = '#E8EDF8';
+  }
+
+  function evaluateQuiz() {
+    const questions = document.querySelectorAll('.quiz-q');
+    let correct = 0;
+
+    questions.forEach((q, i) => {
+      const opts    = q.querySelector('.quiz-options');
+      const correctVal = opts.dataset.correct;
+      const allOpts = opts.querySelectorAll('.quiz-opt');
+
+      allOpts.forEach(o => {
+        o.style.background = '';
+        o.style.borderColor = '';
+        o.style.color = '';
+        o.style.pointerEvents = 'none';
+        const val = o.dataset.value || o.querySelector('.opt-letter').textContent.toLowerCase();
+        if (val === correctVal) {
+          o.classList.add('correct');
+        }
+      });
+
+      // Verificar si la seleccionada es correcta
+      if (answers[i] === correctVal) correct++;
+    });
+
+    const result = document.getElementById('quizResult');
+    result.classList.add('show');
+
+    if (correct >= 4) {
+      result.classList.remove('fail');
+      result.classList.add('pass');
+      result.innerHTML = `✓ APROBADO — ${correct}/5 respuestas correctas.<br>Puedes avanzar a la Fase 2: Hardware & Componentes.`;
+      // Guardar en localStorage
+      try {
+        const p = JSON.parse(localStorage.getItem('notifier_course_progress') || '{"completed":[]}');
+        if (!p.completed.includes(1)) { p.completed.push(1); localStorage.setItem('notifier_course_progress', JSON.stringify(p)); }
+      } catch(e){}
+    } else {
+      result.classList.remove('pass');
+      result.classList.add('fail');
+      result.innerHTML = `✗ ${correct}/5 correctas. Repasa los módulos anteriores y vuelve a intentar. Mínimo requerido: 4/5.`;
+    }
+  }
+
+  // ─── SIDEBAR ACTIVE ───
+  const sections = document.querySelectorAll('.modulo');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const id = entry.target.id;
+        const active = document.querySelector(`.sidebar-nav a[href="#${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
 </script>
+
 </body>
 </html>
