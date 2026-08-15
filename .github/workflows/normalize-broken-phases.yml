@@ -1,0 +1,66 @@
+name: Normalize broken phases
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/normalize-broken-phases.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild phases 1, 4 and 5 as plain HTML
+        shell: python
+        run: |
+          import base64, gzip, pathlib, re
+
+          root = pathlib.Path('.')
+
+          # Phase 1: extract the gzip/base64 payload embedded in the current wrapper.
+          p1 = (root / 'fase1.html').read_text(encoding='utf-8')
+          m = re.search(r"const b64=`([^`]*)`", p1, re.S)
+          if not m:
+              raise SystemExit('Could not find embedded phase 1 payload')
+          html1 = gzip.decompress(base64.b64decode(m.group(1))).decode('utf-8')
+
+          def from_parts(prefix):
+              files = sorted((root / 'payload').glob(prefix + '-*.txt'))
+              if not files:
+                  raise SystemExit(f'No payload files for {prefix}')
+              b64 = ''.join(p.read_text(encoding='utf-8').strip() for p in files)
+              return gzip.decompress(base64.b64decode(b64)).decode('utf-8')
+
+          html4 = from_parts('f4')
+          html5 = from_parts('f5')
+
+          checks = [
+              ('fase1.html', html1, 'Fase 1'),
+              ('fase4.html', html4, 'Fase 4'),
+              ('fase5.html', html5, 'Fase 5'),
+          ]
+          for filename, html, label in checks:
+              low = html.lower()
+              if '<html' not in low or '</html>' not in low or '<body' not in low or '</body>' not in low:
+                  raise SystemExit(f'{label} failed HTML integrity checks')
+              (root / filename).write_text(html, encoding='utf-8')
+              print(filename, len(html.encode('utf-8')), 'bytes')
+
+      - name: Commit static HTML
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fase1.html fase4.html fase5.html
+          if git diff --cached --quiet; then
+            echo "No changes required"
+            exit 0
+          fi
+          git commit -m "Serve phases 1 4 5 as plain HTML"
+          git push
