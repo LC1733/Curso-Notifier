@@ -24,14 +24,24 @@ jobs:
 
           root = pathlib.Path('.')
 
+          def decode_b64(b64):
+              return gzip.decompress(base64.b64decode(b64)).decode('utf-8')
+
           def from_fixed(prefix):
               b64 = (root / 'payload' / f'{prefix}-fixed.txt').read_text(encoding='utf-8').strip()
-              return gzip.decompress(base64.b64decode(b64)).decode('utf-8')
+              return decode_b64(b64)
+
+          def from_chunks(prefix, count):
+              b64 = ''.join(
+                  (root / 'payload' / f'{prefix}-{i:02d}.txt').read_text(encoding='utf-8').strip()
+                  for i in range(count)
+              )
+              return decode_b64(b64)
 
           checks = [
               ('fase1.html', from_fixed('f1'), 'Fase 1', 47728),
               ('fase4.html', from_fixed('f4'), 'Fase 4', 64508),
-              ('fase5.html', from_fixed('f5'), 'Fase 5', 69908),
+              ('fase5.html', from_chunks('f5x', 3), 'Fase 5', 69908),
           ]
 
           for filename, html, label, expected in checks:
