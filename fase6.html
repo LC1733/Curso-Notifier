@@ -1,0 +1,4 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fase 6 — Operación & Mantenimiento | NOTIFIER Pro</title><script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script></head><body><script>
+(async()=>{const files=["payload/f6-00.txt","payload/f6-01.txt","payload/f6-02.txt","payload/f6-03.txt","payload/f6-04.txt"];const parts=await Promise.all(files.map(f=>fetch(f).then(r=>{if(!r.ok)throw new Error(f);return r.text()})));const b64=parts.join("");const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));const html=pako.ungzip(bytes,{to:"string"});document.open();document.write(html);document.close();})().catch(e=>{document.body.innerHTML="<main style='font-family:sans-serif;padding:2rem'><h1>Error cargando la fase</h1><p>"+e+"</p></main>"});
+</script></body></html>
