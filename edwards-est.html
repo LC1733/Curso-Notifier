@@ -551,6 +551,36 @@ h1.hero-title{
 }
 .quick-btn:hover{border-color:var(--orange);color:var(--orange)}
 
+/* ── QUIZ ── */
+.quiz-q{background:var(--bg-panel);border:1px solid var(--border);border-left:3px solid var(--orange);padding:1.1rem 1.25rem;margin-bottom:0.75rem}
+.quiz-q-text{font-size:0.88rem;font-weight:500;margin-bottom:0.85rem;line-height:1.55}
+.quiz-q-num{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--orange);letter-spacing:0.15em;margin-bottom:0.4rem}
+.quiz-opts{display:flex;flex-direction:column;gap:6px}
+.quiz-opt{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:0.6rem 0.85rem;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  cursor:pointer;font-size:0.8rem;line-height:1.5;
+  transition:all 0.15s;border-radius:1px;
+}
+.quiz-opt:hover{border-color:var(--orange);background:var(--orange-dim)}
+.quiz-opt.correct{border-color:#22C55E!important;background:rgba(34,197,94,0.1)!important;color:#4ade80}
+.quiz-opt.wrong{border-color:#ef4444!important;background:rgba(239,68,68,0.08)!important;color:#f87171}
+.quiz-opt.reveal{border-color:#22C55E;background:rgba(34,197,94,0.06);opacity:0.7}
+.quiz-opt-letter{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--orange);min-width:18px;padding-top:1px}
+.quiz-explanation{font-size:0.78rem;color:var(--muted);padding:0.65rem 0.85rem;background:rgba(255,255,255,0.02);border-top:1px solid var(--border);margin-top:6px;line-height:1.55;display:none}
+.quiz-score{
+  background:var(--bg-panel);border:1px solid var(--border);
+  border-top:2px solid var(--orange);padding:1.5rem;
+  text-align:center;margin-top:1rem;
+}
+.quiz-score-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:3.5rem;color:var(--orange);line-height:1}
+.quiz-score-lbl{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.15em;margin-top:4px}
+/* ── RTEST ── */
+.rtest-item.approved{border-color:#22C55E!important;background:rgba(34,197,94,0.08)!important}
+.rtest-item.approved .rtest-val{color:#4ade80!important}
+.rtest-item.failed{border-color:#ef4444!important;background:rgba(239,68,68,0.08)!important}
+.rtest-item.failed .rtest-val{color:#f87171!important}
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
@@ -624,6 +654,15 @@ h1.hero-title{
     </div>
     <div class="nav-item" onclick="showSection('errores');closeSidebar()">
       <div class="nav-dot"></div>⚠ Matriz de Fallas
+    </div>
+    <div class="nav-item" onclick="showSection('diagramas');closeSidebar()">
+      <div class="nav-dot"></div>⬡ Diagramas SVG
+    </div>
+    <div class="nav-item" onclick="showSection('quiz');closeSidebar()">
+      <div class="nav-dot"></div>◈ Quiz por Fase
+    </div>
+    <div class="nav-item" onclick="showSection('reporte');closeSidebar()">
+      <div class="nav-dot"></div>⬇ Reporte PDF
     </div>
   </div>
   <div class="sidebar-footer">
@@ -1836,6 +1875,420 @@ EFFECT:
 </div>
 </div><!-- /errores -->
 
+
+<!-- ══ DIAGRAMAS SVG ══ -->
+<div id="sec-diagramas" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// diagramas de conexión — SIGA-CC1 y SIGA-CT1</span><div class="sec-line"></div></div>
+
+  <!-- TABS -->
+  <div style="display:flex;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:1px">
+    <button class="module-item" id="tab-cc1" style="border-left:2px solid var(--orange);background:var(--bg-card2)" onclick="switchDiag('cc1')">
+      <div class="m-num" style="color:var(--orange)">CC1</div>
+      <div class="m-body"><div class="m-title">SIGA-CC1 — Módulo de Control (Output)</div><div class="m-desc">Equivalente al FRM-1/FCM-1 de Notifier — activa cargas externas desde el SLC</div></div>
+    </button>
+    <button class="module-item" id="tab-ct1" onclick="switchDiag('ct1')">
+      <div class="m-num" style="color:var(--blue)">CT1</div>
+      <div class="m-body"><div class="m-title">SIGA-CT1 — Módulo de Monitoreo (Input)</div><div class="m-desc">Supervisa contactos secos, detectores 4 hilos y dispositivos convencionales</div></div>
+    </button>
+    <button class="module-item" id="tab-rel" onclick="switchDiag('rel')">
+      <div class="m-num" style="color:#a855f7">REL</div>
+      <div class="m-body"><div class="m-title">SIGA-REL — Relé Direccionable</div><div class="m-desc">Relé N/A y N/C para cargas generales — no supervisado</div></div>
+    </button>
+  </div>
+
+  <!-- DIAGRAMA CC1 -->
+  <div id="diag-cc1" class="diagram-wrap" style="padding:2rem">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:0.5rem;color:var(--orange)">SIGA-CC1 — Diagrama de Conexión Completo</div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-bottom:1.5rem">Control Output Module · Activa dispositivos convencionales desde el lazo SLC direccionable</div>
+    <svg width="100%" viewBox="0 0 760 400" style="max-width:760px;display:block;margin:0 auto">
+      <defs>
+        <marker id="a1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#E8510A"/></marker>
+        <marker id="a2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#22C55E"/></marker>
+        <marker id="a3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3B82F6"/></marker>
+        <marker id="a4" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#a855f7"/></marker>
+      </defs>
+
+      <!-- PANEL -->
+      <rect x="10" y="150" width="110" height="100" rx="2" fill="#111722" stroke="#E8510A" stroke-width="1.5"/>
+      <text x="65" y="175" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="13" fill="#E8510A">EST PANEL</text>
+      <text x="65" y="193" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#888">iO / EST3 / EST4</text>
+      <text x="65" y="210" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#DDE4F0">SLC +</text>
+      <text x="65" y="224" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#DDE4F0">SLC −</text>
+      <circle cx="120" cy="210" r="3" fill="#E8510A"/>
+      <circle cx="120" cy="224" r="3" fill="#E8510A"/>
+
+      <!-- SLC WIRES -->
+      <line x1="123" y1="210" x2="195" y2="210" stroke="#E8510A" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="123" y1="224" x2="195" y2="224" stroke="#888" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="159" y="205" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#E8510A">SLC +</text>
+      <text x="159" y="234" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">SLC −</text>
+
+      <!-- SIGA-CC1 MODULE -->
+      <rect x="195" y="130" width="140" height="140" rx="2" fill="#0F1624" stroke="#E8510A" stroke-width="2"/>
+      <rect x="195" y="130" width="140" height="28" rx="2" fill="#E8510A"/>
+      <text x="265" y="149" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="13" fill="#fff">SIGA-CC1</text>
+      <text x="265" y="175" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">SLC IN+  ●</text>
+      <text x="265" y="189" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">SLC IN−  ●</text>
+      <line x1="195" y1="198" x2="335" y2="198" stroke="#333" stroke-width="0.5"/>
+      <text x="265" y="215" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#22C55E">OUT+  ●</text>
+      <text x="265" y="229" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#22C55E">OUT−  ●</text>
+      <line x1="195" y1="240" x2="335" y2="240" stroke="#333" stroke-width="0.5"/>
+      <text x="265" y="257" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#3B82F6">PWR+  ●</text>
+      <text x="265" y="265" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#3B82F6">(24VDC)</text>
+      <!-- LED indicator -->
+      <circle cx="220" cy="145" r="4" fill="#22C55E" opacity="0.8"/>
+      <text x="230" y="148" font-family="JetBrains Mono,monospace" font-size="6" fill="#4ade80">COMM OK</text>
+
+      <!-- OUTPUT WIRE -->
+      <line x1="335" y1="215" x2="395" y2="215" stroke="#22C55E" stroke-width="1.5" marker-end="url(#a2)"/>
+      <line x1="335" y1="229" x2="395" y2="229" stroke="#22C55E" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="365" y="210" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#22C55E">OUT</text>
+
+      <!-- POWER WIRE -->
+      <line x1="265" y1="270" x2="265" y2="310" stroke="#3B82F6" stroke-width="1"/>
+      <line x1="265" y1="310" x2="600" y2="310" stroke="#3B82F6" stroke-width="1"/>
+
+      <!-- POWER SUPPLY -->
+      <rect x="600" y="285" width="90" height="50" rx="2" fill="#111722" stroke="#3B82F6" stroke-width="1"/>
+      <text x="645" y="306" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#60a5fa">24 VDC</text>
+      <text x="645" y="320" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#60a5fa">PWR LTD</text>
+      <line x1="600" y1="310" x2="600" y2="310" stroke="#3B82F6" stroke-width="1"/>
+
+      <!-- OUTPUTS BRANCH -->
+      <!-- Sounder -->
+      <rect x="395" y="140" width="95" height="38" rx="2" fill="#111722" stroke="#22C55E" stroke-width="1"/>
+      <text x="442" y="156" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="600" font-size="11" fill="#4ade80">SOUNDER</text>
+      <text x="442" y="170" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#888">Convencional</text>
+
+      <!-- AHU Fan -->
+      <rect x="395" y="192" width="95" height="38" rx="2" fill="#111722" stroke="#22C55E" stroke-width="1"/>
+      <text x="442" y="208" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="600" font-size="11" fill="#4ade80">AHU / FAN</text>
+      <text x="442" y="222" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#888">Presurización</text>
+
+      <!-- Connection lines to devices -->
+      <line x1="395" y1="159" x2="395" y2="211" stroke="#22C55E" stroke-width="1"/>
+      <line x1="395" y1="215" x2="395" y2="211" stroke="#22C55E" stroke-width="1"/>
+
+      <!-- MORE OUTPUTS -->
+      <line x1="490" y1="211" x2="540" y2="175" stroke="#22C55E" stroke-width="1" marker-end="url(#a2)"/>
+      <line x1="490" y1="211" x2="540" y2="211" stroke="#22C55E" stroke-width="1" marker-end="url(#a2)"/>
+      <line x1="490" y1="211" x2="540" y2="247" stroke="#22C55E" stroke-width="1" marker-end="url(#a2)"/>
+
+      <rect x="540" y="155" width="105" height="28" rx="2" fill="#111722" stroke="#22C55E" stroke-width="1"/>
+      <text x="592" y="173" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#4ade80">Shunt Trip MCCB</text>
+
+      <rect x="540" y="196" width="105" height="28" rx="2" fill="#111722" stroke="#22C55E" stroke-width="1"/>
+      <text x="592" y="214" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#4ade80">Damper Cortafuego</text>
+
+      <rect x="540" y="237" width="105" height="28" rx="2" fill="#111722" stroke="#22C55E" stroke-width="1"/>
+      <text x="592" y="255" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#4ade80">PA / Anuncio</text>
+
+      <!-- EOL note -->
+      <rect x="395" y="245" width="95" height="28" rx="2" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.4)" stroke-width="1"/>
+      <text x="442" y="260" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#fbbf24">EOL requerido</text>
+      <text x="442" y="270" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#fbbf24">en último disp.</text>
+      <line x1="442" y1="230" x2="442" y2="245" stroke="#fbbf24" stroke-width="1" stroke-dasharray="2,2"/>
+
+      <!-- LEGEND -->
+      <rect x="10" y="295" width="175" height="90" rx="2" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1"/>
+      <text x="22" y="313" font-family="JetBrains Mono,monospace" font-size="7" fill="#888">LEYENDA</text>
+      <line x1="22" y1="325" x2="50" y2="325" stroke="#E8510A" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="55" y="328" font-family="JetBrains Mono,monospace" font-size="7" fill="#DDE4F0">Lazo SLC</text>
+      <line x1="22" y1="342" x2="50" y2="342" stroke="#22C55E" stroke-width="1.5"/>
+      <text x="55" y="345" font-family="JetBrains Mono,monospace" font-size="7" fill="#DDE4F0">Salida control (OUT)</text>
+      <line x1="22" y1="359" x2="50" y2="359" stroke="#3B82F6" stroke-width="1.5"/>
+      <text x="55" y="362" font-family="JetBrains Mono,monospace" font-size="7" fill="#DDE4F0">Alimentación 24VDC</text>
+      <text x="22" y="376" font-family="JetBrains Mono,monospace" font-size="6" fill="#fbbf24">⚠ Fuente power-limited obligatoria</text>
+    </svg>
+
+    <div class="info-box" style="margin-top:1rem">ℹ El <strong>SIGA-CC1</strong> es el equivalente Edwards al <strong>FRM-1/FCM-1 de Notifier</strong>. Ambos convierten una dirección del lazo SLC en una salida de control para dispositivos convencionales. La diferencia clave: SIGA-CC1 usa el protocolo propietario <strong>Signature</strong> — no intercambiable con equipos de otras marcas.</div>
+    <div class="warning-box" style="margin-top:0.5rem">⚠ Todos los relés del SIGA-CC1 son <strong>no supervisados</strong>. Deben conectarse a una fuente <strong>power-limited y regulada de 24 VDC</strong>, listada UL para sistemas de alarma contra incendio.</div>
+  </div>
+
+  <!-- DIAGRAMA CT1 -->
+  <div id="diag-ct1" class="diagram-wrap" style="padding:2rem;display:none">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:0.5rem;color:#3B82F6">SIGA-CT1 — Diagrama de Conexión Completo</div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-bottom:1.5rem">Monitor Input Module · Supervisa contactos secos, detectores 4 hilos y dispositivos convencionales</div>
+    <svg width="100%" viewBox="0 0 760 360" style="max-width:760px;display:block;margin:0 auto">
+      <defs>
+        <marker id="b1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#E8510A"/></marker>
+        <marker id="b2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3B82F6"/></marker>
+      </defs>
+
+      <!-- PANEL -->
+      <rect x="10" y="130" width="110" height="100" rx="2" fill="#111722" stroke="#E8510A" stroke-width="1.5"/>
+      <text x="65" y="155" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="13" fill="#E8510A">EST PANEL</text>
+      <text x="65" y="172" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#888">iO / EST3 / EST4</text>
+      <circle cx="120" cy="190" r="3" fill="#E8510A"/>
+      <circle cx="120" cy="204" r="3" fill="#E8510A"/>
+      <text x="65" y="193" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#DDE4F0">SLC +</text>
+      <text x="65" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#DDE4F0">SLC −</text>
+
+      <!-- SLC WIRES -->
+      <line x1="123" y1="190" x2="200" y2="190" stroke="#E8510A" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#b1)"/>
+      <line x1="123" y1="204" x2="200" y2="204" stroke="#888" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="162" y="185" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#E8510A">SLC +</text>
+      <text x="162" y="215" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">SLC −</text>
+
+      <!-- SIGA-CT1 MODULE -->
+      <rect x="200" y="110" width="140" height="155" rx="2" fill="#0F1624" stroke="#3B82F6" stroke-width="2"/>
+      <rect x="200" y="110" width="140" height="28" rx="2" fill="#3B82F6"/>
+      <text x="270" y="129" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="13" fill="#fff">SIGA-CT1</text>
+      <text x="270" y="155" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">SLC IN+ ●</text>
+      <text x="270" y="169" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">SLC IN− ●</text>
+      <line x1="200" y1="178" x2="340" y2="178" stroke="#333" stroke-width="0.5"/>
+      <text x="270" y="195" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#60a5fa">IN1+ ●</text>
+      <text x="270" y="209" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#60a5fa">IN1− ●</text>
+      <line x1="200" y1="218" x2="340" y2="218" stroke="#333" stroke-width="0.5"/>
+      <text x="270" y="233" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">EOL</text>
+      <text x="270" y="247" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#fbbf24">Integrado</text>
+      <!-- LED -->
+      <circle cx="225" cy="125" r="4" fill="#3B82F6" opacity="0.8"/>
+      <text x="235" y="128" font-family="JetBrains Mono,monospace" font-size="6" fill="#60a5fa">MONITOR</text>
+
+      <!-- INPUT CONNECTIONS -->
+      <!-- Valve tamper -->
+      <rect x="380" y="80" width="120" height="38" rx="2" fill="#111722" stroke="#3B82F6" stroke-width="1"/>
+      <text x="440" y="96" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="600" font-size="11" fill="#60a5fa">TAMPER VÁLVULA</text>
+      <text x="440" y="110" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#888">Sprinkler / Supresión</text>
+      <line x1="340" y1="195" x2="380" y2="99" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#b2)"/>
+
+      <!-- Flow switch -->
+      <rect x="380" y="135" width="120" height="38" rx="2" fill="#111722" stroke="#3B82F6" stroke-width="1"/>
+      <text x="440" y="151" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="600" font-size="11" fill="#60a5fa">FLOW SWITCH</text>
+      <text x="440" y="165" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#888">Flujo de agua</text>
+      <line x1="340" y1="195" x2="380" y2="154" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#b2)"/>
+
+      <!-- Manual pull station -->
+      <rect x="380" y="190" width="120" height="38" rx="2" fill="#111722" stroke="#3B82F6" stroke-width="1"/>
+      <text x="440" y="206" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="600" font-size="11" fill="#60a5fa">ESTACIÓN MANUAL</text>
+      <text x="440" y="220" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#888">Convencional (contacto)</text>
+      <line x1="340" y1="195" x2="380" y2="209" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#b2)"/>
+
+      <!-- 4-wire detector -->
+      <rect x="380" y="245" width="120" height="38" rx="2" fill="#111722" stroke="#3B82F6" stroke-width="1"/>
+      <text x="440" y="261" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="600" font-size="11" fill="#60a5fa">DETECTOR 4 HILOS</text>
+      <text x="440" y="275" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#888">Beam / Duct 4-wire</text>
+      <line x1="340" y1="209" x2="380" y2="264" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#b2)"/>
+
+      <!-- Internal EOL note -->
+      <rect x="200" y="268" width="140" height="22" rx="2" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.3)" stroke-width="1"/>
+      <text x="270" y="283" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#fbbf24">⚠ EOL integrado en módulo</text>
+
+      <!-- Return to panel -->
+      <path d="M 500 170 Q 660 170 660 320 Q 660 340 120 340 Q 10 340 10 230" stroke="#E8510A" stroke-width="1" stroke-dasharray="4,2" fill="none" marker-end="url(#b1)"/>
+      <text x="400" y="338" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#E8510A">Retorno SLC (Class A)</text>
+
+      <!-- LEGEND -->
+      <rect x="10" y="85" width="175" height="60" rx="2" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1"/>
+      <text x="22" y="102" font-family="JetBrains Mono,monospace" font-size="7" fill="#888">LEYENDA</text>
+      <line x1="22" y1="115" x2="50" y2="115" stroke="#E8510A" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="55" y="118" font-family="JetBrains Mono,monospace" font-size="7" fill="#DDE4F0">Lazo SLC</text>
+      <line x1="22" y1="132" x2="50" y2="132" stroke="#3B82F6" stroke-width="1.5"/>
+      <text x="55" y="135" font-family="JetBrains Mono,monospace" font-size="7" fill="#DDE4F0">Señal de entrada (IN)</text>
+    </svg>
+    <div class="info-box" style="margin-top:1rem">ℹ El <strong>SIGA-CT1</strong> tiene el EOL <strong>integrado internamente</strong> — no se instala resistencia externa en los dispositivos supervisados. El CT2 (doble entrada) sigue el mismo principio con 2 circuitos independientes.</div>
+  </div>
+
+  <!-- DIAGRAMA REL -->
+  <div id="diag-rel" class="diagram-wrap" style="padding:2rem;display:none">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:0.5rem;color:#a855f7">SIGA-REL — Relé Direccionable</div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-bottom:1.5rem">Relay Module · Contactos N/A y N/C para cargas generales de propósito múltiple</div>
+    <svg width="100%" viewBox="0 0 700 280" style="max-width:700px;display:block;margin:0 auto">
+      <defs>
+        <marker id="c1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#E8510A"/></marker>
+        <marker id="c2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#a855f7"/></marker>
+      </defs>
+
+      <!-- PANEL -->
+      <rect x="10" y="100" width="110" height="80" rx="2" fill="#111722" stroke="#E8510A" stroke-width="1.5"/>
+      <text x="65" y="125" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="13" fill="#E8510A">EST PANEL</text>
+      <circle cx="120" cy="155" r="3" fill="#E8510A"/>
+      <circle cx="120" cy="169" r="3" fill="#E8510A"/>
+      <text x="65" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#DDE4F0">SLC +</text>
+      <text x="65" y="172" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#DDE4F0">SLC −</text>
+
+      <!-- SLC -->
+      <line x1="123" y1="155" x2="195" y2="155" stroke="#E8510A" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#c1)"/>
+      <line x1="123" y1="169" x2="195" y2="169" stroke="#888" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+      <!-- SIGA-REL -->
+      <rect x="195" y="90" width="140" height="155" rx="2" fill="#0F1624" stroke="#a855f7" stroke-width="2"/>
+      <rect x="195" y="90" width="140" height="28" rx="2" fill="#a855f7"/>
+      <text x="265" y="109" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="13" fill="#fff">SIGA-REL</text>
+      <text x="265" y="135" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">SLC IN+ ●</text>
+      <text x="265" y="149" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#888">SLC IN− ●</text>
+      <line x1="195" y1="160" x2="335" y2="160" stroke="#333" stroke-width="0.5"/>
+      <!-- Relay symbol -->
+      <rect x="225" y="168" width="80" height="40" rx="2" fill="rgba(168,85,247,0.1)" stroke="#a855f7" stroke-width="1"/>
+      <text x="265" y="183" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#c084fc">RELÉ</text>
+      <text x="265" y="197" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#c084fc">SPDT</text>
+      <text x="227" y="225" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#c084fc">COM ●</text>
+      <text x="227" y="239" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#4ade80">N/A ●</text>
+      <text x="227" y="253" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#f87171">N/C ●</text>
+
+      <!-- OUTPUT CONNECTIONS -->
+      <line x1="335" y1="225" x2="395" y2="165" stroke="#4ade80" stroke-width="1.5" marker-end="url(#c2)"/>
+      <line x1="335" y1="239" x2="395" y2="195" stroke="#a855f7" stroke-width="1.5" marker-end="url(#c2)"/>
+      <line x1="335" y1="253" x2="395" y2="230" stroke="#f87171" stroke-width="1.5" marker-end="url(#c2)"/>
+
+      <!-- Load boxes -->
+      <rect x="395" y="148" width="130" height="30" rx="2" fill="#111722" stroke="#4ade80" stroke-width="1"/>
+      <text x="460" y="167" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#4ade80">N/A: Magnets puertas / AHU</text>
+
+      <rect x="395" y="183" width="130" height="30" rx="2" fill="#111722" stroke="#a855f7" stroke-width="1"/>
+      <text x="460" y="202" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#c084fc">COM: Punto común</text>
+
+      <rect x="395" y="218" width="130" height="30" rx="2" fill="#111722" stroke="#f87171" stroke-width="1"/>
+      <text x="460" y="237" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7.5" fill="#f87171">N/C: Falla segura / alarma</text>
+
+      <!-- Warning -->
+      <rect x="10" y="210" width="175" height="35" rx="2" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.3)" stroke-width="1"/>
+      <text x="97" y="225" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#fbbf24">⚠ NO supervisado</text>
+      <text x="97" y="238" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#fbbf24">Fuente power-limited obligatoria</text>
+    </svg>
+    <div class="warning-box" style="margin-top:1rem">⚠ El SIGA-REL no supervisa el circuito de carga. Un corte en el cableado de salida NO genera TROUBLE en el panel. Para cargas que requieren supervisión usar <strong>SIGA-CC1</strong>.</div>
+  </div>
+
+</div>
+</div><!-- /diagramas -->
+
+<!-- ══ QUIZ ══ -->
+<div id="sec-quiz" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// quiz de evaluación por fase</span><div class="sec-line"></div></div>
+
+  <!-- SELECTOR DE FASE -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem">
+    <button class="quick-btn" onclick="loadQuiz(1)" id="qbtn1">F1 · Fundamentos</button>
+    <button class="quick-btn" onclick="loadQuiz(2)" id="qbtn2">F2 · Hardware</button>
+    <button class="quick-btn" onclick="loadQuiz(3)" id="qbtn3">F3 · Cableado</button>
+    <button class="quick-btn" onclick="loadQuiz(4)" id="qbtn4">F4 · Software</button>
+    <button class="quick-btn" onclick="loadQuiz(5)" id="qbtn5">F5 · Comisionamiento</button>
+    <button class="quick-btn" onclick="loadQuiz(6)" id="qbtn6">F6 · Operación</button>
+    <button class="quick-btn" onclick="loadQuiz(7)" id="qbtn7">F7 · Avanzado</button>
+  </div>
+
+  <div id="quizArea" style="background:var(--bg-card);border:1px solid var(--border);padding:1.5rem;min-height:200px">
+    <div style="text-align:center;padding:3rem;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.75rem">
+      — Selecciona una fase para iniciar el quiz —
+    </div>
+  </div>
+</div>
+</div><!-- /quiz -->
+
+<!-- ══ REPORTE PDF ══ -->
+<div id="sec-reporte" style="display:none">
+<div class="section">
+  <div class="sec-head"><span class="sec-tag">// generador de reporte de comisionamiento</span><div class="sec-line"></div></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:1px">
+
+    <!-- COL 1: DATOS DEL PROYECTO -->
+    <div style="background:var(--bg-card);padding:1.5rem">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--orange);margin-bottom:1rem;letter-spacing:0.05em">DATOS DEL PROYECTO</div>
+      <div style="display:flex;flex-direction:column;gap:0.65rem">
+        <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">NOMBRE DEL PROYECTO</label>
+        <input class="ai-inp" id="rp-proyecto" placeholder="Ej: Edificio Torre Norte, Piso 12-18" style="width:100%"></div>
+
+        <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">DIRECCIÓN / UBICACIÓN</label>
+        <input class="ai-inp" id="rp-direccion" placeholder="Av. Providencia 1234, Santiago" style="width:100%"></div>
+
+        <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">CLIENTE / MANDANTE</label>
+        <input class="ai-inp" id="rp-cliente" placeholder="Empresa o persona" style="width:100%"></div>
+
+        <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">CONTRATISTA INSTALADOR</label>
+        <input class="ai-inp" id="rp-contratista" placeholder="Empresa instaladora" style="width:100%"></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">FECHA</label>
+          <input class="ai-inp" id="rp-fecha" type="date" style="width:100%"></div>
+          <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">N° REPORTE</label>
+          <input class="ai-inp" id="rp-numero" placeholder="COM-2025-001" style="width:100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COL 2: DATOS DEL SISTEMA -->
+    <div style="background:var(--bg-card);padding:1.5rem">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--orange);margin-bottom:1rem;letter-spacing:0.05em">DATOS DEL SISTEMA</div>
+      <div style="display:flex;flex-direction:column;gap:0.65rem">
+        <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">MODELO DE PANEL</label>
+        <select class="ai-inp" id="rp-panel" style="width:100%">
+          <option value="">Seleccionar...</option>
+          <option>EST4</option><option>EST3</option><option>EST3X</option>
+          <option>iO64</option><option>iO500</option><option>iO1000</option><option>QuickStart</option>
+        </select></div>
+
+        <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">N° DE SERIE DEL PANEL</label>
+        <input class="ai-inp" id="rp-serie" placeholder="Serial número" style="width:100%"></div>
+
+        <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">VERSIÓN FIRMWARE</label>
+        <input class="ai-inp" id="rp-fw" placeholder="Ej: v3.0.2" style="width:100%"></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">N° LAZOS SLC</label>
+          <input class="ai-inp" id="rp-lazos" type="number" placeholder="1" min="1" max="20" style="width:100%"></div>
+          <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">N° DISPOSITIVOS</label>
+          <input class="ai-inp" id="rp-dispositivos" type="number" placeholder="48" style="width:100%"></div>
+        </div>
+
+        <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);display:block;margin-bottom:3px;letter-spacing:0.15em">TÉCNICO RESPONSABLE</label>
+        <input class="ai-inp" id="rp-tecnico" placeholder="Nombre y certificación" style="width:100%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADOS DE PRUEBAS -->
+  <div style="background:var(--bg-card);border:1px solid var(--border);padding:1.5rem;margin-top:1px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--orange);margin-bottom:1rem;letter-spacing:0.05em">RESULTADOS DE PRUEBAS</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem">
+      <div id="rtest-detectores" class="rtest-item" onclick="cycleResult('rtest-detectores')" style="background:var(--bg-card2);border:1px solid var(--border);padding:0.85rem;cursor:pointer;border-radius:1px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);margin-bottom:4px">DETECTORES SIGA</div>
+        <div class="rtest-val" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--muted)">— PENDIENTE —</div>
+      </div>
+      <div id="rtest-manuales" class="rtest-item" onclick="cycleResult('rtest-manuales')" style="background:var(--bg-card2);border:1px solid var(--border);padding:0.85rem;cursor:pointer;border-radius:1px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);margin-bottom:4px">ESTAC. MANUALES</div>
+        <div class="rtest-val" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--muted)">— PENDIENTE —</div>
+      </div>
+      <div id="rtest-nac" class="rtest-item" onclick="cycleResult('rtest-nac')" style="background:var(--bg-card2);border:1px solid var(--border);padding:0.85rem;cursor:pointer;border-radius:1px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);margin-bottom:4px">CIRCUITOS NAC</div>
+        <div class="rtest-val" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--muted)">— PENDIENTE —</div>
+      </div>
+      <div id="rtest-modulos" class="rtest-item" onclick="cycleResult('rtest-modulos')" style="background:var(--bg-card2);border:1px solid var(--border);padding:0.85rem;cursor:pointer;border-radius:1px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);margin-bottom:4px">MÓDULOS SIGA</div>
+        <div class="rtest-val" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--muted)">— PENDIENTE —</div>
+      </div>
+      <div id="rtest-baterias" class="rtest-item" onclick="cycleResult('rtest-baterias')" style="background:var(--bg-card2);border:1px solid var(--border);padding:0.85rem;cursor:pointer;border-radius:1px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);margin-bottom:4px">BATERÍAS</div>
+        <div class="rtest-val" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--muted)">— PENDIENTE —</div>
+      </div>
+      <div id="rtest-causeeffect" class="rtest-item" onclick="cycleResult('rtest-causeeffect')" style="background:var(--bg-card2);border:1px solid var(--border);padding:0.85rem;cursor:pointer;border-radius:1px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);margin-bottom:4px">CAUSE &amp; EFFECT</div>
+        <div class="rtest-val" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--muted)">— PENDIENTE —</div>
+      </div>
+    </div>
+    <div style="margin-top:0.75rem;font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted)">
+      ↑ Toca cada tarjeta para ciclar: PENDIENTE → APROBADO → FALLIDO → PENDIENTE
+    </div>
+  </div>
+
+  <!-- OBSERVACIONES -->
+  <div style="background:var(--bg-card);border:1px solid var(--border);padding:1.5rem;margin-top:1px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--orange);margin-bottom:0.75rem;letter-spacing:0.05em">OBSERVACIONES Y NO CONFORMIDADES</div>
+    <textarea class="ai-inp" id="rp-obs" rows="4" placeholder="Describir fallas encontradas, acciones correctivas tomadas, observaciones del walk test..." style="width:100%;resize:vertical;font-size:0.8rem;line-height:1.6"></textarea>
+  </div>
+
+  <!-- BOTÓN GENERAR -->
+  <div style="background:var(--bg-card);border:1px solid var(--border);padding:1.25rem;margin-top:1px;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+    <button class="btn btn-main" onclick="generarReporte()">⬇ GENERAR REPORTE HTML</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted)" id="rp-status">— Completa los campos y genera el reporte —</span>
+  </div>
+
+</div>
+</div><!-- /reporte -->
+
 </main><!-- /main -->
 
 <script>
@@ -2029,6 +2482,307 @@ function appendThinking() {
 function removeThinking(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
+}
+
+// ─── DIAGRAMAS TABS ───
+function switchDiag(id) {
+  ['cc1','ct1','rel'].forEach(d => {
+    const el = document.getElementById('diag-'+d);
+    const tab = document.getElementById('tab-'+d);
+    if (el) el.style.display = d === id ? 'block' : 'none';
+    if (tab) {
+      tab.style.background = d === id ? 'var(--bg-card2)' : 'var(--bg-card)';
+      tab.style.borderLeft = d === id ? '2px solid var(--orange)' : '2px solid transparent';
+    }
+  });
+}
+
+// ─── QUIZ DATA ───
+const QUIZDATA = {
+  1: [
+    { q:"¿Qué norma regula el diseño e instalación de sistemas de alarma de incendio en EE.UU. y es base para sistemas Edwards EST?", opts:["UL 864","NFPA 72","NFPA 101","IEC 62305"], ans:1, exp:"NFPA 72 (National Fire Alarm and Signaling Code) es la norma base. UL 864 es la certificación de los paneles, pero no regula el diseño del sistema." },
+    { q:"¿Cuál es la principal ventaja de un sistema direccionable sobre uno convencional?", opts:["Es más barato de instalar","Identifica exactamente el dispositivo en alarma, no solo la zona","Usa menos cableado siempre","No requiere mantenimiento"], ans:1, exp:"En un sistema direccionable cada SIGA-device tiene una dirección única, permitiendo identificar el punto exacto en el panel." },
+    { q:"¿Qué protocolo de comunicación usan los dispositivos SIGA de Edwards en el lazo SLC?", opts:["Protocol 3000 (Notifier)","MODBUS","Signature (propietario Edwards)","BACnet/MSTP"], ans:2, exp:"Edwards usa el protocolo propietario 'Signature'. No es intercambiable con dispositivos de otras marcas en el mismo lazo." },
+    { q:"¿Cuáles son los 3 estados de señalización principales en un sistema de alarma según NFPA 72?", opts:["Alarma, Falla, Normal","Alarm, Trouble, Supervisory","Fire, Warning, Clear","Alert, Fault, OK"], ans:1, exp:"NFPA 72 define: ALARM (rojo, incendio), TROUBLE (amarillo, falla del sistema), SUPERVISORY (azul/amarillo, condición en sistema de supresión)." },
+    { q:"¿Qué significa el indicador LED verde 'AC POWER' encendido en un panel Edwards?", opts:["Sistema en modo alarma","Batería cargada al 100%","Alimentación AC presente — estado normal","Prueba en progreso"], ans:2, exp:"El LED verde AC POWER indica que la alimentación de red eléctrica (AC) está presente y el sistema opera normalmente sin depender de baterías." }
+  ],
+  2: [
+    { q:"¿Cuál es la capacidad máxima del panel iO64?", opts:["64 zonas convencionales","64 puntos direccionables en 1 lazo SLC","500 dispositivos en red","64 circuitos NAC"], ans:1, exp:"El iO64 soporta exactamente 64 puntos (devices) direccionables en un único lazo SLC usando protocolo Signature de Edwards." },
+    { q:"¿Qué módulo SIGA es el equivalente directo al FRM-1/FCM-1 de Notifier?", opts:["SIGA-CT1","SIGA-REL","SIGA-CC1","SIGA-DDOS"], ans:2, exp:"El SIGA-CC1 (Control Output Module) es el equivalente funcional. Convierte una dirección del lazo SLC en una salida de control para dispositivos convencionales." },
+    { q:"¿Cuál es la diferencia entre SIGA-PD y SIGA-PS?", opts:["PD es para ductos, PS para espacios","PD es solo fotoeléctrico, PS combina foto + temperatura","PD es iónico, PS es fotoeléctrico","Son idénticos, solo distinto color"], ans:1, exp:"SIGA-PD = Photoelectric Detector (solo foto). SIGA-PS = Photo + Smoke detector (fotoeléctrico + sensor de calor diferencial). El PS reduce falsas alarmas." },
+    { q:"¿Dónde se instala el detector SIGA-DDOS?", opts:["En el techo de salas de servidores","En ductos de sistemas HVAC","En sótanos con riesgo de inundación","En exteriores bajo cubierta"], ans:1, exp:"El SIGA-DDOS es un Duct Smoke Detector diseñado específicamente para instalarse dentro de ductos de sistemas de ventilación HVAC, monitoreando el flujo de aire." },
+    { q:"¿Cuándo se lanzó el EST4 y qué característica de cableado lo distingue del EST3?", opts:["2020, usa fibra exclusivamente","Plataforma actual, requiere 75% menos cableado que EST3","2015, tiene 50% más capacidad que EST3","2018, es completamente inalámbrico"], ans:1, exp:"El EST4 es la plataforma actual de Edwards con arquitectura IPv6. Requiere 75% menos cableado gracias a su topología de red versus la arquitectura del EST3." }
+  ],
+  3: [
+    { q:"¿Qué significa 'Class A' en el cableado de un lazo SLC según NFPA 72?", opts:["Un solo conductor de mayor calibre","El cable sale del panel, recorre todos los dispositivos y regresa al panel","Solo aplica a circuitos de notificación","Requiere cable blindado tipo armored"], ans:1, exp:"Class A (también llamado Estilo 6 ó 7) usa topología de lazo cerrado: el cable va del panel hacia los dispositivos y regresa. Un corte no interrumpe la comunicación en el resto del lazo." },
+    { q:"¿Cuál es el voltaje mínimo que debe llegar al dispositivo de notificación más alejado de un circuito NAC?", opts:["12 VDC","20 VDC","16 VDC","24 VDC exactos"], ans:2, exp:"El mínimo aceptable en el dispositivo más alejado es 16 VDC. La caída de voltaje por resistencia del cable no debe hacer caer la tensión por debajo de este valor." },
+    { q:"¿Qué característica tiene el EOL (End-of-Line Resistor) en el módulo SIGA-CT1?", opts:["Debe instalarse externamente en el último dispositivo","Está integrado internamente — no requiere resistencia externa","Puede omitirse si el cable es menor a 50 metros","Se instala directamente en el panel"], ans:1, exp:"El SIGA-CT1 tiene el EOL integrado en el módulo mismo. No se requiere instalar ninguna resistencia externa en los dispositivos supervisados." },
+    { q:"Para calcular la batería de respaldo según NFPA 72, ¿cuántas horas de standby y cuántos minutos de alarma se requieren?", opts:["8h standby + 15 min alarma","24h standby + 5 min alarma (aprox. 0.083h)","12h standby + 10 min alarma","24h standby + 30 min alarma"], ans:1, exp:"NFPA 72 requiere: 24 horas en modo standby + 5 minutos (0.083h) en modo alarma completa. Fórmula: Ah = (I_standby × 24) + (I_alarma × 0.083), dividido por 0.8 factor de derating." },
+    { q:"¿Qué topología de cableado es exclusiva del EST4 y ofrece la mayor redundancia?", opts:["Class B Estilo 4","Class A Estilo 7","Class X en red mesh IPv6","Clase Z propietaria"], ans:2, exp:"La Class X del EST4 opera en topología mesh (malla) usando la red IPv6. Múltiples caminos redundantes garantizan que un corte o cortocircuito no afecte ningún dispositivo." }
+  ],
+  4: [
+    { q:"¿Cómo se llama el software de programación para paneles Edwards iO y EST4?", opts:["VeriFire Tools","EST3 Programmer","Configuration Utility (CU)","FireWorks Designer"], ans:2, exp:"La 'Configuration Utility' (CU) es el software oficial de Edwards para programar y diagnosticar paneles iO64, iO500, EST3 y EST4." },
+    { q:"En la lógica Cause & Effect, ¿qué representa el 'CAUSE'?", opts:["La acción que toma el sistema","El dispositivo o evento que activa la respuesta","El tiempo de retardo antes de la acción","El nivel de prioridad de la alarma"], ans:1, exp:"El CAUSE es el evento iniciador (ej: alarma en SIGA-PD dirección 047). El EFFECT son las acciones que el sistema ejecuta automáticamente en respuesta." },
+    { q:"¿Qué ocurre si la dirección programada en el CU no coincide con la dirección física del dispositivo SIGA?", opts:["El dispositivo funciona igual con cualquier dirección","El panel no reconoce el dispositivo — genera TROUBLE","Solo afecta el descriptor de texto","El sistema ignora el dispositivo silenciosamente"], ans:1, exp:"Las direcciones deben coincidir exactamente. Si hay discrepancia, el panel genera un TROUBLE de 'Device Missing' o no reconoce el punto en el lazo SLC." },
+    { q:"¿Qué herramienta física se usa para programar la dirección en los dispositivos SIGA?", opts:["Laptop con CU directamente","Programador SIGA-PRO o rotary switches","Bluetooth desde teléfono","No requiere programación — es automática"], ans:1, exp:"Las cabezas SIGA requieren el programador SIGA-PRO para asignar su dirección física, o en versiones antiguas mediante rotary switches en la base del dispositivo." },
+    { q:"¿Qué acción requiere NFPA 72 cada vez que se modifica la lógica Cause & Effect en un panel ya en servicio?", opts:["Solo documentar el cambio en la bitácora","Notificar al fabricante vía email","Re-prueba de los puntos afectados por la modificación","Reemplazar todos los dispositivos de la zona modificada"], ans:2, exp:"NFPA 72 exige que cualquier modificación de programación o lógica C&E sea seguida de pruebas funcionales de todos los puntos afectados por el cambio antes de volver a poner en servicio." }
+  ],
+  5: [
+    { q:"¿A quién se debe notificar PRIMERO antes de iniciar un walk test en un sistema en servicio?", opts:["Al cliente solamente","A los bomberos locales","A la central de monitoreo","Al distribuidor de Edwards"], ans:2, exp:"Siempre notificar a la central de monitoreo que el sistema entrará en modo prueba. De lo contrario, se generarán alertas reales y despacho de bomberos." },
+    { q:"¿Qué aerosol se usa para probar detectores de humo durante el walk test?", opts:["Spray de pintura normal","Aerosol de prueba aprobado (Ultratest o equivalente)","Humo real de cigarrillo","Gas refrigerante R-134a"], ans:1, exp:"Se usan aerosoles de prueba certificados como Ultratest (SDi) o equivalentes aprobados por el fabricante del detector. Nunca usar humo real, sprays inflamables o cualquier sustancia no aprobada." },
+    { q:"¿Cuántos dispositivos deben probarse en el comisionamiento inicial según NFPA 72?", opts:["Al menos 20% representativo","Muestra aleatoria de 50%","El 100% de todos los dispositivos","Solo los detectores, no las estaciones manuales"], ans:2, exp:"NFPA 72 exige prueba del 100% de todos los dispositivos en el comisionamiento inicial. En mantenimiento anual posterior se puede usar un programa rotativo." },
+    { q:"¿Cuál debe ser el voltaje de carga de las baterías en un panel Edwards correctamente configurado?", opts:["24.0 VDC exactos","12.6 VDC por batería","27.2 VDC aproximadamente","13.8 VDC"], ans:2, exp:"Los cargadores de baterías selladas de plomo-ácido en paneles Edwards operan a aproximadamente 27.2 VDC (2 baterías de 12V en serie = 24V nominal, con tensión de flotación a 27.2V)." },
+    { q:"¿Qué debe verificarse en cada detector SIGA durante el walk test además de que active la alarma?", opts:["Solo la activación es suficiente","Que el panel muestra la dirección correcta y el descriptor de texto","Que el LED del detector parpadee en azul","Que la corriente de lazo no supere 2 mA"], ans:1, exp:"Debe verificarse: (1) activación de la alarma, (2) que el display del panel muestre la dirección correcta, (3) que el descriptor de texto sea el correcto, y (4) que las salidas NAC correspondientes según C&E se activen." }
+  ],
+  6: [
+    { q:"¿Qué acción debe tomar el operador cuando el panel muestra ALARM y el LED rojo parpadea?", opts:["Presionar RESET inmediatamente","Desconectar el panel para evitar falsas alarmas","Leer el display, presionar ACKNOWLEDGE y proceder a investigar en campo","Apagar las sirenas desde el disyuntor"], ans:2, exp:"Secuencia correcta: Leer y anotar el punto en alarma → ACKNOWLEDGE (silencia buzzer del panel, NO las sirenas) → Investigar en campo → Si es falsa alarma confirmada → RESET." },
+    { q:"¿Con qué frecuencia mínima deben probarse las baterías selladas según NFPA 72?", opts:["Anual","Mensual","Semestral","Solo cuando el panel lo indica"], ans:2, exp:"NFPA 72 requiere prueba semestral de baterías selladas de plomo-ácido: verificación de voltaje en carga y bajo carga de prueba. Las baterías deben reemplazarse cada 3-5 años." },
+    { q:"¿Qué indica el LED 'GROUND FAULT' en un panel Edwards?", opts:["El sistema está bien aterrizado","Un conductor SLC o NAC está en contacto con tierra","Falta la batería de respaldo","El panel necesita actualización de firmware"], ans:1, exp:"Ground Fault indica que algún conductor del sistema (SLC, NAC u otro) está haciendo contacto con tierra. Puede ser por conduit metálico mojado, aislamiento dañado o humedad en una caja de paso." },
+    { q:"¿Cuándo evaluar el reemplazo de un detector de humo SIGA según buenas prácticas?", opts:["A los 5 años sin excepción","A los 20 años o cuando presente 3 alarmas falsas","A los 10 años de antigüedad o cuando genere alertas de mantenimiento repetidas","Nunca — los SIGA son de vida útil indefinida"], ans:2, exp:"NFPA 72 y buenas prácticas Edwards recomiendan evaluar el reemplazo a los 10 años. El panel EST genera alertas de mantenimiento basadas en drift de sensibilidad y conteo de alarmas acumuladas." },
+    { q:"¿Qué documentación es obligatoria llevar en cada mantenimiento preventivo?", opts:["Solo el recibo del servicio","Registro en bitácora: fecha, técnico, pruebas realizadas, resultados, observaciones y firma","Solo el reporte automático del panel","No se requiere documentación si no hay fallas"], ans:1, exp:"NFPA 72 exige registro escrito de cada inspección y mantenimiento: fecha, identificación del técnico, pruebas realizadas punto a punto, resultados, deficiencias encontradas y acciones correctivas." }
+  ],
+  7: [
+    { q:"¿Qué tipo de cifrado usa el EST4 en su red y qué estándar cumple?", opts:["DES de 56 bits","AES conforme a FIPS Pub 197","RSA-2048","Sin cifrado — usa red privada"], ans:1, exp:"El EST4 usa cifrado AES (Advanced Encryption Standard) certificado FIPS Pub 197 — el estándar más robusto para sistemas de control en infraestructura crítica." },
+    { q:"¿Cuál fue la fecha de discontinuación del EST3X?", opts:["Q4 2026","Q1 2025","Q2 2023","Aún no discontinuado"], ans:1, exp:"El EST3X fue discontinuado en Q1 2025. El EST3 tiene fecha de sunset en Q4 2026. Edwards recomienda migrar a EST4 para instalaciones existentes." },
+    { q:"¿Qué se conserva al migrar de EST3 a EST4?", opts:["Todo, incluyendo el panel y software","Solo el cableado del edificio (tubería)","Los dispositivos SIGA de campo y el cableado de field devices","Nada — es una sustitución completa"], ans:2, exp:"La migración EST3→EST4 conserva los dispositivos SIGA (detectores, módulos) y su cableado de campo. Se reemplaza el panel, tarjetas SLC y software de programación." },
+    { q:"¿Qué capítulo de NFPA 72 regula los Mass Notification Systems que soporta el EST4?", opts:["Capítulo 12","Capítulo 18","Capítulo 24","Capítulo 10"], ans:2, exp:"NFPA 72 Capítulo 24 regula los Emergency Communications Systems incluyendo Mass Notification Systems (MNS). El EST4 cumple este capítulo para comunicaciones de emergencia avanzadas." },
+    { q:"¿Para qué se usa BACnet/IP en la integración del EST4 con el BMS?", opts:["Para programar el panel remotamente sin CU","Para que el BMS pueda visualizar estados y posiblemente recibir comandos del sistema de alarma","Para transferir la base de datos entre paneles","Para actualizaciones de firmware automáticas"], ans:1, exp:"BACnet/IP permite que el BMS visualice estados del sistema de alarma. NFPA 72 establece que el BMS NO puede inhibir la señalización de alarma — la integración debe ser principalmente de solo lectura para estados de ALARM." }
+  ]
+};
+
+let quizState = { fase: null, answered: {}, score: 0, total: 0 };
+
+function loadQuiz(fase) {
+  quizState = { fase, answered: {}, score: 0, total: QUIZDATA[fase].length };
+  document.querySelectorAll('[id^="qbtn"]').forEach(b => {
+    b.style.borderColor = '';b.style.color = '';
+  });
+  document.getElementById('qbtn'+fase).style.borderColor = 'var(--orange)';
+  document.getElementById('qbtn'+fase).style.color = 'var(--orange)';
+
+  const area = document.getElementById('quizArea');
+  const qs = QUIZDATA[fase];
+  area.innerHTML = `
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:1.25rem;color:var(--orange)">
+      FASE ${fase} — ${['','Fundamentos Teóricos','Hardware & Componentes','Cableado & Instalación','Software & Programación','Comisionamiento','Operación & Mantenimiento','Nivel Avanzado'][fase]}
+      <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);font-weight:400;margin-left:12px">${qs.length} PREGUNTAS</span>
+    </div>
+    ${qs.map((q,i) => `
+    <div class="quiz-q" id="qq-${i}">
+      <div class="quiz-q-num">PREGUNTA ${String(i+1).padStart(2,'0')}</div>
+      <div class="quiz-q-text">${q.q}</div>
+      <div class="quiz-opts">
+        ${q.opts.map((o,j) => `
+        <div class="quiz-opt" id="qo-${i}-${j}" onclick="answerQuiz(${i},${j})">
+          <span class="quiz-opt-letter">${['A','B','C','D'][j]}</span>
+          <span>${o}</span>
+        </div>`).join('')}
+      </div>
+      <div class="quiz-explanation" id="qexp-${i}">💡 ${q.exp}</div>
+    </div>`).join('')}
+    <div id="quiz-score-area"></div>
+  `;
+}
+
+function answerQuiz(qi, oi) {
+  if (quizState.answered[qi] !== undefined) return;
+  quizState.answered[qi] = oi;
+  const q = QUIZDATA[quizState.fase][qi];
+  const correct = q.ans;
+
+  // Mark options
+  q.opts.forEach((_,j) => {
+    const el = document.getElementById(`qo-${qi}-${j}`);
+    el.style.pointerEvents = 'none';
+    if (j === correct) el.classList.add('correct');
+    else if (j === oi && oi !== correct) el.classList.add('wrong');
+    else el.classList.add('reveal');
+  });
+
+  // Show explanation
+  document.getElementById(`qexp-${qi}`).style.display = 'block';
+  if (oi === correct) quizState.score++;
+
+  // Check if all answered
+  if (Object.keys(quizState.answered).length === quizState.total) showQuizScore();
+}
+
+function showQuizScore() {
+  const pct = Math.round((quizState.score / quizState.total) * 100);
+  const msg = pct >= 80 ? '✅ APROBADO — Listo para continuar' : pct >= 60 ? '⚠ REGULAR — Repasa los módulos' : '❌ INSUFICIENTE — Revisa la fase completa';
+  const col = pct >= 80 ? '#4ade80' : pct >= 60 ? '#fbbf24' : '#f87171';
+  document.getElementById('quiz-score-area').innerHTML = `
+    <div class="quiz-score">
+      <div class="quiz-score-num" style="color:${col}">${pct}%</div>
+      <div class="quiz-score-lbl">${quizState.score} / ${quizState.total} CORRECTAS</div>
+      <div style="margin-top:0.75rem;font-size:0.85rem;color:${col}">${msg}</div>
+      <button class="btn btn-main" style="margin-top:1rem" onclick="loadQuiz(${quizState.fase})">↺ REINTENTAR</button>
+    </div>`;
+}
+
+// ─── RESULTADOS RTEST ───
+const rtestCycle = { 'rtest-detectores':0,'rtest-manuales':0,'rtest-nac':0,'rtest-modulos':0,'rtest-baterias':0,'rtest-causeeffect':0 };
+const rtestLabels = [
+  {txt:'— PENDIENTE —', cls:''},
+  {txt:'✓ APROBADO', cls:'approved'},
+  {txt:'✗ FALLIDO', cls:'failed'}
+];
+
+function cycleResult(id) {
+  rtestCycle[id] = (rtestCycle[id] + 1) % 3;
+  const el = document.getElementById(id);
+  const val = el.querySelector('.rtest-val');
+  const state = rtestLabels[rtestCycle[id]];
+  el.className = 'rtest-item' + (state.cls ? ' '+state.cls : '');
+  el.style.background = '';el.style.border = '';
+  val.textContent = state.txt;
+}
+
+// ─── GENERADOR DE REPORTE ───
+function generarReporte() {
+  const proyecto = document.getElementById('rp-proyecto').value || 'Sin nombre';
+  const direccion = document.getElementById('rp-direccion').value || '—';
+  const cliente = document.getElementById('rp-cliente').value || '—';
+  const contratista = document.getElementById('rp-contratista').value || '—';
+  const fecha = document.getElementById('rp-fecha').value || new Date().toISOString().split('T')[0];
+  const numero = document.getElementById('rp-numero').value || 'COM-001';
+  const panel = document.getElementById('rp-panel').value || '—';
+  const serie = document.getElementById('rp-serie').value || '—';
+  const fw = document.getElementById('rp-fw').value || '—';
+  const lazos = document.getElementById('rp-lazos').value || '—';
+  const dispositivos = document.getElementById('rp-dispositivos').value || '—';
+  const tecnico = document.getElementById('rp-tecnico').value || '—';
+  const obs = document.getElementById('rp-obs').value || 'Sin observaciones.';
+
+  // Recoger resultados de pruebas
+  const labels = {
+    'rtest-detectores':'Detectores SIGA','rtest-manuales':'Estaciones Manuales',
+    'rtest-nac':'Circuitos NAC','rtest-modulos':'Módulos SIGA',
+    'rtest-baterias':'Baterías','rtest-causeeffect':'Cause & Effect'
+  };
+  const resultados = Object.entries(labels).map(([id,name]) => {
+    const state = rtestCycle[id];
+    const color = state===1?'#166534':state===2?'#991b1b':'#374151';
+    const bg = state===1?'#dcfce7':state===2?'#fee2e2':'#f3f4f6';
+    const txt = rtestLabels[state].txt;
+    return `<tr><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;font-size:13px">${name}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center">
+        <span style="background:${bg};color:${color};padding:2px 10px;border-radius:3px;font-size:11px;font-weight:600;font-family:monospace">${txt}</span>
+      </td></tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Reporte de Comisionamiento — ${proyecto}</title>
+<style>
+  body{font-family:Arial,sans-serif;margin:0;padding:0;color:#111;background:#fff;font-size:13px}
+  .header{background:#1a1a2e;color:#fff;padding:24px 32px;display:flex;justify-content:space-between;align-items:flex-start}
+  .logo-area h1{font-size:22px;font-weight:700;letter-spacing:2px;margin:0;color:#E8510A}
+  .logo-area p{font-size:10px;letter-spacing:1px;color:#aaa;margin:4px 0 0}
+  .doc-num{text-align:right;font-size:11px;color:#aaa;font-family:monospace}
+  .doc-num .num{font-size:18px;color:#E8510A;font-weight:700;letter-spacing:1px}
+  .badge{display:inline-block;background:#E8510A;color:#fff;padding:3px 12px;font-size:10px;letter-spacing:2px;font-weight:700;margin-top:4px}
+  .body{padding:24px 32px}
+  .section-title{font-size:11px;font-weight:700;letter-spacing:2px;color:#E8510A;text-transform:uppercase;border-bottom:2px solid #E8510A;padding-bottom:4px;margin:20px 0 12px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .field{margin-bottom:10px}
+  .field label{font-size:9px;font-weight:700;letter-spacing:1.5px;color:#666;text-transform:uppercase;display:block;margin-bottom:2px}
+  .field .val{font-size:13px;padding:5px 8px;background:#f8f9fa;border:1px solid #e5e7eb;border-radius:2px}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th{background:#f3f4f6;padding:8px 12px;text-align:left;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#666;border-bottom:2px solid #e5e7eb}
+  .obs{background:#f8f9fa;border:1px solid #e5e7eb;padding:12px;border-radius:2px;font-size:13px;line-height:1.6;min-height:60px;white-space:pre-wrap}
+  .firma-area{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px}
+  .firma-box{border-top:1px solid #111;padding-top:8px;text-align:center;font-size:10px;letter-spacing:1px;color:#666;text-transform:uppercase}
+  .footer{background:#f3f4f6;border-top:2px solid #E8510A;padding:10px 32px;display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:24px}
+  @media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-area">
+    <h1>EDWARDS EST</h1>
+    <p>FIRE SAFETY SYSTEMS — CARRIER GLOBAL</p>
+    <div class="badge">REPORTE DE COMISIONAMIENTO</div>
+  </div>
+  <div class="doc-num">
+    <div class="num">${numero}</div>
+    <div>Fecha: ${fecha}</div>
+    <div style="margin-top:4px;font-size:10px">NFPA 72 — UL 864</div>
+  </div>
+</div>
+
+<div class="body">
+  <div class="section-title">I. Datos del Proyecto</div>
+  <div class="grid-2">
+    <div>
+      <div class="field"><label>Nombre del Proyecto</label><div class="val">${proyecto}</div></div>
+      <div class="field"><label>Dirección / Ubicación</label><div class="val">${direccion}</div></div>
+      <div class="field"><label>Cliente / Mandante</label><div class="val">${cliente}</div></div>
+    </div>
+    <div>
+      <div class="field"><label>Contratista Instalador</label><div class="val">${contratista}</div></div>
+      <div class="field"><label>Técnico Responsable</label><div class="val">${tecnico}</div></div>
+      <div class="field"><label>Fecha de Comisionamiento</label><div class="val">${fecha}</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">II. Datos del Sistema</div>
+  <div class="grid-2">
+    <div>
+      <div class="field"><label>Modelo de Panel</label><div class="val">Edwards EST — ${panel}</div></div>
+      <div class="field"><label>Número de Serie</label><div class="val">${serie}</div></div>
+      <div class="field"><label>Versión Firmware</label><div class="val">${fw}</div></div>
+    </div>
+    <div>
+      <div class="field"><label>Número de Lazos SLC</label><div class="val">${lazos}</div></div>
+      <div class="field"><label>Total Dispositivos</label><div class="val">${dispositivos}</div></div>
+      <div class="field"><label>Normativa Aplicable</label><div class="val">NFPA 72 / UL 864</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">III. Resultados de Pruebas — Walk Test</div>
+  <table>
+    <thead><tr><th>Componente / Prueba</th><th style="width:160px;text-align:center">Resultado</th></tr></thead>
+    <tbody>${resultados}</tbody>
+  </table>
+
+  <div class="section-title">IV. Observaciones y No Conformidades</div>
+  <div class="obs">${obs}</div>
+
+  <div class="section-title">V. Declaración de Conformidad</div>
+  <p style="font-size:12px;line-height:1.7;color:#444">
+    El suscrito certifica que el sistema de detección y alarma de incendio <strong>Edwards EST ${panel}</strong> instalado en el proyecto indicado ha sido comisionado conforme a los requisitos de <strong>NFPA 72</strong> y los estándares técnicos del fabricante (<strong>UL 864</strong>). Todas las pruebas indicadas fueron realizadas con resultado según lo consignado en la sección III. Las no conformidades detectadas han sido registradas en la sección IV.
+  </p>
+
+  <div class="firma-area">
+    <div class="firma-box">
+      <div style="height:50px"></div>
+      Técnico Responsable<br>${tecnico}
+    </div>
+    <div class="firma-box">
+      <div style="height:50px"></div>
+      Representante del Cliente<br>Nombre y Firma
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>Edwards EST Fire Safety — Reporte Comisionamiento</span>
+  <span>${numero} · ${fecha}</span>
+  <span>Conforme NFPA 72 / UL 864</span>
+</div>
+<script>window.onload=()=>window.print()<\/script>
+</body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Reporte-Comisionamiento-EST-${numero}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('rp-status').textContent = '✓ Reporte generado — se abrirá para imprimir como PDF';
+  document.getElementById('rp-status').style.color = '#4ade80';
 }
 </script>
 </body>
