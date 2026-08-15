@@ -24,25 +24,25 @@ jobs:
 
           root = pathlib.Path('.')
 
-          def from_parts(prefix):
-              files = sorted((root / 'payload').glob(prefix + '-*.txt'))
-              if not files:
-                  raise SystemExit(f'No payload files for {prefix}')
-              b64 = ''.join(p.read_text(encoding='utf-8').strip() for p in files)
+          def from_fixed(prefix):
+              b64 = (root / 'payload' / f'{prefix}-fixed.txt').read_text(encoding='utf-8').strip()
               return gzip.decompress(base64.b64decode(b64)).decode('utf-8')
 
           checks = [
-              ('fase1.html', from_parts('f1'), 'Fase 1'),
-              ('fase4.html', from_parts('f4'), 'Fase 4'),
-              ('fase5.html', from_parts('f5'), 'Fase 5'),
+              ('fase1.html', from_fixed('f1'), 'Fase 1', 47728),
+              ('fase4.html', from_fixed('f4'), 'Fase 4', 64508),
+              ('fase5.html', from_fixed('f5'), 'Fase 5', 69908),
           ]
 
-          for filename, html, label in checks:
+          for filename, html, label, expected in checks:
+              raw = html.encode('utf-8')
               low = html.lower()
+              if len(raw) != expected:
+                  raise SystemExit(f'{label} size mismatch: {len(raw)} != {expected}')
               if '<html' not in low or '</html>' not in low or '<body' not in low or '</body>' not in low:
                   raise SystemExit(f'{label} failed HTML integrity checks')
               (root / filename).write_text(html, encoding='utf-8')
-              print(filename, len(html.encode('utf-8')), 'bytes')
+              print(filename, len(raw), 'bytes OK')
 
       - name: Commit static HTML
         run: |
