@@ -1,59 +1,61 @@
-name: Publish DJ Console Pro
-
+name: Fix DJ Console Pro
 on:
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/publish-dj-console.yml'
-
+    paths: ['.github/workflows/publish-dj-console.yml']
 permissions:
   contents: write
-
 jobs:
-  publish:
+  fix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Rebuild verified DJ Console HTML
+        with: {fetch-depth: 0}
+      - name: Patch and validate
         shell: python
         run: |
-          import base64, gzip, hashlib, pathlib
-
-          root = pathlib.Path('.')
-          parts = [root / 'payload' / f'dj-safe-{i:02}.txt' for i in range(7)]
-          b64 = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
-          raw = gzip.decompress(base64.b64decode(b64))
-
-          expected_size = 70329
-          expected_sha = '635b271acd0a136d464384b1da4b52aad58c2f8d610600e0a5fbac5f56c402d0'
-          actual_sha = hashlib.sha256(raw).hexdigest()
-
-          if len(raw) != expected_size:
-              raise SystemExit(f'Size mismatch: {len(raw)} != {expected_size}')
-          if actual_sha != expected_sha:
-              raise SystemExit(f'SHA mismatch: {actual_sha} != {expected_sha}')
-
-          text = raw.decode('utf-8')
-          low = text.lower()
-          if '<html' not in low or '</html>' not in low or '<body' not in low or '</body>' not in low:
-              raise SystemExit('HTML integrity check failed')
-          if '<title>dj console pro</title>' not in low:
-              raise SystemExit('Unexpected document title')
-
-          (root / 'dj-console-pro.html').write_bytes(raw)
-          print('dj-console-pro.html', len(raw), actual_sha)
-
-      - name: Commit published page
+          from pathlib import Path
+          import hashlib
+          p=Path('dj-console-pro.html'); s=p.read_text(encoding='utf-8')
+          if '<title>DJ CONSOLE PRO</title>' not in s: raise SystemExit('Unexpected source')
+          css='''
+          /* Responsive DJ mobile fix */
+          @media (max-width:900px){
+            html,body{height:auto;min-height:100%;overflow:auto}.shell{display:flex;flex-direction:column;height:auto;min-height:100vh}
+            .browser{border-right:0;border-bottom:1px solid var(--line);min-height:0;max-height:36vh;flex:0 0 auto}.bh{grid-template-columns:1fr auto;align-items:center}.bh h2{grid-column:1/-1}.imp{width:auto;white-space:nowrap}.tlist{max-height:22vh}
+            .main{min-height:0;overflow:visible}.top{height:auto;min-height:48px;flex-wrap:wrap;padding:7px 9px;gap:7px;position:sticky;top:0;z-index:30}.top h1{font-size:.7rem;letter-spacing:.17em}.chip{max-width:135px;padding:4px 6px}
+            .stack{padding:7px 7px 5px}canvas.zoom{height:82px}canvas.ov{height:24px}.console{display:grid;grid-template-columns:1fr;gap:8px;padding:8px;overflow:visible}.deck,.mixer{min-width:0;width:100%}.mixer{order:2}.deck.A{order:1}.deck.B{order:3}
+            .jogzone{grid-template-columns:120px minmax(0,1fr);gap:8px}canvas.jog{width:120px;height:120px}.transport,.pads,.loops,.fxgrid,.fxrow{gap:4px}.tbtn,.pad,.lp,.fx{min-height:38px}.veil{overflow:auto}.veil>div{width:min(100%,520px)}
+          }
+          @media (max-width:520px){
+            .browser{max-height:34vh}.bh{grid-template-columns:1fr;padding:8px}.imp{width:100%}.top h1{width:100%}.top .chip{max-width:46%;font-size:.58rem}.top .spacer{display:none}.tb{flex:1;min-width:84px}
+            .stack{padding:5px}canvas.zoom{height:68px}.console{padding:6px;gap:6px}.deck,.mixer{padding:8px}.jogzone{grid-template-columns:1fr}canvas.jog{width:126px;height:126px;margin:auto}.bigbpm{text-align:center}
+            .transport{grid-template-columns:repeat(2,1fr)}.fxgrid{grid-template-columns:repeat(2,1fr)}.knobs{gap:5px}.k{padding:6px}.k label{font-size:.54rem}.veil{padding:16px 12px}.veil h2{font-size:1.2rem;letter-spacing:.13em}.veil button{width:100%;padding:13px 12px}
+          }'''
+          if '/* Responsive DJ mobile fix */' not in s: s=s.replace('</style>',css+'\n</style>',1)
+          helper='''
+          function makeStereoPanner(){
+            if(ac&&typeof ac.createStereoPanner==="function") return ac.createStereoPanner();
+            var g=ac.createGain(); g.pan=null; return g;
+          }'''
+          if 'function makeStereoPanner()' not in s: s=s.replace('function buildFx(input, output){',helper+'\nfunction buildFx(input, output){',1)
+          s=s.replace('panL=ac.createStereoPanner(), panR=ac.createStereoPanner(),','panL=makeStereoPanner(), panR=makeStereoPanner(),')
+          s=s.replace('panL.pan.value=-1; panR.pan.value=1; pF.gain.value=0.45;','if(panL.pan)panL.pan.value=-1; if(panR.pan)panR.pan.value=1; pF.gain.value=0.45;')
+          s=s.replace('var aP=ac.createStereoPanner();\n  input.connect(aP); aP.connect(mk("autopan","insert"));\n  F.autopan.lfo=lfo(1, 0.95, aP.pan);','var aP=makeStereoPanner();\n  input.connect(aP); aP.connect(mk("autopan","insert"));\n  F.autopan.lfo=aP.pan ? lfo(1,0.95,aP.pan) : null;')
+          s=s.replace('if(name==="autopan"){ m.lfo.osc.frequency.setTargetAtTime(1/(t*2), now, 0.05); }','if(name==="autopan"&&m.lfo){ m.lfo.osc.frequency.setTargetAtTime(1/(t*2),now,0.05); }')
+          old='$("#boot").onclick = function(){ initAudio(); $("#veil").classList.add("hide"); toast("Motor listo - carga tus pistas"); };'
+          new='''$("#boot").onclick=function(){try{initAudio();if(ac&&ac.resume)ac.resume();$("#veil").classList.add("hide");toast("Motor listo - carga tus pistas");}catch(e){var m="No se pudo iniciar el audio"+(e&&e.message?": "+e.message:"");toast(m,true);var p=$("#veil p");if(p)p.textContent=m+". Abre esta pagina directamente en Chrome, Safari o Edge.";}};'''
+          if old in s: s=s.replace(old,new,1)
+          req=['/* Responsive DJ mobile fix */','function makeStereoPanner()','panL=makeStereoPanner()','F.autopan.lfo=aP.pan ?','No se pudo iniciar el audio']
+          miss=[x for x in req if x not in s]
+          if miss: raise SystemExit('Patch failed: '+repr(miss))
+          p.write_text(s,encoding='utf-8',newline='\n')
+          print(p.stat().st_size,hashlib.sha256(p.read_bytes()).hexdigest())
+      - name: Commit fixed page
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add dj-console-pro.html
-          if git diff --cached --quiet; then
-            echo "No changes required"
-            exit 0
-          fi
-          git commit -m "Add DJ Console Pro"
+          if git diff --cached --quiet; then echo "No changes required"; exit 0; fi
+          git commit -m "Fix DJ Console Pro mobile and audio"
           git push
