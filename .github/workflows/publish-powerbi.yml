@@ -4,67 +4,52 @@ on:
   push:
     paths:
       - '.github/workflows/publish-powerbi.yml'
-      - 'payload/powerbi-v4/**'
+      - 'payload/powerbi-final-v5.patch'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build-powerbi:
+  publish-powerbi:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Verify payload chunks
+      - name: Apply and verify final Power BI patch
         shell: bash
         run: |
           set -euo pipefail
-          echo "f954d6fc8da33f1c1c7515c91992a62963dd0a9a87b1a5f00a923c5557701190  payload/powerbi-v4/part00.txt" | sha256sum -c -
-          echo "7ce09905c11e8e6222ae5cca9fa4d18109ec77c6dc625d98b7776f7b227f4550  payload/powerbi-v4/part01.txt" | sha256sum -c -
-          echo "bf5095df64fb7229b3f9f97c5d970e0ffb992d8d7ed8621f1a38c537402ffd7a  payload/powerbi-v4/part02.txt" | sha256sum -c -
-          echo "3b4a04a5f6e59203dd59c67c569e196231d4ce9d851dcc1b34d53ec917108697  payload/powerbi-v4/part03.txt" | sha256sum -c -
-          echo "11a85d16b8236420272aae98c638273f2bb98a2fc89e8d4067bb451f6648f47a  payload/powerbi-v4/part04.txt" | sha256sum -c -
-          echo "9cd8a03ee2fa4ff3b190c498e38d2531ccfce37f748d58fc2c3de886fa4123d0  payload/powerbi-v4/part05.txt" | sha256sum -c -
-          echo "527dae72c94e4a1cee6d9f88b923777190ab29c6e391c2694f6bc48e61039bce  payload/powerbi-v4/part06.txt" | sha256sum -c -
-          echo "6ec267ea918b228daf010cf3899b2d96a48935bacdb2f1d15e435c59e04636d4  payload/powerbi-v4/part07.txt" | sha256sum -c -
-          echo "5f7ffb2ad15f9788312526624cbc680540eb2c2701f814781f23a808079621e5  payload/powerbi-v4/part08.txt" | sha256sum -c -
-          echo "6af58b54dbc8102fe3d07e2ac99a9caf7b651709a2f5c13a8be3e318e4f0f26b  payload/powerbi-v4/part09.txt" | sha256sum -c -
-          echo "b2069841176783e7671ae178fe4f7572dfe3a912a3e47cf15d3a3270e9445bdb  payload/powerbi-v4/part10.txt" | sha256sum -c -
-          echo "a2473af73e4cbc95c1cb3579d8f51b54a00049ac61dbc9fa5acad0afde0252f6  payload/powerbi-v4/part11.txt" | sha256sum -c -
+          OLD_SHA='760663c50f0d2a7137bbe5c731da7048bf898fa58b4b8d1df485a03eba3e5f01'
+          NEW_SHA='ab5e85ae37104ac91d704810622c66a031039296132f51f50c46e74088ae1394'
+          CURRENT_SHA="$(sha256sum powerbi-learning-hub.html | awk '{print $1}')"
 
-      - name: Rebuild Power BI course
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat payload/powerbi-v4/part00.txt \
-              payload/powerbi-v4/part01.txt \
-              payload/powerbi-v4/part02.txt \
-              payload/powerbi-v4/part03.txt \
-              payload/powerbi-v4/part04.txt \
-              payload/powerbi-v4/part05.txt \
-              payload/powerbi-v4/part06.txt \
-              payload/powerbi-v4/part07.txt \
-              payload/powerbi-v4/part08.txt \
-              payload/powerbi-v4/part09.txt \
-              payload/powerbi-v4/part10.txt \
-              payload/powerbi-v4/part11.txt > powerbi.b64
-          base64 -d powerbi.b64 > powerbi.html.gz
-          gzip -dc powerbi.html.gz > powerbi-learning-hub.html
-          test "$(wc -c < powerbi-learning-hub.html)" -eq 170573
-          echo "760663c50f0d2a7137bbe5c731da7048bf898fa58b4b8d1df485a03eba3e5f01  powerbi-learning-hub.html" | sha256sum -c -
-
-      - name: Commit static Power BI course
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add powerbi-learning-hub.html
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
+          if [ "$CURRENT_SHA" = "$NEW_SHA" ]; then
+            echo 'Final Power BI file already verified.'
             exit 0
           fi
-          git commit -m "Publish Power BI Learning Hub"
+
+          if [ "$CURRENT_SHA" != "$OLD_SHA" ]; then
+            echo "Unexpected starting SHA: $CURRENT_SHA" >&2
+            exit 1
+          fi
+
+          git apply --check payload/powerbi-final-v5.patch
+          git apply payload/powerbi-final-v5.patch
+          test "$(wc -c < powerbi-learning-hub.html)" -eq 172049
+          echo "$NEW_SHA  powerbi-learning-hub.html" | sha256sum -c -
+
+      - name: Commit final Power BI course
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add powerbi-learning-hub.html
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+            exit 0
+          fi
+          git commit -m 'Publish final Power BI Learning Hub'
           git push
