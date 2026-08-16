@@ -1,0 +1,4165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Curso interactivo de Power BI con 16 capítulos desarrollados, dashboard, progreso, lectura guiada, ejemplos de código, prácticas y autoevaluación." />
+  <title>Power BI Learning Hub · Curso completo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f9fafc;
+      --surface-3: #eef2f7;
+      --text: #172033;
+      --muted: #667085;
+      --border: #e4e8ef;
+      --brand: #f2c811;
+      --brand-strong: #d9ad00;
+      --brand-soft: #fff8d6;
+      --nav: #111827;
+      --nav-2: #1f2937;
+      --success: #12805c;
+      --success-soft: #eaf8f2;
+      --danger: #b42318;
+      --danger-soft: #fff0ee;
+      --info: #2563eb;
+      --info-soft: #eff6ff;
+      --shadow-sm: 0 1px 2px rgba(16,24,40,.05);
+      --shadow: 0 10px 35px rgba(16,24,40,.08);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --sidebar: 316px;
+      --topbar: 76px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #111827;
+      --surface-2: #172033;
+      --surface-3: #1f2937;
+      --text: #f4f7fb;
+      --muted: #9aa4b2;
+      --border: #2b3648;
+      --brand-soft: #342f10;
+      --nav: #080d17;
+      --nav-2: #111827;
+      --success-soft: #103329;
+      --danger-soft: #3b1716;
+      --info-soft: #102a55;
+      --shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid rgba(242,200,17,.42); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: var(--sidebar) minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(242,200,17,.16), transparent 28%),
+        linear-gradient(180deg, var(--nav), #0b1220 100%);
+      color: #fff;
+      padding: 22px 18px;
+      overflow-y: auto;
+      z-index: 40;
+      border-right: 1px solid rgba(255,255,255,.06);
+    }
+
+    .brand {
+      display: flex;
+      gap: 13px;
+      align-items: center;
+      padding: 4px 8px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      margin-bottom: 16px;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--brand);
+      color: #111827;
+      box-shadow: 0 10px 24px rgba(242,200,17,.22);
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .brand-copy strong { display: block; font-size: 15px; letter-spacing: .2px; }
+    .brand-copy span { color: #aeb8c8; font-size: 12px; }
+
+    .side-actions {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 18px;
+    }
+
+    .side-btn,
+    .chapter-btn,
+    .unit-toggle {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .side-btn {
+      color: #d8dfeb;
+      border-radius: 12px;
+      padding: 11px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: .18s ease;
+    }
+
+    .side-btn:hover,
+    .side-btn.active {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+
+    .side-btn.active {
+      box-shadow: inset 3px 0 0 var(--brand);
+    }
+
+    .side-section-title {
+      color: #77849a;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin: 18px 10px 9px;
+      font-weight: 800;
+    }
+
+    .search-wrap {
+      padding: 0 2px 12px;
+      position: sticky;
+      top: -22px;
+      background: linear-gradient(180deg, var(--nav) 80%, transparent);
+      z-index: 5;
+    }
+
+    .search { position: relative; }
+
+    .search input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.07);
+      color: #fff;
+      border-radius: 12px;
+      padding: 10px 12px 10px 36px;
+      outline: none;
+    }
+
+    .search input::placeholder { color: #8f9aad; }
+    .search span {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8f9aad;
+      pointer-events: none;
+    }
+
+    .search-empty {
+      color: #8190a6;
+      font-size: 11px;
+      padding: 10px 12px;
+      line-height: 1.5;
+    }
+
+    .unit {
+      margin: 8px 0;
+      border-radius: 13px;
+      overflow: hidden;
+    }
+
+    .unit-toggle {
+      padding: 10px 9px;
+      color: #d5dce7;
+      display: grid;
+      grid-template-columns: 29px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border-radius: 12px;
+    }
+
+    .unit-toggle:hover { background: rgba(255,255,255,.05); }
+
+    .unit-num {
+      width: 29px;
+      height: 29px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.08);
+      color: var(--brand);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .unit-title { min-width: 0; }
+
+    .unit-title strong {
+      font-size: 12px;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .unit-title span { color: #8190a6; font-size: 10px; }
+    .unit-arrow { color: #7f8da2; transition: transform .2s; }
+    .unit.open .unit-arrow { transform: rotate(90deg); }
+    .chapter-list { display: none; padding: 2px 0 7px 13px; }
+    .unit.open .chapter-list { display: block; }
+
+    .chapter-btn {
+      position: relative;
+      color: #aeb8c8;
+      display: grid;
+      grid-template-columns: 26px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 8px;
+      border-radius: 10px;
+      margin: 2px 0;
+      transition: .18s ease;
+    }
+
+    .chapter-btn:hover { background: rgba(255,255,255,.05); color: #fff; }
+    .chapter-btn.active { background: rgba(242,200,17,.12); color: #fff; }
+
+    .chapter-btn.active::before {
+      content: "";
+      position: absolute;
+      left: -13px;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      border-radius: 3px;
+      background: var(--brand);
+    }
+
+    .chapter-index {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.14);
+      font-size: 10px;
+      color: #8f9aad;
+    }
+
+    .chapter-btn.done .chapter-index {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .chapter-btn.started .chapter-index {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+
+    .chapter-name { font-size: 11px; line-height: 1.25; }
+    .chapter-state { color: #6f7c90; font-size: 10px; }
+    .chapter-btn.done .chapter-state { color: #69d4b0; }
+    .chapter-btn.started .chapter-state { color: var(--brand); }
+
+    .sidebar-progress {
+      margin-top: 18px;
+      padding: 15px;
+      border-radius: 15px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.07);
+    }
+
+    .sidebar-progress-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 11px;
+      color: #cfd7e4;
+      margin-bottom: 9px;
+    }
+
+    .progress-track {
+      height: 8px;
+      background: var(--surface-3);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .sidebar .progress-track { background: rgba(255,255,255,.09); }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--brand), #ffe568);
+      border-radius: inherit;
+      transition: width .35s ease;
+    }
+
+    .storage-warning {
+      margin-top: 12px;
+      padding: 10px 11px;
+      border-radius: 11px;
+      background: rgba(242,200,17,.12);
+      border: 1px solid rgba(242,200,17,.3);
+      color: #f5e6a8;
+      font-size: 10px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .storage-warning.show { display: block; }
+
+    .shell { min-width: 0; }
+
+    .topbar {
+      height: var(--topbar);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 28px;
+      background: var(--surface);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-left {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mobile-menu {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+    }
+
+    .crumb {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .crumb strong { color: var(--text); }
+
+    .top-actions { display: flex; align-items: center; gap: 9px; }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 11px;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .profile { display: flex; align-items: center; gap: 10px; margin-left: 4px; }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), #ffd94f);
+      color: #111827;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .profile-copy { line-height: 1.2; }
+    .profile-copy strong { display: block; font-size: 12px; }
+    .profile-copy span { color: var(--muted); font-size: 10px; }
+
+    main { padding: 28px; }
+    .view { display: none; }
+    .view.active { display: block; animation: fade .2s ease; }
+    @keyframes fade { from { opacity: .35; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    .dashboard { max-width: 1280px; margin: 0 auto; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+
+    .hero-main {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 88% 10%, rgba(255,255,255,.18), transparent 22%),
+        linear-gradient(120deg, #121a2a, #202c42 72%, #2c3543);
+      color: white;
+      padding: 34px;
+      min-height: 270px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main::after {
+      content: "BI";
+      position: absolute;
+      right: 30px;
+      bottom: -28px;
+      font-size: 150px;
+      font-weight: 950;
+      color: rgba(242,200,17,.08);
+      letter-spacing: -.09em;
+    }
+
+    .eyebrow {
+      color: var(--brand);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 48px);
+      letter-spacing: -.04em;
+      line-height: 1.02;
+      margin: 0 0 12px;
+      max-width: 720px;
+    }
+
+    .hero-main p {
+      margin: 0 0 23px;
+      color: #c7d0df;
+      max-width: 690px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; position: relative; z-index: 2; }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      border-radius: 12px;
+      min-height: 42px;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 12px;
+      transition: transform .15s ease, opacity .15s ease, background .15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--brand); color: #111827; }
+    .btn-primary:hover { background: #ffda20; }
+    .btn-dark { background: #202b3c; color: white; border: 1px solid rgba(255,255,255,.1); }
+    .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger-soft); color: var(--danger); border: 1px solid rgba(180,35,24,.25); }
+
+    .hero-side {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .ring-wrap { display: flex; align-items: center; gap: 22px; }
+
+    .ring {
+      --p: 0;
+      width: 124px;
+      height: 124px;
+      border-radius: 50%;
+      background: conic-gradient(var(--brand) calc(var(--p) * 1%), var(--surface-3) 0);
+      display: grid;
+      place-items: center;
+      flex: 0 0 124px;
+      position: relative;
+    }
+
+    .ring::after {
+      content: "";
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: var(--surface);
+      position: absolute;
+    }
+
+    .ring-value { position: relative; z-index: 1; text-align: center; }
+    .ring-value strong { display: block; font-size: 25px; }
+    .ring-value span { color: var(--muted); font-size: 10px; }
+
+    .hero-side h3 { margin: 0 0 7px; font-size: 17px; }
+    .hero-side p { color: var(--muted); font-size: 12px; margin: 0; line-height: 1.5; }
+
+    .resume { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+
+    .resume-head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+    .resume-head strong { font-size: 12px; }
+    .resume-head span { color: var(--muted); font-size: 11px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--brand-soft);
+      color: #836d00;
+      font-size: 19px;
+    }
+
+    .stat-card:nth-child(2) .stat-icon { background: var(--success-soft); color: var(--success); }
+    .stat-card:nth-child(3) .stat-icon { background: var(--info-soft); color: var(--info); }
+    .stat-card:nth-child(4) .stat-icon { background: var(--surface-3); color: var(--muted); }
+
+    .stat-copy span { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+    .stat-copy strong { display: block; font-size: 22px; margin-top: 2px; }
+    .stat-copy em { display: block; font-style: normal; color: var(--muted); font-size: 10px; margin-top: 2px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 21px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2,
+    .panel-head h3 { margin: 0; font-size: 16px; }
+    .panel-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+
+    .unit-progress-list { display: grid; gap: 15px; }
+    .unit-progress-row {
+      display: grid;
+      grid-template-columns: minmax(160px, .8fr) minmax(160px, 1.4fr) 46px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .unit-progress-name strong { font-size: 12px; display: block; }
+    .unit-progress-name span { color: var(--muted); font-size: 10px; }
+    .unit-progress-row .pct { font-size: 11px; text-align: right; color: var(--muted); font-weight: 800; }
+
+    .next-list { display: grid; gap: 10px; }
+
+    .next-item {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 35px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      cursor: pointer;
+      background: var(--surface-2);
+      transition: .18s;
+      text-align: left;
+    }
+
+    .next-item:hover { transform: translateY(-1px); border-color: var(--brand); }
+
+    .next-num {
+      width: 35px;
+      height: 35px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: var(--brand-soft);
+      color: #836d00;
+      font-weight: 900;
+      font-size: 11px;
+    }
+
+    .next-copy strong { font-size: 11px; display: block; }
+    .next-copy span { color: var(--muted); font-size: 10px; }
+    .next-arrow { color: var(--muted); }
+
+    .course { max-width: 1160px; margin: 0 auto; }
+
+    .course-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .course-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: var(--brand);
+    }
+
+    .chapter-kicker {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: .1em;
+      margin-bottom: 8px;
+    }
+
+    .course-hero h1 {
+      margin: 0;
+      letter-spacing: -.03em;
+      font-size: clamp(25px, 4vw, 40px);
+      line-height: 1.08;
+    }
+
+    .course-hero p {
+      color: var(--muted);
+      max-width: 820px;
+      line-height: 1.65;
+      font-size: 13px;
+      margin: 12px 0 18px;
+    }
+
+    .meta-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: var(--surface-3);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .chip.success { background: var(--success-soft); color: var(--success); }
+    .chip.pending { background: var(--brand-soft); color: #7c6800; }
+
+    .course-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .lesson-stack { display: grid; gap: 16px; }
+
+    .lesson-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 23px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lesson-card h2 { margin: 0 0 13px; font-size: 17px; }
+    .lesson-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+
+    .objective-list,
+    .topic-grid {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0 0;
+      display: grid;
+      gap: 9px;
+    }
+
+    .objective-list li {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 9px;
+      align-items: start;
+      padding: 10px 11px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .objective-list .check {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--brand-soft);
+      color: #7c6800;
+      font-weight: 900;
+    }
+
+    .topic-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+
+    .topic {
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-2);
+    }
+
+    .topic strong { display: block; font-size: 11px; margin-bottom: 4px; }
+    .topic span { color: var(--muted); font-size: 10px; }
+
+    .flow {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(95px,1fr));
+      gap: 9px;
+      align-items: stretch;
+    }
+
+    .flow-step {
+      position: relative;
+      padding: 14px 10px;
+      border-radius: 13px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      min-height: 86px;
+    }
+
+    .flow-step::after {
+      content: "→";
+      position: absolute;
+      right: -10px;
+      top: 35%;
+      z-index: 2;
+      color: var(--muted);
+    }
+
+    .flow-step:last-child::after { display: none; }
+
+    .flow-step b {
+      display: grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #111827;
+      margin-bottom: 8px;
+      font-size: 10px;
+    }
+
+    .flow-step strong { display: block; font-size: 10px; }
+    .flow-step span { color: var(--muted); font-size: 9px; }
+
+    .lesson-reading-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 17px;
+    }
+
+    .lesson-reading-head .source-pill {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: var(--info-soft);
+      color: var(--info);
+      font-size: 9px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .lesson-lead {
+      margin: 0 0 16px !important;
+      color: var(--text) !important;
+      opacity: .86;
+      font-size: 13px !important;
+      line-height: 1.78 !important;
+    }
+
+    .content-blocks { display: grid; gap: 12px; }
+
+    .content-block {
+      display: grid;
+      grid-template-columns: 34px minmax(0,1fr);
+      gap: 13px;
+      align-items: start;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-2);
+    }
+
+    .content-index {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--brand);
+      color: #111827;
+      font-weight: 950;
+      font-size: 11px;
+      box-shadow: 0 6px 14px rgba(242,200,17,.16);
+    }
+
+    .content-block h3 { margin: 1px 0 7px; font-size: 13px; line-height: 1.35; }
+    .content-block p { color: var(--text); opacity: .78; }
+
+    .content-points {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .content-note {
+      margin-top: 11px;
+      padding: 11px 12px;
+      border-radius: 11px;
+      background: var(--brand-soft);
+      border: 1px solid rgba(242,200,17,.5);
+      color: var(--text);
+      opacity: .92;
+      font-size: 10.5px;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .remember-box {
+      margin-top: 16px;
+      padding: 15px;
+      border-radius: 14px;
+      background: var(--success-soft);
+      border: 1px solid rgba(18,128,92,.25);
+    }
+
+    .remember-box strong { display: block; margin-bottom: 7px; color: var(--success); font-size: 11px; }
+
+    .remember-box ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 5px;
+      color: var(--text);
+      opacity: .8;
+      font-size: 10.5px;
+      line-height: 1.5;
+    }
+
+    .code-stack { display: grid; gap: 14px; margin-top: 14px; }
+
+    .code-item + .code-item { padding-top: 0; }
+    .code-item > p.code-intro {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 11.5px;
+      line-height: 1.6;
+    }
+
+    .code-card {
+      background: #0c1320;
+      color: #dce6f5;
+      border-radius: 15px;
+      overflow: hidden;
+      border: 1px solid #1d2a3c;
+    }
+
+    .code-head {
+      padding: 10px 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      background: #131e2e;
+      border-bottom: 1px solid #243148;
+      color: #9eb0c8;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .copy-code {
+      border: 1px solid #34455f;
+      background: #1a2940;
+      color: #cfdbeb;
+      border-radius: 8px;
+      padding: 5px 8px;
+      cursor: pointer;
+      font-size: 9px;
+    }
+
+    .copy-code:hover { background: #24354f; }
+
+    pre {
+      margin: 0;
+      padding: 17px;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.65;
+      white-space: pre;
+    }
+
+    .tok-kw { color: #c792ea; }
+    .tok-fn { color: #f2c811; }
+    .tok-str { color: #7ee0c0; }
+    .tok-com { color: #64748b; font-style: italic; }
+    .tok-num { color: #f0a37e; }
+
+    .practice {
+      border-left: 4px solid var(--brand);
+      background: var(--brand-soft);
+      padding: 15px;
+      border-radius: 0 13px 13px 0;
+      margin-top: 14px;
+    }
+
+    .practice strong { font-size: 11px; display: block; margin-bottom: 5px; }
+    .practice p { color: var(--text); opacity: .82; }
+
+    .quiz-score {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 4px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .quiz-score .progress-track { flex: 1; max-width: 220px; }
+
+    .quiz-block { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--border); }
+    .quiz-block:first-of-type { border-top: 0; padding-top: 6px; }
+
+    .quiz-prompt {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 9px;
+      align-items: start;
+      font-size: 12.5px;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+
+    .quiz-prompt b {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--surface-3);
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .quiz-options { display: grid; gap: 9px; margin-top: 12px; }
+
+    .quiz-option {
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      padding: 11px 12px;
+      border-radius: 11px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 11px;
+      line-height: 1.45;
+      transition: .18s;
+    }
+
+    .quiz-option:hover:not(:disabled) { border-color: var(--brand); }
+    .quiz-option:disabled { cursor: default; }
+    .quiz-option.correct { border-color: var(--success); background: var(--success-soft); color: var(--success); }
+    .quiz-option.wrong { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
+
+    .quiz-feedback { margin-top: 10px; font-size: 11px; font-weight: 700; line-height: 1.55; min-height: 16px; }
+    .quiz-feedback.ok { color: var(--success); }
+    .quiz-feedback.bad { color: var(--danger); }
+
+    .quiz-actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 18px; }
+
+    .right-rail {
+      position: sticky;
+      top: calc(var(--topbar) + 18px);
+      display: grid;
+      gap: 14px;
+    }
+
+    .rail-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 17px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .rail-card h3 { margin: 0 0 11px; font-size: 13px; }
+    .rail-card p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+
+    .chapter-progress-copy {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .rail-steps { display: grid; gap: 6px; margin-top: 12px; }
+
+    .rail-step {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 8px;
+      align-items: center;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .rail-step i {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-size: 8px;
+      font-style: normal;
+    }
+
+    .rail-step.on { color: var(--text); }
+    .rail-step.on i { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .topic-nav { margin-top: 12px; display: grid; gap: 6px; }
+
+    .topic-nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 10px;
+      padding: 7px 8px;
+      border-radius: 9px;
+    }
+
+    .topic-nav a:hover { background: var(--surface-3); color: var(--text); }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      border-radius: 11px;
+      padding: 10px;
+      outline: none;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .rail-actions { display: grid; gap: 8px; margin-top: 10px; }
+    .notes-state { font-size: 9px; color: var(--muted); margin-top: 6px; min-height: 12px; }
+
+    .course-footer {
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+      margin: 18px -28px -28px;
+      padding: 14px 28px;
+      background: var(--surface);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .course-footer .btn:last-child { justify-self: end; }
+
+    .footer-progress {
+      min-width: 210px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .footer-progress .progress-track { flex: 1; min-width: 120px; }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 100;
+      background: var(--text);
+      color: var(--surface);
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 11px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: .2s;
+      max-width: min(360px, 80vw);
+    }
+
+    .toast.show { opacity: 1; transform: none; }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 39;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1080px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-side { min-height: 220px; }
+      .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .course-layout { grid-template-columns: 1fr; }
+      .right-rail { position: static; grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        transform: translateX(-104%);
+        transition: transform .25s ease;
+        width: min(88vw, 330px);
+        box-shadow: 20px 0 60px rgba(0,0,0,.28);
+      }
+      .app.menu-open .sidebar { transform: translateX(0); }
+      .app.menu-open .overlay { display: block; }
+      .mobile-menu { display: grid; place-items: center; }
+      .topbar { padding: 0 16px; }
+      main { padding: 18px 16px; }
+      .profile-copy { display: none; }
+      .course-footer { margin: 18px -16px -18px; padding: 12px 16px; }
+    }
+
+    @media (max-width: 640px) {
+      .hero-main { padding: 25px 21px; }
+      .hero-side { padding: 21px; }
+      .ring-wrap { align-items: flex-start; }
+      .ring { width: 104px; height: 104px; flex-basis: 104px; }
+      .ring::after { width: 77px; height: 77px; }
+      .stats { grid-template-columns: 1fr; }
+      .unit-progress-row { grid-template-columns: 1fr 54px; }
+      .unit-progress-row .progress-track { grid-column: 1 / -1; grid-row: 2; }
+      .unit-progress-row .pct { grid-column: 2; grid-row: 1; }
+      .course-hero, .lesson-card { padding: 19px; }
+      .topic-grid { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
+      .flow-step::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -13px; }
+      .right-rail { grid-template-columns: 1fr; }
+      .course-footer { grid-template-columns: 1fr 1fr; }
+      .footer-progress { display: none; }
+      .course-footer .btn:last-child { justify-self: stretch; }
+      .course-footer .btn { width: 100%; }
+      .lesson-reading-head { display: block; }
+      .lesson-reading-head .source-pill { display: inline-flex; margin-top: 9px; }
+      .content-block { grid-template-columns: 28px minmax(0,1fr); padding: 14px 12px; }
+      .content-index { width: 28px; height: 28px; border-radius: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="sidebar" aria-label="Navegación del curso">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">BI</div>
+      <div class="brand-copy">
+        <strong>Power BI Learning Hub</strong>
+        <span>Curso interactivo</span>
+      </div>
+    </div>
+
+    <div class="side-actions">
+      <button class="side-btn active" id="navHome" type="button"><span aria-hidden="true">⌂</span><span>Inicio</span></button>
+      <button class="side-btn" id="navContinue" type="button"><span aria-hidden="true">▶</span><span>Continuar aprendiendo</span></button>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search">
+        <span aria-hidden="true">⌕</span>
+        <input id="chapterSearch" type="search" placeholder="Buscar tema, concepto o función..." aria-label="Buscar en el curso" />
+      </div>
+    </div>
+
+    <div class="side-section-title">Ruta de aprendizaje</div>
+    <div id="unitNav"></div>
+
+    <div class="sidebar-progress">
+      <div class="sidebar-progress-row">
+        <span>Progreso total</span>
+        <strong id="sidebarPct">0%</strong>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="sidebarProgress"></div>
+      </div>
+      <div class="sidebar-progress-row" style="margin:9px 0 0">
+        <span id="sidebarDone">0 de 16 capítulos</span>
+        <span id="sidebarRemaining">16 pendientes</span>
+      </div>
+    </div>
+
+    <div class="storage-warning" id="storageWarning">
+      Este navegador no permite guardar datos locales, así que el avance solo dura mientras la pestaña esté abierta. Usa <strong>Exportar avance</strong> para conservarlo.
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <section class="shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu" id="mobileMenu" type="button" aria-label="Abrir menú" aria-expanded="false">☰</button>
+        <div class="crumb" id="breadcrumb"><strong>Inicio</strong> · Tu ruta de Power BI</div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="themeToggle" type="button" title="Cambiar tema" aria-label="Cambiar tema">◐</button>
+        <div class="profile">
+          <div class="avatar" aria-hidden="true">A</div>
+          <div class="profile-copy">
+            <strong>Alumno</strong>
+            <span id="profileLevel">Nivel inicial</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="dashboardView" aria-label="Panel de inicio">
+        <div class="dashboard">
+          <div class="hero">
+            <article class="hero-main">
+              <div class="eyebrow">Power BI · Ruta completa</div>
+              <h1>Aprende Power BI como un curso, no como un índice.</h1>
+              <p>
+                Avanza por fundamentos, preparación de datos, modelado, DAX, visualizaciones y publicación.
+                Cada capítulo incluye lectura guiada, ejemplos de código, una práctica y tres preguntas de control.
+              </p>
+              <div class="hero-actions">
+                <button class="btn btn-primary" id="heroContinue" type="button">▶ Continuar curso</button>
+                <button class="btn btn-dark" id="heroStart" type="button">Ver desde el capítulo 1</button>
+              </div>
+            </article>
+
+            <aside class="hero-side">
+              <div class="ring-wrap">
+                <div class="ring" id="progressRing" style="--p:0" role="img" aria-label="Progreso del curso">
+                  <div class="ring-value">
+                    <strong id="ringPct">0%</strong>
+                    <span>completado</span>
+                  </div>
+                </div>
+                <div>
+                  <h3>Tu avance</h3>
+                  <p id="ringMessage">Empieza por el primer capítulo y ve construyendo la ruta paso a paso.</p>
+                </div>
+              </div>
+              <div class="resume">
+                <div class="resume-head">
+                  <strong id="resumeTitle">Cap. 1 · ¿Qué es Power BI?</strong>
+                  <span id="resumeMeta">Unidad 1</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="resumeProgress"></div>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <section class="stats" aria-label="Resumen del curso">
+            <article class="stat-card">
+              <div class="stat-icon" aria-hidden="true">◎</div>
+              <div class="stat-copy">
+                <span>Progreso</span>
+                <strong id="statProgress">0%</strong>
+                <em id="statProgressSub">ponderado por capítulo</em>
+              </div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon" aria-hidden="true">✓</div>
+              <div class="stat-copy">
+                <span>Completados</span>
+                <strong id="statDone">0 / 16</strong>
+                <em>capítulos marcados</em>
+              </div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon" aria-hidden="true">?</div>
+              <div class="stat-copy">
+                <span>Autoevaluaciones</span>
+                <strong id="statQuiz">0 / 16</strong>
+                <em id="statQuizSub">0 respuestas correctas</em>
+              </div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon" aria-hidden="true">✎</div>
+              <div class="stat-copy">
+                <span>Notas guardadas</span>
+                <strong id="statNotes">0</strong>
+                <em>capítulos con apuntes</em>
+              </div>
+            </article>
+          </section>
+
+          <div class="grid-2">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Progreso por unidad</h2>
+                  <p>Una vista clara de tu avance en los cinco grandes bloques.</p>
+                </div>
+              </div>
+              <div class="unit-progress-list" id="unitProgressList"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3>Próximos capítulos</h3>
+                  <p>Continúa desde donde estás o salta a otro tema.</p>
+                </div>
+              </div>
+              <div class="next-list" id="nextList"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="courseView" aria-label="Capítulo del curso">
+        <div class="course">
+          <article class="course-hero">
+            <div class="chapter-kicker" id="chapterKicker">Unidad 1 · Fundamentos y preparación</div>
+            <h1 id="chapterTitle">Capítulo 1 · ¿Qué es Power BI?</h1>
+            <p id="chapterSummary"></p>
+            <div class="meta-row">
+              <span class="chip" id="chapterDuration">◷ 25 min</span>
+              <span class="chip" id="chapterTopicCount">☷ 4 temas</span>
+              <span class="chip" id="chapterCodeCount">⌘ 0 ejemplos</span>
+              <span class="chip pending" id="chapterStatus">Pendiente</span>
+            </div>
+          </article>
+
+          <div class="course-layout">
+            <div class="lesson-stack">
+              <section class="lesson-card" id="objectivesSection">
+                <h2>🎯 Objetivos de aprendizaje</h2>
+                <p>Al terminar este capítulo deberías poder:</p>
+                <ul class="objective-list" id="objectiveList"></ul>
+              </section>
+
+              <section class="lesson-card" id="topicsSection">
+                <h2>🧭 Mapa del capítulo</h2>
+                <p>Estos son los conceptos principales que estructuran esta parte del curso.</p>
+                <div class="topic-grid" id="topicGrid"></div>
+                <div id="specialVisual"></div>
+              </section>
+
+              <section class="lesson-card" id="lessonContentSection">
+                <div class="lesson-reading-head">
+                  <div>
+                    <h2>📚 Lección explicada</h2>
+                    <p>Desarrollo del capítulo con las ideas que sostienen todo lo demás.</p>
+                  </div>
+                  <span class="source-pill" id="lessonSource">Lectura guiada</span>
+                </div>
+                <div id="lessonContent"></div>
+              </section>
+
+              <section class="lesson-card" id="codeSection" hidden>
+                <h2>⌘ Ejemplos de código</h2>
+                <p id="codeSectionIntro">Fórmulas y consultas listas para adaptar a tu propio modelo.</p>
+                <div class="code-stack" id="codeStack"></div>
+              </section>
+
+              <section class="lesson-card" id="practiceSection">
+                <h2>🧪 Práctica guiada</h2>
+                <p>Convierte el contenido del capítulo en una acción concreta.</p>
+                <div class="practice">
+                  <strong>Reto</strong>
+                  <p id="practiceText"></p>
+                </div>
+              </section>
+
+              <section class="lesson-card" id="quizSection">
+                <h2>✅ Autoevaluación</h2>
+                <p id="quizIntro">Responde las preguntas de control del capítulo.</p>
+                <div class="quiz-score">
+                  <span id="quizScoreText">0 / 3 correctas</span>
+                  <div class="progress-track"><div class="progress-fill" id="quizScoreBar"></div></div>
+                </div>
+                <div id="quizList"></div>
+                <div class="quiz-actions">
+                  <button class="btn btn-ghost" id="retryQuiz" type="button">↺ Repetir autoevaluación</button>
+                </div>
+              </section>
+            </div>
+
+            <aside class="right-rail">
+              <section class="rail-card">
+                <h3>Progreso del capítulo</h3>
+                <div class="chapter-progress-copy">
+                  <span>Estado</span>
+                  <strong id="railStatus">Pendiente</strong>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="railProgress"></div>
+                </div>
+                <div class="rail-steps" id="railSteps"></div>
+                <div class="topic-nav">
+                  <a href="#objectivesSection">Objetivos</a>
+                  <a href="#topicsSection">Mapa del capítulo</a>
+                  <a href="#lessonContentSection">Lección explicada</a>
+                  <a href="#codeSection">Ejemplos de código</a>
+                  <a href="#practiceSection">Práctica</a>
+                  <a href="#quizSection">Autoevaluación</a>
+                </div>
+              </section>
+
+              <section class="rail-card">
+                <h3>Mis notas</h3>
+                <p style="margin-bottom:9px">Se guardan automáticamente por capítulo.</p>
+                <textarea id="chapterNotes" aria-label="Notas del capítulo" placeholder="Escribe aquí tus ideas, fórmulas, dudas o recordatorios..."></textarea>
+                <div class="notes-state" id="notesState" aria-live="polite"></div>
+                <div class="rail-actions">
+                  <button class="btn btn-ghost" id="saveNotes" type="button">Guardar notas</button>
+                </div>
+              </section>
+
+              <section class="rail-card">
+                <h3>Acciones</h3>
+                <p>Marca el capítulo cuando hayas terminado lectura, práctica y autoevaluación.</p>
+                <div class="rail-actions">
+                  <button class="btn btn-success" id="completeChapter" type="button">✓ Marcar completado</button>
+                  <button class="btn btn-danger" id="resetChapter" type="button">Restablecer capítulo</button>
+                </div>
+              </section>
+
+              <section class="rail-card">
+                <h3>Tu avance</h3>
+                <p>Descarga un archivo con tu progreso o recupéralo en otro equipo.</p>
+                <div class="rail-actions">
+                  <button class="btn btn-ghost" id="exportProgress" type="button">↓ Exportar avance</button>
+                  <button class="btn btn-ghost" id="importProgress" type="button">↑ Importar avance</button>
+                  <button class="btn btn-danger" id="resetCourse" type="button">Reiniciar todo el curso</button>
+                </div>
+                <input type="file" id="importFile" accept="application/json,.json" class="sr-only" aria-hidden="true" tabindex="-1">
+              </section>
+            </aside>
+          </div>
+
+          <footer class="course-footer">
+            <button class="btn btn-ghost" id="prevChapter" type="button">← Anterior</button>
+            <div class="footer-progress">
+              <span id="footerProgressText">0%</span>
+              <div class="progress-track">
+                <div class="progress-fill" id="footerProgress"></div>
+              </div>
+            </div>
+            <button class="btn btn-primary" id="nextChapter" type="button">Siguiente →</button>
+          </footer>
+        </div>
+      </section>
+    </main>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+/* =========================================================================
+   POWER BI LEARNING HUB
+   Aplicación de un solo archivo. Estructura:
+   1) Datos del curso  · courseData, chapterLessons, codeLibrary, quizData
+   2) Estado           · almacenamiento seguro con respaldo en memoria
+   3) Render           · sidebar, dashboard, capítulo, autoevaluación
+   4) Eventos          · navegación, notas, progreso, exportar/importar
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- 1. DATOS */
+
+const courseData = {
+  title: "Power BI",
+  units: [
+    { id: 1, title: "Fundamentos y preparación", subtitle: "Capítulos 1–4", chapters: [1, 2, 3, 4] },
+    { id: 2, title: "Modelado", subtitle: "Capítulos 5–6", chapters: [5, 6] },
+    { id: 3, title: "DAX", subtitle: "Capítulos 7–11", chapters: [7, 8, 9, 10, 11] },
+    { id: 4, title: "Informes y analítica", subtitle: "Capítulos 12–15", chapters: [12, 13, 14, 15] },
+    { id: 5, title: "Power BI Service", subtitle: "Capítulo 16", chapters: [16] }
+  ],
+  chapters: {
+    1: {
+      title: "¿Qué es Power BI?",
+      duration: 25,
+      summary: "Una introducción al ecosistema de Power BI, sus antecedentes, sus componentes principales, el flujo de trabajo y los roles que intervienen en un proyecto.",
+      objectives: [
+        "Conocer Power BI y sus antecedentes.",
+        "Diferenciar los componentes que integran Power BI.",
+        "Identificar los roles que se pueden cumplir al trabajar en el entorno de Power BI."
+      ],
+      topics: ["Antecedentes de Power BI", "Componentes de Power BI", "Flujo de trabajo", "Roles en Power BI"],
+      practice: "Dibuja un flujo con cinco pasos: origen de datos → transformación → modelo → informe → publicación. Después identifica en qué parte actuaría un diseñador, un administrador y un consumidor."
+    },
+    2: {
+      title: "Trabajar desde Power BI Desktop",
+      duration: 40,
+      summary: "Recorre el entorno de Power BI Desktop: instalación, vistas de trabajo, cinta de opciones, paneles y configuración básica de la herramienta.",
+      objectives: [
+        "Descargar Power BI Desktop.",
+        "Descubrir las opciones y el entorno de trabajo de Power BI Desktop.",
+        "Iniciar sesión en Power BI Desktop."
+      ],
+      topics: ["Descarga e instalación", "Vista Informes", "Vista Datos", "Vista Modelo", "Cinta de opciones", "Paneles", "Configuración"],
+      practice: "Abre Power BI Desktop e identifica las tres vistas principales. Anota para qué usarías cada una y localiza los paneles de Filtros, Visualizaciones y Campos."
+    },
+    3: {
+      title: "Conectar a datos externos",
+      duration: 45,
+      summary: "Introduce el proceso de conexión a orígenes externos y el entorno de Power Query para inspeccionar, configurar y preparar los datos antes del modelado.",
+      objectives: [
+        "Utilizar las opciones del entorno de trabajo de Power Query en Power BI Desktop.",
+        "Conectar a datos externos.",
+        "Ver los datos importados."
+      ],
+      topics: ["Obtener datos", "Entorno de Power Query", "Panel Consultas", "Panel Datos", "Configuración de la consulta", "Modos de acceso", "Propiedades de conexión"],
+      practice: "Conecta un archivo de Excel o CSV de prueba. Antes de cargarlo, revisa nombres de columnas, tipos de datos y los pasos aplicados en Power Query."
+    },
+    4: {
+      title: "Transformar datos",
+      duration: 65,
+      summary: "Trabaja la limpieza y transformación de datos en Power Query: tipos, columnas, estructura, combinación de consultas y preparación del modelo.",
+      objectives: [
+        "Limpiar y transformar datos.",
+        "Combinar consultas.",
+        "Preparar el modelo para el análisis."
+      ],
+      topics: ["Calidad y limpieza", "Tipos de datos", "Agregar columnas", "Unpivot", "Dividir y combinar columnas", "Combinar consultas", "Anexar consultas", "Editor avanzado"],
+      practice: "Toma una tabla con columnas innecesarias, tipos incorrectos y valores repetidos. Limpia la consulta, crea una columna condicional y documenta cada transformación."
+    },
+    5: {
+      title: "Modelado de datos con Power BI",
+      duration: 45,
+      summary: "Presenta las bases del modelo tabular y el trabajo con tablas, relaciones y propiedades del modelo de datos.",
+      objectives: [
+        "Comprender las características de un modelo tabular.",
+        "Reconocer el papel de las tablas y sus relaciones.",
+        "Configurar propiedades de los elementos del modelo."
+      ],
+      topics: ["Modelo tabular", "Tablas", "Relaciones", "Propiedades del modelo"],
+      practice: "Construye un modelo pequeño con una tabla de ventas, una de clientes y una de productos. Comprueba cardinalidad y dirección de filtrado."
+    },
+    6: {
+      title: "Introducción a la optimización de modelos",
+      duration: 55,
+      summary: "Compara estructuras de modelado y aborda escenarios frecuentes de rendimiento, relaciones, jerarquías y tablas de fecha.",
+      objectives: [
+        "Diferenciar tabla única, copo de nieve y esquema estrella.",
+        "Identificar problemas de modelado que afectan al rendimiento.",
+        "Crear y configurar una tabla de fecha."
+      ],
+      topics: ["Tabla única", "Copo de nieve", "Esquema estrella", "Rendimiento", "Relaciones 1:1", "Dirección de filtro", "Tabla calendario"],
+      practice: "Revisa un modelo con varias relaciones y decide qué tablas deberían ser hechos y dimensiones. Propón una versión más cercana a un esquema estrella."
+    },
+    7: {
+      title: "Bases del lenguaje DAX",
+      duration: 50,
+      summary: "Introduce la sintaxis, funciones, operadores, variables y los tipos de cálculos que pueden construirse con DAX.",
+      objectives: [
+        "Crear expresiones en lenguaje DAX.",
+        "Reconocer funciones, operadores y buenas prácticas.",
+        "Diferenciar columnas calculadas, medidas y tablas calculadas."
+      ],
+      topics: ["Sintaxis DAX", "Comentarios y formato", "Funciones", "Operadores", "Variables", "Columnas calculadas", "Medidas", "Tablas calculadas"],
+      practice: "Crea una medida básica de ventas y una segunda medida que reutilice la primera. Explica por qué una medida no es lo mismo que una columna calculada."
+    },
+    8: {
+      title: "Crear componentes con DAX",
+      duration: 50,
+      summary: "Profundiza en la creación de medidas base, agregaciones, reutilización de medidas y control de divisiones.",
+      objectives: [
+        "Crear medidas base a partir de columnas.",
+        "Reutilizar medidas en nuevos cálculos.",
+        "Evitar errores de división por cero."
+      ],
+      topics: ["Medidas base", "Agregados", "Más de una tabla", "Reutilización de medidas", "DIVIDE"],
+      practice: "Crea medidas para ventas, coste y margen. Después crea el porcentaje de margen reutilizando las medidas anteriores."
+    },
+    9: {
+      title: "Contextos en DAX y requisitos de negocio",
+      duration: 70,
+      summary: "Trabaja contexto de filtro, contexto de fila, CALCULATE y técnicas de filtrado para responder preguntas de negocio.",
+      objectives: [
+        "Diferenciar contexto de filtro y contexto de fila.",
+        "Comprender el papel de CALCULATE.",
+        "Crear filtros DAX para distintos escenarios de negocio."
+      ],
+      topics: ["Contexto de filtro", "Contexto de fila", "CALCULATE", "Filtros DAX", "AND / OR", "ALL", "Relaciones inactivas"],
+      practice: "Crea una medida de ventas totales y otra que ignore el filtro de una categoría usando ALL. Compara los resultados en una matriz."
+    },
+    10: {
+      title: "DAX e inteligencia de tiempos",
+      duration: 60,
+      summary: "Aplica DAX a acumulados, comparaciones de períodos y análisis temporal usando una tabla calendario.",
+      objectives: [
+        "Preparar una tabla calendario para inteligencia de tiempo.",
+        "Crear acumulados y medias móviles.",
+        "Comparar períodos actuales con períodos anteriores."
+      ],
+      topics: ["Tabla Calendario", "Acumulado YTD", "Período anterior", "Mismo período año pasado", "Crecimiento", "Rangos de fecha"],
+      practice: "Crea una medida de ventas YTD y otra para el mismo período del año anterior. Añade una tercera medida con el porcentaje de crecimiento."
+    },
+    11: {
+      title: "Modelado, visualizaciones y DAX",
+      duration: 50,
+      summary: "Relaciona la calidad del modelo con el comportamiento de los cálculos y visualizaciones: relaciones, categorías, jerarquías y visibilidad.",
+      objectives: [
+        "Reconocer errores habituales en relaciones.",
+        "Configurar orden, categorías y formatos.",
+        "Usar jerarquías y visibilidad para mejorar la experiencia del informe."
+      ],
+      topics: ["Errores de relaciones", "Tipos de datos", "Ordenar por columna", "Categorías", "Agregación", "Visibilidad", "Jerarquías"],
+      practice: "Crea una jerarquía de fecha y otra geográfica. Oculta las columnas técnicas que no deberían ser visibles para quien construye el informe."
+    },
+    12: {
+      title: "Crear y configurar visualizaciones",
+      duration: 70,
+      summary: "Recorre los principales objetos visuales de Power BI, su configuración y criterios de elección según el tipo de análisis.",
+      objectives: [
+        "Reconocer los tipos de visualizaciones disponibles.",
+        "Elegir el gráfico adecuado según el objetivo.",
+        "Configurar objetos visuales, formatos y propiedades."
+      ],
+      topics: ["Tarjetas", "KPI", "Barras y columnas", "Líneas y áreas", "Combinados", "Circular y anillo", "Treemap", "Embudo", "Tablas y matrices", "Mapas", "Dispersión"],
+      practice: "Diseña una página con una tarjeta, un gráfico de líneas y una matriz. Justifica qué pregunta responde cada visual."
+    },
+    13: {
+      title: "Filtrar datos en informes",
+      duration: 55,
+      summary: "Explora cómo interactúan los visuales, los segmentadores y el panel de filtros, incluyendo sincronización y obtención de detalle.",
+      objectives: [
+        "Comprender la interacción entre visualizaciones.",
+        "Usar segmentadores para controlar el análisis.",
+        "Configurar filtros con distintos alcances."
+      ],
+      topics: ["Editar interacciones", "Segmentadores", "Selección única y múltiple", "Filtros de página", "Filtros de informe", "Incluir / Excluir", "Drillthrough", "Tooltips"],
+      practice: "Crea dos segmentadores y tres visuales. Prueba el comportamiento predeterminado y luego modifica una interacción para que un visual no filtre a otro."
+    },
+    14: {
+      title: "Analítica avanzada con Power BI",
+      duration: 80,
+      summary: "Reúne perfiles de datos, integración con R y Python, detección de anomalías y objetos con capacidades de inteligencia artificial.",
+      objectives: [
+        "Explorar perfiles y calidad de datos.",
+        "Integrar R o Python cuando el análisis lo requiera.",
+        "Usar capacidades avanzadas e inteligencia artificial integrada."
+      ],
+      topics: ["Perfil de datos", "R y Python", "Clústeres", "Anomalías", "Tendencia", "Previsión", "Preguntas y respuestas", "Elementos influyentes", "Narración inteligente"],
+      practice: "Elige una visualización temporal y activa una función analítica disponible, como tendencia, previsión o detección de anomalías. Documenta qué aporta."
+    },
+    15: {
+      title: "La historia de los datos",
+      duration: 55,
+      summary: "Se centra en storytelling, accesibilidad, organización visual, botones, navegación, marcadores, selección y temas.",
+      objectives: [
+        "Aplicar principios de narrativa y accesibilidad.",
+        "Crear navegación con botones y marcadores.",
+        "Usar temas y organización visual para mejorar la experiencia."
+      ],
+      topics: ["Storytelling", "Accesibilidad", "Diseño de página", "Botones", "Navegadores", "Marcadores", "Panel Selección", "Temas"],
+      practice: "Crea dos marcadores con estados distintos de una misma página y añade botones para navegar entre ellos como una pequeña presentación."
+    },
+    16: {
+      title: "Power BI más allá de Desktop",
+      duration: 70,
+      summary: "Introduce el Servicio Power BI: publicación, áreas de trabajo, datos, seguridad, paneles, colaboración y consumo móvil.",
+      objectives: [
+        "Comprender el papel del Servicio Power BI.",
+        "Diferenciar informes y paneles.",
+        "Reconocer opciones de publicación, seguridad y colaboración."
+      ],
+      topics: ["Servicio Power BI", "Licencias", "Publicar", "Áreas de trabajo", "Linaje", "Conjuntos de datos", "Flujos de datos", "Seguridad", "Paneles", "Colaboración", "Power BI Mobile"],
+      practice: "Describe el recorrido de un informe desde Power BI Desktop hasta un área de trabajo. Señala qué pasos dependen de permisos y cuáles corresponden al consumidor."
+    }
+  }
+};
+
+const chapterLessons = {
+  "1": {
+    "sourcePages": "18–23",
+    "lead": "Power BI se presenta como una herramienta de inteligencia de negocio de Microsoft orientada a convertir datos externos en modelos, informes interactivos y finalmente historias de datos que puedan consumirse y compartirse.",
+    "topicDescriptions": [
+      "De SQL Server y Excel/Power Pivot a una plataforma integrada de BI.",
+      "Desktop crea y modela; el Servicio publica y administra; Mobile permite consumir contenidos.",
+      "El recorrido recomendado va desde los datos y Power Query hasta el modelo, el informe y la publicación.",
+      "El uso de Power BI cambia según se diseñen modelos, informes, se administren recursos o se consuman resultados."
+    ],
+    "sections": [
+      {
+        "title": "Qué problema resuelve Power BI",
+        "body": "El punto de partida del capítulo es el crecimiento de los datos y la necesidad de tratarlos, modelarlos y visualizarlos de forma útil. Power BI reúne herramientas para conectar fuentes distintas, convertirlas en un modelo coherente y presentar el resultado mediante informes analíticos interactivos.",
+        "points": [
+          "Los datos pueden provenir de orígenes diferentes y no relacionados.",
+          "El modelo permite relacionar tablas y simplificar el análisis.",
+          "La visualización es la capa final para comunicar la información."
+        ]
+      },
+      {
+        "title": "De dónde viene Power BI",
+        "body": "El material sitúa sus antecedentes en la experiencia de Microsoft con los servicios de inteligencia de negocio de SQL Server y en la evolución de Excel como herramienta de BI. Power Pivot aportó el modelo tabular; Power View, Power Query y Power Map ampliaron el trabajo con visualización, preparación y mapas.",
+        "callout": "Idea clave: Power BI no aparece aislado; integra aprendizajes previos de modelado, preparación y visualización de datos."
+      },
+      {
+        "title": "Los tres componentes principales",
+        "body": "Power BI Desktop es la aplicación de escritorio para conectar, transformar, modelar y diseñar informes. El Servicio Power BI es el entorno en la nube para publicar, administrar y colaborar. Power BI Mobile permite consultar y analizar el contenido publicado desde dispositivos móviles.",
+        "points": [
+          "Desktop: creación y modelado.",
+          "Servicio: publicación, administración y colaboración.",
+          "Mobile: consumo ágil del contenido publicado."
+        ]
+      },
+      {
+        "title": "Flujo de trabajo y roles",
+        "body": "El flujo recomendado empieza en Desktop, continúa en Power Query para limpiar y transformar datos, sigue con un modelo eficiente y un informe, y termina con la publicación en el Servicio Power BI. Los roles descritos incluyen diseñador de modelos e informes, diseñador de informes, administrador de recursos y consumidor."
+      }
+    ],
+    "remember": [
+      "Power BI combina preparación, modelado, análisis, visualización y publicación.",
+      "Desktop, Servicio y Mobile cumplen funciones distintas pero conectadas.",
+      "El rol de una persona determina en qué parte del ecosistema trabajará con mayor intensidad."
+    ]
+  },
+  "2": {
+    "sourcePages": "24–34",
+    "lead": "Este capítulo introduce Power BI Desktop como el entorno principal de trabajo para tratar datos y construir informes. El objetivo no es memorizar botones, sino entender qué vista y qué panel corresponde a cada tarea.",
+    "topicDescriptions": [
+      "Instalación desde Microsoft Store o desde el sitio de Power BI.",
+      "La vista Informe es el lienzo donde se construyen los objetos visuales.",
+      "La vista Datos permite explorar tablas; la vista Modelo permite trabajar con relaciones y estructura.",
+      "La cinta y los paneles concentran las acciones de datos, modelado, visualización, formato y filtros."
+    ],
+    "sections": [
+      {
+        "title": "Qué se puede hacer con Desktop",
+        "body": "Power BI Desktop permite conectarse a uno o varios orígenes externos, transformar los datos, darles forma de modelo y utilizar ese modelo para crear visualizaciones. El archivo de trabajo se guarda con extensión .PBIX.",
+        "points": [
+          "Conectar a datos.",
+          "Transformar y modelar.",
+          "Diseñar informes.",
+          "Guardar el proyecto como archivo PBIX."
+        ]
+      },
+      {
+        "title": "Las tres vistas principales",
+        "body": "La vista Informes es el lienzo de diseño de las páginas. La vista Datos sirve para explorar tablas y columnas sin modificar los datos almacenados. La vista Modelo muestra la estructura de tablas y relaciones, y es el lugar central para comprender cómo está organizado el modelo.",
+        "callout": "Regla práctica: si estás diseñando una página, piensa en Informe; si inspeccionas valores, Datos; si revisas relaciones, Modelo."
+      },
+      {
+        "title": "Cinta de opciones y paneles",
+        "body": "La cinta superior agrupa tareas como acceso a datos, inserción de objetos, modelado y visualización. A la derecha aparecen paneles como Filtros, Visualizaciones y Campos, desde los que se controlan filtros, tipos de visual y los elementos del modelo que alimentan cada gráfico."
+      },
+      {
+        "title": "Configuración e inicio de sesión",
+        "body": "Desktop puede utilizarse sin iniciar sesión para muchas tareas locales. Sin embargo, algunas acciones, como publicar en el Servicio Power BI u obtener determinados objetos visuales, requieren autenticación. La versión y las opciones de configuración se consultan desde los menús de Ayuda y Opciones."
+      }
+    ],
+    "remember": [
+      "Desktop es el entorno de creación del modelo y del informe.",
+      "Informe, Datos y Modelo responden a tareas diferentes.",
+      "Publicar y algunas funciones conectadas requieren iniciar sesión."
+    ]
+  },
+  "3": {
+    "sourcePages": "35–62",
+    "lead": "La conexión es el primer paso técnico del ciclo de datos. Power BI incluye numerosos conectores y utiliza Power Query para revisar, limpiar y preparar la información antes de llevarla al modelo.",
+    "topicDescriptions": [
+      "Elegir un conector según el tipo de origen: archivos, bases de datos, Azure, servicios en línea, web, R o Python.",
+      "Power Query muestra una vista previa y ofrece herramientas de exploración, limpieza y transformación.",
+      "Consultas, datos y configuración de la consulta organizan el trabajo antes de cargar.",
+      "Las propiedades de conexión dependen del origen: rutas, archivos, URL, cadenas de conexión o credenciales."
+    ],
+    "sections": [
+      {
+        "title": "Elegir y configurar un origen",
+        "body": "El proceso comienza seleccionando el proveedor o conector adecuado. Después se indican propiedades de acceso como ruta, archivo, carpeta, URL o cadena de conexión, y se completan los controles de seguridad que correspondan.",
+        "points": [
+          "Primero se elige el conector.",
+          "Luego se definen las propiedades de acceso.",
+          "Finalmente se revisa la navegación y la vista previa de los datos."
+        ]
+      },
+      {
+        "title": "Qué hace Power Query",
+        "body": "Una vez conectados los datos, Power Query permite darles forma para que sean adecuados para el informe. La herramienta muestra una vista previa y ofrece opciones de exploración, filtrado, limpieza, transformación y modelado desde la cinta y los menús contextuales."
+      },
+      {
+        "title": "Paneles para controlar la consulta",
+        "body": "El panel Consultas organiza las consultas del proyecto. El área de datos muestra la vista previa de la tabla seleccionada. El panel Configuración de la consulta permite revisar propiedades y los pasos aplicados, lo que hace visible el historial de transformaciones."
+      },
+      {
+        "title": "Antes de cargar",
+        "body": "No conviene asumir que los datos conectados ya están listos. El capítulo insiste en revisar contenido y calidad, corregir estructura cuando sea necesario y solo entonces llevar el resultado al modelo para construir el informe.",
+        "callout": "La conexión no es el final: es la entrada a un proceso de preparación de datos."
+      }
+    ],
+    "remember": [
+      "Cada origen utiliza un conector y unas propiedades de acceso específicas.",
+      "Power Query es el entorno de preparación previo al modelado.",
+      "La vista previa y los pasos aplicados ayudan a comprobar qué transformaciones se han realizado."
+    ]
+  },
+  "4": {
+    "sourcePages": "63–97",
+    "lead": "Transformar datos significa convertir información externa, posiblemente inconsistente o mal estructurada, en tablas útiles para un modelo analítico. La calidad del informe depende directamente de la calidad de esta preparación.",
+    "topicDescriptions": [
+      "Detectar nulos, duplicados, incoherencias y columnas que no aportan valor.",
+      "Asignar tipos correctos y tratar fechas, textos y números de forma coherente.",
+      "Crear columnas derivadas, dividir, combinar, transponer o anular dinamización cuando la estructura lo exija.",
+      "Combinar y anexar consultas para integrar datos de distintas tablas u orígenes."
+    ],
+    "sections": [
+      {
+        "title": "La calidad empieza antes del informe",
+        "body": "Valores repetidos en columnas clave, datos ausentes e incoherencias pueden sesgar la muestra, distorsionar los hechos o provocar errores en el modelo. En especial, una columna situada en el lado Uno de una relación debe contener valores únicos y no nulos.",
+        "points": [
+          "Eliminar información innecesaria puede ayudar a optimizar el modelo.",
+          "Una estructura complicada puede dividirse en columnas más simples.",
+          "Los códigos poco legibles pueden sustituirse por valores comprensibles para el destinatario."
+        ]
+      },
+      {
+        "title": "Tipos de datos y columnas",
+        "body": "Definir correctamente los tipos de datos es una decisión fundamental porque condiciona transformaciones posteriores y el comportamiento del modelo. El capítulo también trabaja la creación de columnas, incluidas columnas condicionales, y la extracción de información útil desde fechas y textos."
+      },
+      {
+        "title": "Cambiar la forma de una tabla",
+        "body": "Power Query permite reorganizar datos mediante operaciones como anular dinamización de columnas, transponer filas y columnas, dividir campos o combinar columnas. El objetivo es conseguir una estructura más adecuada para el análisis, no conservar la forma original por costumbre."
+      },
+      {
+        "title": "Combinar, anexar y reutilizar consultas",
+        "body": "Combinar consultas relaciona información de tablas según columnas comunes; anexar integra filas de varias consultas. El capítulo también diferencia referenciar y duplicar consultas y presenta el Editor avanzado para trabajar directamente con el código M.",
+        "callout": "Una buena transformación deja una tabla más clara para el modelo y reduce trabajo innecesario en DAX o en las visualizaciones."
+      }
+    ],
+    "remember": [
+      "La limpieza y la estructura de los datos condicionan la calidad del análisis.",
+      "Los tipos de datos deben definirse deliberadamente.",
+      "Combinar y anexar resuelven necesidades distintas de integración."
+    ]
+  },
+  "5": {
+    "sourcePages": "98–108",
+    "lead": "El modelo tabular es el conjunto de tablas, columnas y relaciones que sustenta el informe. Un buen diseño facilita el filtrado, los cálculos y la comprensión del modelo.",
+    "topicDescriptions": [
+      "El modelo tabular organiza tablas, filas, columnas y relaciones.",
+      "Las tablas de hechos almacenan transacciones o métricas; las dimensiones describen y filtran esos hechos.",
+      "Las relaciones conectan columnas y permiten que el filtro se propague entre tablas.",
+      "Las propiedades del modelo ayudan a definir el comportamiento de tablas y columnas."
+    ],
+    "sections": [
+      {
+        "title": "Qué es un modelo tabular",
+        "body": "El capítulo define el modelo tabular como el conjunto de tablas y relaciones presentes dentro de Power BI. Dedicar tiempo a su diseño y validación es esencial para que los informes funcionen correctamente."
+      },
+      {
+        "title": "Entidades, atributos, hechos y dimensiones",
+        "body": "Una entidad se representa como una tabla y sus atributos como columnas. En modelado dimensional, las tablas de hechos contienen transacciones, eventos o métricas y suelen acumular muchas filas; las dimensiones contienen información descriptiva que se utiliza para filtrar y agrupar.",
+        "points": [
+          "Ventas, pedidos o mediciones son ejemplos de hechos.",
+          "Clientes, productos o empleados son ejemplos de dimensiones.",
+          "Los atributos de una misma entidad deberían mantenerse juntos siempre que sea posible."
+        ]
+      },
+      {
+        "title": "Relaciones entre tablas",
+        "body": "Las relaciones se definen mediante columnas participantes de cada tabla. Su diseño determina cómo se conectan las entidades y cómo se propagan los filtros cuando un usuario analiza el informe."
+      },
+      {
+        "title": "Propiedades del modelo",
+        "body": "La vista Modelo permite revisar y configurar propiedades de tablas y columnas. Estas decisiones no son meramente visuales: ayudan a organizar el modelo y preparar sus elementos para cálculos y visualizaciones."
+      }
+    ],
+    "remember": [
+      "El modelo tabular es la base lógica del informe.",
+      "Hechos y dimensiones cumplen funciones diferentes.",
+      "Las relaciones determinan cómo se conectan y filtran las tablas."
+    ]
+  },
+  "6": {
+    "sourcePages": "109–126",
+    "lead": "Optimizar un modelo significa diseñarlo para que sea claro, mantenible y responda con rapidez. El capítulo compara estructuras y propone soluciones a problemas frecuentes de modelado.",
+    "topicDescriptions": [
+      "Una tabla única mezcla entidades y es una estructura que el material recomienda evitar.",
+      "El esquema copo de nieve conserva dimensiones relacionadas entre sí; el esquema estrella acerca dimensiones a la tabla de hechos.",
+      "Las relaciones 1:1, filtros cruzados y jerarquías innecesarias pueden complicar el modelo.",
+      "Una tabla calendario correctamente diseñada es esencial para análisis temporales."
+    ],
+    "sections": [
+      {
+        "title": "Rendimiento desde el diseño",
+        "body": "Para quien consume el informe, el rendimiento se percibe en la velocidad de carga y actualización de páginas y visualizaciones. Por eso la optimización empieza en el modelo y no al final del proyecto."
+      },
+      {
+        "title": "Tabla única, copo de nieve y estrella",
+        "body": "El capítulo compara tres enfoques. La tabla única concentra todos los campos y no distingue entidades. El copo de nieve mantiene dimensiones relacionadas con otras dimensiones. El esquema estrella organiza una tabla de hechos rodeada de dimensiones y es el patrón de referencia para un modelo analítico más simple.",
+        "callout": "La meta no es tener muchas tablas ni pocas tablas: es tener una estructura que represente bien hechos, dimensiones y filtros."
+      },
+      {
+        "title": "Problemas de relaciones y jerarquías",
+        "body": "Se revisan escenarios como relaciones 1:1, dimensiones que cumplen distintos roles, jerarquías primario-secundario y dirección de filtro cruzado. El objetivo es reconocer cuándo una estructura complica la propagación de filtros o el mantenimiento."
+      },
+      {
+        "title": "La tabla de fecha",
+        "body": "El capítulo dedica una sección específica a crear y configurar una tabla de fecha o calendario. También revisa la opción de fecha y hora automáticas y los aspectos que deben cuidarse al diseñar esta dimensión especial."
+      }
+    ],
+    "remember": [
+      "El rendimiento se diseña desde el modelo.",
+      "El esquema estrella simplifica la lectura analítica del modelo.",
+      "La dimensión calendario merece un tratamiento específico."
+    ]
+  },
+  "7": {
+    "sourcePages": "127–134",
+    "lead": "DAX, Data Analysis Expressions, es el lenguaje analítico del modelo tabular. Permite crear cálculos que enriquecen el modelo y responden al contexto en el que se evalúan.",
+    "topicDescriptions": [
+      "Una expresión DAX combina funciones, operadores, referencias, constantes y variables.",
+      "Las funciones pueden devolver valores escalares o tablas y pueden anidarse.",
+      "Las variables ayudan a organizar y reutilizar partes de una expresión.",
+      "DAX permite crear columnas calculadas, medidas y tablas calculadas."
+    ],
+    "sections": [
+      {
+        "title": "Qué es DAX",
+        "body": "DAX es el lenguaje diseñado para crear objetos y consultar modelos tabulares. El material lo describe como una colección de funciones, operadores y constantes que se combinan en expresiones para calcular uno o más valores."
+      },
+      {
+        "title": "Cómo se construye una expresión",
+        "body": "Una fórmula puede incluir funciones, operadores, referencias a tablas, columnas o medidas, valores constantes y variables. DAX no distingue mayúsculas de minúsculas y las funciones pueden anidarse, por lo que el formato de la fórmula es importante para mantener la legibilidad."
+      },
+      {
+        "title": "Funciones, operadores y variables",
+        "body": "Cada función espera determinados tipos de datos de entrada y produce un resultado concreto. Las variables permiten guardar resultados intermedios y hacer que fórmulas más complejas sean más claras y eficientes."
+      },
+      {
+        "title": "Tipos de cálculos",
+        "body": "El capítulo diferencia columnas calculadas, medidas y tablas calculadas. No son objetos intercambiables: se crean en momentos distintos, se almacenan o evalúan de forma distinta y sirven para resolver necesidades diferentes dentro del modelo.",
+        "callout": "Antes de escribir DAX, decide qué objeto necesitas crear; no empieces por la función."
+      }
+    ],
+    "remember": [
+      "DAX opera sobre el modelo tabular y sus relaciones.",
+      "Una expresión puede devolver un valor o una tabla.",
+      "Medidas, columnas y tablas calculadas son tipos de cálculo diferentes."
+    ]
+  },
+  "8": {
+    "sourcePages": "135–143",
+    "lead": "El capítulo pasa de la sintaxis a una práctica esencial: construir medidas base reutilizables en lugar de depender de agregaciones implícitas sobre columnas nativas.",
+    "topicDescriptions": [
+      "Las columnas originales pueden agregarse en gráficos, pero el material recomienda medidas para un uso más controlado.",
+      "Una medida base puede agregar una sola columna o combinar varias columnas.",
+      "Las medidas pueden reutilizar otras medidas y variables.",
+      "DIVIDE permite controlar de forma segura escenarios de división por cero."
+    ],
+    "sections": [
+      {
+        "title": "Columnas nativas frente a medidas",
+        "body": "Aunque un gráfico puede utilizar directamente una columna numérica, el material recomienda crear cálculos DAX en forma de medidas para trabajar con agregados de manera más sostenible y controlada. También propone ocultar columnas nativas que no deberían utilizarse directamente en los visuales."
+      },
+      {
+        "title": "Crear medidas base",
+        "body": "Las medidas base encapsulan cálculos fundamentales del modelo: cantidades, importes, costes u otros agregados. Pueden construirse desde una columna, varias columnas de una tabla o incluso datos distribuidos entre tablas relacionadas."
+      },
+      {
+        "title": "Reutilizar medidas",
+        "body": "Una medida bien diseñada puede convertirse en la base de otras expresiones. Esto reduce duplicación de lógica y hace que los cálculos sean más fáciles de leer y mantener."
+      },
+      {
+        "title": "Evitar divisiones problemáticas",
+        "body": "El capítulo incluye el control de divisiones por cero. La función DIVIDE permite expresar una división con un comportamiento definido cuando el denominador no es válido, lo que evita resultados no deseados en los informes.",
+        "callout": "Diseña primero medidas base fiables; luego construye indicadores derivados sobre ellas."
+      }
+    ],
+    "remember": [
+      "Las medidas ofrecen más control que las agregaciones implícitas de columnas.",
+      "La reutilización evita duplicar lógica.",
+      "DIVIDE es preferible cuando una división puede tener denominador cero."
+    ]
+  },
+  "9": {
+    "sourcePages": "144–175",
+    "lead": "El resultado de una medida no depende solo de su fórmula: depende del contexto en el que se evalúa. Comprender contexto de filtro y contexto de fila es una de las bases del razonamiento con DAX.",
+    "topicDescriptions": [
+      "El contexto de filtro representa el conjunto de filtros activos al evaluar una expresión.",
+      "El contexto de fila permite evaluar expresiones fila por fila en determinados escenarios.",
+      "CALCULATE modifica el contexto en el que se evalúa una expresión.",
+      "Funciones y expresiones de filtro permiten incluir, excluir o restaurar conjuntos de filas."
+    ],
+    "sections": [
+      {
+        "title": "Por qué una misma medida puede cambiar",
+        "body": "La misma medida puede devolver valores diferentes según el objeto visual, la categoría, el segmentador o cualquier otro filtro activo. El contexto de filtro es el conjunto de condiciones que determinan qué filas participan en el cálculo."
+      },
+      {
+        "title": "Contexto de fila",
+        "body": "En ciertos cálculos se crea un contexto que recorre filas. El capítulo muestra que columnas calculadas, medidas y funciones DAX pueden generar o consumir contextos, y que distinguir ambos tipos es esencial para interpretar resultados."
+      },
+      {
+        "title": "El papel de CALCULATE",
+        "body": "CALCULATE permite evaluar una expresión bajo un contexto de filtro modificado. Por eso es una función central para comparar categorías, ajustar totales y construir medidas que deben incluir o ignorar determinadas condiciones."
+      },
+      {
+        "title": "Filtros avanzados y modelo",
+        "body": "El capítulo amplía el tema con operadores AND/OR, conjuntos incluidos o excluidos, ALL para devolver visibilidad a filas, relaciones inactivas y dimensiones que cumplen distintos roles. Los filtros no se entienden aislados: dependen de las relaciones del modelo.",
+        "callout": "En DAX, antes de preguntar 'qué fórmula falta', pregunta 'qué contexto está activo'."
+      }
+    ],
+    "remember": [
+      "El contexto de evaluación explica por qué cambia el resultado de una medida.",
+      "CALCULATE modifica el contexto de filtro.",
+      "Los filtros DAX interactúan con las relaciones del modelo."
+    ]
+  },
+  "10": {
+    "sourcePages": "176–197",
+    "lead": "El análisis temporal exige una dimensión calendario fiable. Sobre esa base, DAX permite construir acumulados, comparaciones entre períodos y medidas de crecimiento.",
+    "topicDescriptions": [
+      "La tabla Calendario debe contener fechas únicas y continuas para el período analizado.",
+      "Los acumulados permiten resumir valores desde el inicio de un período hasta una fecha.",
+      "Las comparaciones temporales enfrentan período actual con períodos anteriores.",
+      "Rangos, medias móviles y parámetros amplían el análisis del tiempo."
+    ],
+    "sections": [
+      {
+        "title": "Por qué necesitas una tabla Calendario",
+        "body": "Las funciones de inteligencia de tiempo necesitan una tabla con al menos una columna de tipo Fecha, valores únicos y sin saltos. Debe cubrir todas las fechas necesarias para analizar los hechos, normalmente desde el 1 de enero hasta el 31 de diciembre de cada año incluido."
+      },
+      {
+        "title": "Cómo puede construirse",
+        "body": "El material presenta alternativas: preparar el calendario fuera de Power BI, generarlo con Power Query o crearlo con DAX. Luego se agregan atributos como año, mes u otros niveles útiles para jerarquías y filtros."
+      },
+      {
+        "title": "Acumulados y medias móviles",
+        "body": "Una vez preparada la dimensión temporal, se pueden crear acumulados hasta la fecha y medias móviles. Estas medidas permiten observar no solo el valor puntual, sino la trayectoria dentro de un período."
+      },
+      {
+        "title": "Comparar períodos",
+        "body": "El capítulo trabaja comparaciones con el mismo período del año anterior, acumulados previos, crecimiento o disminución y análisis según niveles de jerarquía. También combina DAX con parámetros de hipótesis para explorar escenarios.",
+        "callout": "La inteligencia de tiempo funciona mejor cuando el calendario está bien modelado antes de escribir las medidas."
+      }
+    ],
+    "remember": [
+      "La tabla Calendario debe ser continua y sin fechas repetidas.",
+      "Los acumulados y comparaciones se apoyan en esa dimensión.",
+      "Comparar períodos requiere entender tanto el calendario como el contexto de filtro."
+    ]
+  },
+  "11": {
+    "sourcePages": "198–221",
+    "lead": "Los errores del modelo se reflejan directamente en las visualizaciones y en DAX. Este capítulo conecta relaciones, propiedades de columnas y jerarquías con el comportamiento visible del informe.",
+    "topicDescriptions": [
+      "Una relación inexistente o mal definida puede producir resultados incorrectos o incompletos.",
+      "Los tipos de datos deben coincidir con la función que cumple cada columna.",
+      "Orden, categoría y agregación determinan cómo se interpreta una columna en un visual.",
+      "Ocultar campos técnicos y crear jerarquías mejora la experiencia de construcción del informe."
+    ],
+    "sections": [
+      {
+        "title": "Relaciones y propagación de filtros",
+        "body": "En un modelo bien diseñado, las dimensiones filtran la tabla de hechos y las medidas se evalúan en el contexto correcto. Si la relación falta, utiliza columnas equivocadas o contiene tipos incompatibles, el filtro no se propaga como se espera y el visual puede mostrar datos erróneos."
+      },
+      {
+        "title": "Propiedades que afectan la visualización",
+        "body": "El capítulo revisa ordenar columnas, categorizar campos según su función, definir tipos de datos y formatos y controlar la agregación predeterminada de columnas numéricas. Estas propiedades influyen directamente en cómo Power BI presenta los datos."
+      },
+      {
+        "title": "Visibilidad del modelo",
+        "body": "Ocultar columnas, medidas o tablas técnicas puede reducir ruido para quien construye el informe. Ocultar no elimina el objeto del modelo; organiza qué elementos deberían estar disponibles en la experiencia de autoría."
+      },
+      {
+        "title": "Jerarquías",
+        "body": "Las jerarquías permiten agrupar niveles relacionados para navegar por ellos en los objetos visuales. El capítulo diferencia jerarquías utilizadas en la visualización y jerarquías definidas en el modelo."
+      }
+    ],
+    "remember": [
+      "Una mala relación puede hacer que un cálculo correcto parezca incorrecto.",
+      "Las propiedades de columna son parte del diseño del modelo.",
+      "Las jerarquías y la visibilidad mejoran usabilidad y navegación."
+    ]
+  },
+  "12": {
+    "sourcePages": "222–270",
+    "lead": "Una visualización es el objeto que representa datos dentro de una página de informe. Elegir el visual correcto depende de la pregunta que se quiere responder, no de cuántos tipos de gráficos existen.",
+    "topicDescriptions": [
+      "Una página es el contenedor donde se organizan objetos visuales y filtros.",
+      "Campos, Formato y Analytics controlan datos, estética y capacidades analíticas del visual.",
+      "Tarjetas, KPI, barras, líneas, tablas, matrices, mapas y otros visuales responden a preguntas distintas.",
+      "Color, formato condicional y opciones de enfoque ayudan a comunicar mejor el dato."
+    ],
+    "sections": [
+      {
+        "title": "Páginas y objetos visuales",
+        "body": "Cada informe contiene una o más páginas. Dentro de ellas se agregan objetos que pueden mostrar una métrica, una tabla, un gráfico o un filtro. Los objetos reaccionan a acciones de filtro y resaltado provenientes de otros visuales."
+      },
+      {
+        "title": "Elegir el tipo de visual",
+        "body": "El capítulo recorre visuales para objetivos distintos: tarjetas cuando importa una cifra, KPI o medidores para comparar con objetivos, barras y columnas para comparar categorías, líneas y áreas para evolución temporal, dispersión para relaciones y mapas para análisis geográfico."
+      },
+      {
+        "title": "Configurar un objeto",
+        "body": "El trabajo se apoya en paneles como Campos, Formato y Analytics. Campos define qué partes del modelo alimentan al objeto; Formato controla su apariencia y comportamiento; Analytics agrega capacidades analíticas disponibles para determinados tipos de gráfico."
+      },
+      {
+        "title": "Más allá del gráfico básico",
+        "body": "También se revisan tablas, matrices, minigráficos, cascada, cintas, treemap, embudo, visuales combinados, modo de enfoque y configuración de colores. El formato condicional ayuda a convertir valores en señales visuales que facilitan la lectura.",
+        "callout": "El mejor gráfico es el que hace evidente la respuesta a la pregunta de negocio."
+      }
+    ],
+    "remember": [
+      "Una página organiza visuales con un propósito común.",
+      "El tipo de visual debe elegirse por la pregunta analítica.",
+      "Campos, Formato y Analytics cumplen funciones distintas."
+    ]
+  },
+  "13": {
+    "sourcePages": "271–300",
+    "lead": "Filtrar no significa modificar los datos. Power BI genera consultas sobre el modelo para mostrar el subconjunto correspondiente, y las visualizaciones pueden filtrar o resaltar a otras de forma interactiva.",
+    "topicDescriptions": [
+      "Las selecciones en un visual pueden aplicar filtro cruzado o resaltado cruzado a otros objetos.",
+      "Los segmentadores exponen filtros interactivos al usuario del informe.",
+      "El panel Filtros permite controlar alcance a nivel de objeto, página o informe.",
+      "Drillthrough y tooltips permiten navegar o mostrar contexto adicional sin saturar la página principal."
+    ],
+    "sections": [
+      {
+        "title": "Qué ocurre cuando filtras",
+        "body": "Una acción de filtro no cambia los datos almacenados en el modelo ni en el origen. En segundo plano se genera una consulta analítica que filtra, agrupa y resume los datos para devolver el resultado correspondiente."
+      },
+      {
+        "title": "Interacción entre visuales",
+        "body": "De forma predeterminada, seleccionar un punto de datos puede provocar filtro cruzado o resaltado cruzado en los demás objetos de la página. Con Editar interacciones se puede modificar ese comportamiento para decidir qué visual afecta a cuál."
+      },
+      {
+        "title": "Segmentadores y panel Filtros",
+        "body": "Los segmentadores permiten exponer filtros directamente en el lienzo y pueden configurarse para texto, números o fechas. El panel Filtros organiza condiciones con distintos alcances: sobre un visual, sobre la página o sobre todo el informe."
+      },
+      {
+        "title": "Filtros avanzados",
+        "body": "El capítulo cubre filtros Incluir/Excluir, combinación de condiciones, exploración por jerarquías, obtención de detalle y páginas especiales de información sobre herramientas. Estas técnicas permiten profundizar en el análisis sin llenar la página principal de objetos.",
+        "callout": "Diseñar filtros es diseñar la ruta de exploración del usuario."
+      }
+    ],
+    "remember": [
+      "Filtrar cambia la consulta y la vista, no los datos originales.",
+      "Los visuales pueden interactuar entre sí.",
+      "El alcance del filtro determina qué parte del informe se ve afectada."
+    ]
+  },
+  "14": {
+    "sourcePages": "301–371",
+    "lead": "Power BI incorpora capacidades de analítica avanzada tanto en Power Query como en los visuales. El capítulo las organiza desde perfiles de datos hasta funciones de inteligencia artificial integradas.",
+    "topicDescriptions": [
+      "Los perfiles de calidad, distribución y columna ayudan a descubrir problemas y patrones antes del modelado.",
+      "R y Python pueden extender procesos de obtención, transformación o visualización.",
+      "Clústeres, tendencias, previsión y anomalías amplían el análisis de los objetos visuales.",
+      "Preguntas y respuestas, elementos influyentes, esquema jerárquico y narración inteligente incorporan capacidades de IA."
+    ],
+    "sections": [
+      {
+        "title": "Analítica desde Power Query",
+        "body": "Power Query integra perfiles de datos para revisar calidad, distribución y contenido de columnas. Por defecto el perfil puede basarse en las primeras 1.000 filas, aunque es posible analizar el conjunto completo cuando haga falta; el material advierte que mantener esa opción siempre activa puede perjudicar el rendimiento."
+      },
+      {
+        "title": "Extender con R y Python",
+        "body": "El capítulo muestra que Power BI puede integrar scripts de R y Python para obtener datos, transformar consultas o crear visualizaciones. Estas opciones amplían la herramienta cuando el análisis necesita técnicas que no están cubiertas de forma directa por los objetos estándar."
+      },
+      {
+        "title": "Analítica integrada en visuales",
+        "body": "Se trabajan clústeres, formato condicional, matrices de calor, líneas de tendencia, previsión y detección de anomalías. Estas funciones permiten identificar patrones, cambios y comportamientos fuera de lo esperado."
+      },
+      {
+        "title": "Objetos con inteligencia artificial",
+        "body": "Power BI incluye recursos como Preguntas y respuestas, elementos influyentes, esquema jerárquico y narración inteligente. El objetivo es ayudar a explorar causas, relaciones y explicaciones directamente desde el informe.",
+        "callout": "La analítica avanzada no sustituye un buen modelo; añade nuevas formas de explorar un modelo bien preparado."
+      }
+    ],
+    "remember": [
+      "El análisis avanzado puede comenzar antes del modelo, en Power Query.",
+      "R y Python amplían las posibilidades cuando es necesario.",
+      "Las funciones de IA ayudan a explorar patrones y explicaciones desde los datos."
+    ]
+  },
+  "15": {
+    "sourcePages": "372–405",
+    "lead": "Un informe no es una colección de gráficos: debe contar una historia comprensible para un público concreto. Este capítulo conecta diseño, accesibilidad, navegación y consistencia visual.",
+    "topicDescriptions": [
+      "El público y el objetivo determinan cuánta información, detalle e interacción necesita el informe.",
+      "El diseño debe considerar accesibilidad, organización, tamaño y versión de escritorio o móvil.",
+      "Botones, acciones, navegadores y marcadores construyen rutas de exploración.",
+      "El panel Selección y los temas ayudan a mantener control, cohesión y consistencia visual."
+    ],
+    "sections": [
+      {
+        "title": "Diseñar para una audiencia",
+        "body": "El material insiste en identificar quién consumirá la información. Un directivo que revisa cifras agregadas no necesita la misma experiencia que una persona que explora hipótesis en profundidad. Lenguaje, nivel de detalle, colores y complejidad deben responder a ese público."
+      },
+      {
+        "title": "Diseñar para un objetivo",
+        "body": "Un informe debe ayudar a tomar decisiones y descubrir patrones, tendencias o anomalías relacionados con una necesidad concreta. El capítulo recuerda que un informe no sirve para todo: funciona cuando está alineado con el objetivo para el que fue diseñado."
+      },
+      {
+        "title": "Navegación y narrativa",
+        "body": "La interactividad, los botones, los navegadores, los marcadores y la exploración de jerarquías permiten crear una secuencia de lectura. En lugar de presentar toda la información a la vez, el informe puede guiar al usuario hacia niveles de detalle progresivos."
+      },
+      {
+        "title": "Accesibilidad, selección y temas",
+        "body": "La organización de objetos, el diseño móvil, las opciones de accesibilidad, el panel Selección y los temas ayudan a construir una experiencia consistente. Los marcadores también pueden guardar estados y utilizarse para presentar diferentes vistas de una misma página.",
+        "callout": "La historia debe ser clara incluso antes de que el usuario empiece a hacer clic."
+      }
+    ],
+    "remember": [
+      "El público y el objetivo son decisiones de diseño, no detalles finales.",
+      "La navegación puede convertir un informe en una historia guiada.",
+      "Accesibilidad y consistencia visual forman parte de la calidad del informe."
+    ]
+  },
+  "16": {
+    "sourcePages": "406–430",
+    "lead": "El Servicio Power BI lleva el contenido más allá de Desktop: permite publicar, administrar, compartir y consumir datos e informes desde la nube y desde dispositivos móviles.",
+    "topicDescriptions": [
+      "El Servicio es el entorno en la nube para trabajar con contenido publicado y crear elementos de autoservicio.",
+      "Las áreas de trabajo organizan contenido personal o colaborativo.",
+      "Publicación, datos, flujos, puertas de enlace y seguridad sostienen el ciclo operativo del informe.",
+      "Paneles, colaboración y Power BI Mobile amplían la distribución y el consumo."
+    ],
+    "sections": [
+      {
+        "title": "Qué es el Servicio Power BI",
+        "body": "El Servicio Power BI es una aplicación en la nube para interactuar con información publicada o creada en línea. Permite conectar datos, trabajar en áreas de trabajo, explorar contenido publicado desde Desktop y crear informes o paneles según los permisos y licencias disponibles."
+      },
+      {
+        "title": "Informes y paneles",
+        "body": "Ambos son lienzos con visualizaciones, pero cumplen funciones distintas. El material presenta los paneles como una ventana de presentación para reunir elementos relevantes, mientras que los informes concentran una exploración más amplia del conjunto de datos."
+      },
+      {
+        "title": "Publicar y administrar datos",
+        "body": "Para publicar desde Desktop se requiere iniciar sesión y guardar el informe como PBIX. En el Servicio, el contenido se organiza en áreas de trabajo y se amplía con funciones como vista Linaje, flujos de datos, análisis en Excel, puertas de enlace y opciones para administrar conjuntos de datos."
+      },
+      {
+        "title": "Seguridad, colaboración y móvil",
+        "body": "El capítulo aborda roles de seguridad, asignación de usuarios, trabajo colaborativo en áreas compartidas y consumo desde Power BI Mobile. La experiencia final depende de los permisos, la licencia y el rol de cada persona dentro de la organización.",
+        "callout": "Desktop crea gran parte del contenido; el Servicio lo vuelve administrable, compartible y consumible a escala."
+      }
+    ],
+    "remember": [
+      "El Servicio es la capa de publicación, administración y colaboración en la nube.",
+      "Los permisos y licencias condicionan qué puede hacer cada usuario.",
+      "Mobile extiende el consumo de informes y paneles fuera del escritorio."
+    ]
+  }
+};
+
+/* Biblioteca de ejemplos. Cada capítulo puede tener varios bloques. */
+const codeLibrary = {
+  3: [
+    {
+      label: "Power Query · M",
+      intro: "Conexión parametrizada a una carpeta: cambiar de entorno pasa a ser editar un valor, no reescribir la consulta.",
+      value: `let
+    // RutaOrigen es un parámetro de Power Query, no una ruta fija
+    Origen      = Folder.Files(RutaOrigen),
+    SoloExcel   = Table.SelectRows(Origen, each [Extension] = ".xlsx"),
+    Contenido   = Table.AddColumn(SoloExcel, "Datos",
+                    each Excel.Workbook([Content]){[Item="Ventas"]}[Data]),
+    Expandida   = Table.ExpandTableColumn(Contenido, "Datos",
+                    {"Fecha", "Cliente", "Producto", "Importe"})
+in
+    Expandida`
+    }
+  ],
+  4: [
+    {
+      label: "Power Query · M",
+      intro: "Transformación sencilla para clasificar ingresos en una nueva columna condicional.",
+      value: `let
+    Origen = Excel.Workbook(File.Contents("C:\\datos.xlsx"), null, true),
+    Tabla  = Origen{[Name="Ventas"]}[Data],
+    AgregarRango = Table.AddColumn(
+        Tabla,
+        "Rango",
+        each if [Ingresos] <= 50000 then "Bajo"
+             else if [Ingresos] <= 100000 then "Medio"
+             else "Alto",
+        type text
+    )
+in
+    AgregarRango`
+    },
+    {
+      label: "Power Query · M · unpivot",
+      intro: "Cuando el origen trae un mes por columna, esta es la transformación que convierte la planilla en una tabla de hechos. Usa 'otras columnas' para que los meses nuevos se incorporen solos.",
+      value: `let
+    Origen = Excel.CurrentWorkbook(){[Name="Presupuesto"]}[Content],
+    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars=true]),
+
+    // Ene, Feb, Mar... dejan de ser columnas y pasan a ser filas
+    Anulada = Table.UnpivotOtherColumns(
+        Encabezados,
+        {"Centro", "Cuenta"},     // columnas que NO se dinamizan
+        "Mes",                    // nombre de la columna de atributo
+        "Importe"                 // nombre de la columna de valor
+    ),
+    Tipada = Table.TransformColumnTypes(Anulada, {{"Importe", type number}})
+in
+    Tipada`
+    }
+  ],
+  5: [
+    {
+      label: "DAX · tabla calculada",
+      intro: "Una dimensión derivada del propio modelo. Útil cuando la lista de categorías no existe como tabla en el origen.",
+      value: `Dim Producto =
+SUMMARIZE(
+    Ventas,
+    Ventas[CodProducto],
+    Ventas[Categoria],
+    Ventas[Marca]
+)
+
+-- Después: crear la relación Dim Producto[CodProducto] (1) → Ventas[CodProducto] (*)
+-- El lado Uno exige valores únicos y sin nulos.`
+    }
+  ],
+  6: [
+    {
+      label: "DAX · tabla Calendario",
+      intro: "La dimensión de fecha que necesita cualquier análisis temporal: días continuos, años completos y los atributos que después usarán las jerarquías.",
+      value: `Calendario =
+VAR FechaMin = MIN( Ventas[Fecha] )
+VAR FechaMax = MAX( Ventas[Fecha] )
+RETURN
+ADDCOLUMNS(
+    CALENDAR( DATE( YEAR(FechaMin), 1, 1 ), DATE( YEAR(FechaMax), 12, 31 ) ),
+    "Año",        YEAR( [Date] ),
+    "NumMes",     MONTH( [Date] ),
+    "Mes",        FORMAT( [Date], "mmm" ),
+    "Trimestre",  "T" & QUARTER( [Date] ),
+    "AñoMes",     FORMAT( [Date], "yyyy-mm" ),
+    "DiaSemana",  FORMAT( [Date], "ddd" ),
+    "EsHabil",    WEEKDAY( [Date], 2 ) <= 5
+)
+
+-- Tres pasos que no se pueden saltar:
+-- 1. Marcar la tabla como tabla de fechas.
+-- 2. Ordenar la columna Mes por NumMes.
+-- 3. Desactivar Fecha y hora automáticas en Opciones.`
+    }
+  ],
+  7: [
+    {
+      label: "DAX · medidas base",
+      intro: "Dos medidas para empezar a trabajar con agregaciones y reutilización.",
+      value: `Ventas Totales =
+SUMX(
+    Ventas,
+    Ventas[Cantidad] * Ventas[Precio]
+)
+
+Ticket Medio =
+DIVIDE(
+    [Ventas Totales],
+    [Operaciones]
+)`
+    },
+    {
+      label: "DAX · variables",
+      intro: "VAR no es cosmético: evalúa una sola vez, da nombre a cada paso y permite depurar devolviendo un valor intermedio.",
+      value: `Margen % =
+VAR Ingresos = [Ventas Totales]
+VAR Costes   = [Coste Total]
+VAR Margen   = Ingresos - Costes
+RETURN
+    DIVIDE( Margen, Ingresos )
+
+-- Para depurar, cambia temporalmente el RETURN por una variable:
+--     RETURN Costes`
+    }
+  ],
+  8: [
+    {
+      label: "DAX · agregación de varias columnas",
+      intro: "SUM agrega una columna ya existente. Cuando el valor nace de multiplicar o combinar columnas, el iterador SUMX calcula fila a fila y agrega al final, sin materializar una columna nueva en el modelo.",
+      value: `-- Costoso: columna calculada guardada en el modelo
+Importe = Ventas[Cantidad] * Ventas[Precio]
+
+-- Correcto: medida con iterador, no ocupa memoria
+Ventas Totales =
+SUMX( Ventas, Ventas[Cantidad] * Ventas[Precio] )
+
+-- El iterador también cruza tablas relacionadas
+Ventas con tarifa =
+SUMX(
+    Ventas,
+    Ventas[Cantidad] * RELATED( Producto[PrecioLista] )
+)`
+    },
+    {
+      label: "DAX · reutilizar y dividir con seguridad",
+      intro: "Una medida bien construida es la base de las siguientes. Y toda división pasa por DIVIDE: un denominador en cero rompe el objeto visual completo.",
+      value: `Coste Total   = SUMX( Ventas, Ventas[Cantidad] * RELATED( Producto[Coste] ) )
+Margen Bruto  = [Ventas Totales] - [Coste Total]
+
+-- El tercer argumento define qué devolver si el denominador es 0 o vacío
+Margen %      = DIVIDE( [Margen Bruto], [Ventas Totales], 0 )
+Ticket Medio  = DIVIDE( [Ventas Totales], DISTINCTCOUNT( Ventas[NumFactura] ) )`
+    }
+  ],
+  9: [
+    {
+      label: "DAX · CALCULATE",
+      intro: "CALCULATE evalúa una expresión modificando el contexto de filtro. Detalle que cambia todo: sus argumentos REEMPLAZAN el filtro existente sobre esa misma columna, no se suman a él.",
+      value: `-- Reemplaza el filtro de Categoria que venga del visual
+Ventas Accesorios =
+CALCULATE(
+    [Ventas Totales],
+    Producto[Categoria] = "Accesorios"
+)
+
+-- KEEPFILTERS intersecta en lugar de reemplazar:
+-- si el segmentador ya filtra otra categoría, el resultado será vacío
+Ventas Accesorios (intersectando) =
+CALCULATE(
+    [Ventas Totales],
+    KEEPFILTERS( Producto[Categoria] = "Accesorios" )
+)
+
+-- Varios argumentos se combinan con AND
+Ventas premium 2025 =
+CALCULATE(
+    [Ventas Totales],
+    Producto[Gama] = "Premium",
+    Calendario[Año] = 2025
+)`
+    },
+    {
+      label: "DAX · quitar filtros y calcular participación",
+      intro: "ALL y ALLSELECTED son la elección del denominador. ALL ignora todo; ALLSELECTED respeta lo que el usuario marcó en los segmentadores e ignora el filtro del propio visual.",
+      value: `% sobre el total general =
+DIVIDE(
+    [Ventas Totales],
+    CALCULATE( [Ventas Totales], REMOVEFILTERS( Producto ) )
+)
+
+% sobre lo seleccionado =
+DIVIDE(
+    [Ventas Totales],
+    CALCULATE( [Ventas Totales], ALLSELECTED() )
+)
+
+-- ALL sobre una sola columna: el resto de filtros sigue activo
+% dentro de la categoría =
+DIVIDE(
+    [Ventas Totales],
+    CALCULATE( [Ventas Totales], ALL( Producto[Producto] ) )
+)`
+    },
+    {
+      label: "DAX · relaciones inactivas",
+      intro: "Cuando la tabla de hechos tiene varias fechas (pedido, envío, entrega) solo una relación puede estar activa. Las demás se invocan desde la medida.",
+      value: `Ventas por fecha de envío =
+CALCULATE(
+    [Ventas Totales],
+    USERELATIONSHIP( Ventas[FechaEnvio], Calendario[Date] )
+)`
+    }
+  ],
+  10: [
+    {
+      label: "DAX · acumulado",
+      intro: "Acumulado dentro del año en curso hasta la fecha visible en el visual.",
+      value: `Acumulado YTD =
+CALCULATE(
+    [Ventas Totales],
+    DATESYTD( Calendario[Fecha] )
+)`
+    },
+    {
+      label: "DAX · comparar períodos",
+      intro: "El patrón completo son cuatro medidas, no una: valor actual, valor desplazado, diferencia y variación porcentual. Separarlas permite mostrar cualquiera de ellas por separado.",
+      value: `Ventas AA =
+CALCULATE( [Ventas Totales], SAMEPERIODLASTYEAR( Calendario[Fecha] ) )
+
+Diferencia AA  = [Ventas Totales] - [Ventas AA]
+Variación % AA = DIVIDE( [Diferencia AA], [Ventas AA] )
+
+-- Media móvil de 3 meses para suavizar el ruido mensual
+Media móvil 3M =
+AVERAGEX(
+    DATESINPERIOD( Calendario[Fecha], MAX( Calendario[Fecha] ), -3, MONTH ),
+    [Ventas Totales]
+)`
+    }
+  ],
+  11: [
+    {
+      label: "DAX · control de totales",
+      intro: "La fila Total de una matriz se evalúa sin el filtro de la fila, así que un porcentaje o un cálculo condicional puede mostrar ahí un valor sin sentido. HASONEVALUE detecta si hay una sola categoría en contexto.",
+      value: `Cumplimiento =
+IF(
+    HASONEVALUE( Producto[Categoria] ),
+    DIVIDE( [Ventas Totales], [Objetivo] ),
+    DIVIDE( [Ventas Totales], CALCULATE( [Objetivo], ALL( Producto[Categoria] ) ) )
+)
+
+-- Buenas prácticas de modelo que evitan escribir DAX defensivo:
+-- · Ordenar por columna: Mes ordenado por NumMes.
+-- · No resumir: en columnas numéricas que son códigos.
+-- · Categoría de datos: ubicación, URL de imagen, URL web.
+-- · Ocultar claves y columnas técnicas del panel de campos.`
+    }
+  ],
+  14: [
+    {
+      label: "Python · script en Power Query",
+      intro: "Cuando la transformación necesita algo que M no cubre, Power Query puede ejecutar un script. La tabla de entrada llega siempre en el DataFrame 'dataset'.",
+      value: `# Obtener datos → Script de Python
+# 'dataset' contiene la tabla del paso anterior
+import pandas as pd
+
+resultado = dataset.copy()
+
+# Marcar valores atípicos por rango intercuartílico
+q1 = resultado["Importe"].quantile(0.25)
+q3 = resultado["Importe"].quantile(0.75)
+iqr = q3 - q1
+
+resultado["Atipico"] = (
+    (resultado["Importe"] < q1 - 1.5 * iqr) |
+    (resultado["Importe"] > q3 + 1.5 * iqr)
+)`
+    }
+  ],
+  15: [
+    {
+      label: "JSON · tema corporativo",
+      intro: "Un tema define colores y tipografía una sola vez para todos los informes. Se importa desde Ver → Temas → Buscar temas.",
+      value: `{
+  "name": "Corporativo 2026",
+  "dataColors": ["#f2c811", "#118dff", "#12805c", "#e5566d",
+                 "#8b7bd8", "#e66c37", "#6b007b", "#3599b8"],
+  "background": "#FFFFFF",
+  "foreground": "#172033",
+  "tableAccent": "#f2c811",
+  "textClasses": {
+    "title":  { "fontFace": "Segoe UI Semibold", "fontSize": 14 },
+    "label":  { "fontFace": "Segoe UI", "fontSize": 10 },
+    "callout":{ "fontFace": "Segoe UI Bold", "fontSize": 32 }
+  }
+}`
+    }
+  ],
+  16: [
+    {
+      label: "DAX · seguridad de nivel de fila",
+      intro: "El rol se define en Desktop (Modelado → Administrar roles) y los usuarios se asignan en el Servicio. El patrón dinámico evita crear un rol por persona.",
+      value: `-- Filtro del rol aplicado sobre la dimensión Vendedor
+[Email] = USERPRINCIPALNAME()
+
+-- Variante con tabla de permisos: un usuario puede ver varias zonas
+Zona[Codigo] IN
+    CALCULATETABLE(
+        VALUES( Permisos[CodZona] ),
+        Permisos[Email] = USERPRINCIPALNAME()
+    )
+
+-- Verificación obligatoria: Modelado → Ver como → seleccionar el rol.
+-- RLS no restringe a quien tiene permisos de edición del conjunto de datos.`
+    }
+  ]
+};
+
+/* Banco de preguntas: 3 por capítulo. */
+const quizData = {
+  1: [
+    {
+      question: "¿Cuál es el flujo recomendado para construir y distribuir un análisis?",
+      options: [
+        "Desktop → Power Query → modelo → informe → Servicio Power BI",
+        "Servicio → Mobile → Excel → Desktop",
+        "Mobile → Power Query → informe → Desktop",
+        "Informe → origen → modelo → Servicio"
+      ],
+      correct: 0,
+      explanation: "El flujo empieza en Desktop, transforma en Power Query, construye el modelo y el informe, y después publica en el Servicio."
+    },
+    {
+      question: "Un equipo necesita que 40 personas consulten un informe con permisos distintos según el área. ¿Qué componente resuelve esa parte?",
+      options: [
+        "Power BI Desktop",
+        "El Servicio Power BI",
+        "Power Query",
+        "El Editor avanzado"
+      ],
+      correct: 1,
+      explanation: "La distribución, los permisos y la colaboración viven en el Servicio. Desktop crea, el Servicio gobierna."
+    },
+    {
+      question: "Una persona revisa informes publicados desde el móvil, filtra y exporta, pero nunca edita el modelo. ¿Qué rol cumple?",
+      options: [
+        "Diseñador de modelos",
+        "Administrador de recursos",
+        "Consumidor",
+        "Diseñador de informes"
+      ],
+      correct: 2,
+      explanation: "El consumidor lee y explora contenido publicado; no debería necesitar entender el modelo para usarlo."
+    }
+  ],
+  2: [
+    {
+      question: "¿En qué vista de Power BI Desktop se trabajan principalmente las relaciones entre tablas?",
+      options: ["Vista Informes", "Vista Datos", "Vista Modelo", "Vista Mobile"],
+      correct: 2,
+      explanation: "La vista Modelo muestra la estructura de tablas y relaciones y es el punto central para trabajar con ellas."
+    },
+    {
+      question: "¿Con qué extensión guarda Power BI Desktop el archivo de trabajo?",
+      options: [".pbix", ".pbids", ".dax", ".pq"],
+      correct: 0,
+      explanation: "El proyecto completo (consultas, modelo e informe) se guarda como .PBIX."
+    },
+    {
+      question: "Quieres comprobar qué valores quedaron realmente cargados en una columna, sin tocar el diseño de la página. ¿Qué vista usas?",
+      options: ["Vista Informes", "Vista Datos", "Vista Modelo", "Power Query"],
+      correct: 1,
+      explanation: "La vista Datos permite explorar tablas y columnas ya cargadas sin modificar el informe ni el origen."
+    }
+  ],
+  3: [
+    {
+      question: "Después de conectarte a un origen, ¿para qué sirve principalmente Power Query?",
+      options: [
+        "Para reemplazar el Servicio Power BI",
+        "Para limpiar, transformar y dar forma a los datos",
+        "Solo para cambiar colores de gráficos",
+        "Solo para publicar un PBIX"
+      ],
+      correct: 1,
+      explanation: "Power Query se utiliza para preparar los datos antes de cargarlos al modelo."
+    },
+    {
+      question: "¿Qué panel de Power Query muestra el historial de transformaciones aplicadas a una consulta?",
+      options: [
+        "Panel Consultas",
+        "Vista previa de datos",
+        "Configuración de la consulta, con los pasos aplicados",
+        "Cinta de opciones"
+      ],
+      correct: 2,
+      explanation: "Los pasos aplicados hacen visible y reproducible cada transformación, en el orden en que se ejecutan."
+    },
+    {
+      question: "Estás importando 4 millones de filas y necesitas inteligencia de tiempo compleja. ¿Qué modo de acceso conviene?",
+      options: [
+        "DirectQuery, siempre que el volumen sea alto",
+        "Importación",
+        "Conexión activa",
+        "Da igual: el modo no afecta a DAX"
+      ],
+      correct: 1,
+      explanation: "La importación comprime los datos en memoria y deja disponible todo DAX y todo Power Query. DirectQuery restringe ambos."
+    }
+  ],
+  4: [
+    {
+      question: "¿Qué problema puede provocar un valor duplicado en una columna que está en el lado Uno de una relación?",
+      options: [
+        "Puede provocar un error en la relación",
+        "Crea automáticamente una medida",
+        "Convierte la tabla en un panel",
+        "No tiene ningún efecto"
+      ],
+      correct: 0,
+      explanation: "El lado Uno requiere valores únicos; duplicados o nulos impiden una relación válida."
+    },
+    {
+      question: "El origen trae una columna por cada mes y cada mes hay que editar la consulta a mano. ¿Qué transformación lo resuelve de forma permanente?",
+      options: [
+        "Transponer filas y columnas",
+        "Anular dinamización de otras columnas",
+        "Combinar consultas",
+        "Agrupar por"
+      ],
+      correct: 1,
+      explanation: "Anular dinamización de OTRAS columnas absorbe automáticamente las columnas nuevas que aparezcan después."
+    },
+    {
+      question: "Varias consultas parten de la misma tabla base. ¿Qué diferencia hay entre referenciar y duplicar?",
+      options: [
+        "Son lo mismo con distinto nombre",
+        "Duplicar es más rápido al actualizar",
+        "Referenciar parte del resultado de otra consulta; duplicar copia todos los pasos y hay que mantenerlos dos veces",
+        "Referenciar solo funciona con archivos de Excel"
+      ],
+      correct: 2,
+      explanation: "Referenciar crea un tronco común con ramas. Duplicar multiplica el mantenimiento."
+    }
+  ],
+  5: [
+    {
+      question: "¿Qué tipo de tabla suele contener transacciones o métricas y muchas filas?",
+      options: ["Tabla de hechos", "Tabla de dimensiones", "Tabla de temas", "Tabla de filtros"],
+      correct: 0,
+      explanation: "Las tablas de hechos almacenan eventos, transacciones y métricas; las dimensiones describen y filtran."
+    },
+    {
+      question: "En una relación uno a varios, la columna del lado Uno debe cumplir un requisito. ¿Cuál?",
+      options: [
+        "Ser de tipo texto",
+        "Contener valores únicos y sin nulos",
+        "Estar oculta en el modelo",
+        "Tener el mismo nombre en ambas tablas"
+      ],
+      correct: 1,
+      explanation: "Sin unicidad no hay relación válida: el motor no sabría a qué fila corresponde cada hecho."
+    },
+    {
+      question: "¿En qué dirección se propaga el filtro por defecto en una relación uno a varios?",
+      options: [
+        "De la tabla de hechos hacia la dimensión",
+        "De la dimensión hacia la tabla de hechos",
+        "En ambos sentidos siempre",
+        "En ninguno hasta activarlo manualmente"
+      ],
+      correct: 1,
+      explanation: "El filtro va del lado Uno al lado Varios: la dimensión filtra al hecho. Lo contrario requiere filtro cruzado bidireccional."
+    }
+  ],
+  6: [
+    {
+      question: "¿Qué diseño recomienda evitar el capítulo por rendimiento y usabilidad?",
+      options: ["Esquema estrella", "Tabla única", "Dimensión calendario", "Tabla de hechos con dimensiones"],
+      correct: 1,
+      explanation: "La tabla única mezcla entidades y obliga a duplicar información en cuanto aparece un segundo hecho."
+    },
+    {
+      question: "Tienes Producto → Subcategoría → Categoría como tres tablas encadenadas. ¿Qué conviene hacer?",
+      options: [
+        "Dejarlo así: está correctamente normalizado",
+        "Aplanar los tres niveles en una única tabla de dimensión",
+        "Convertir Categoría en tabla de hechos",
+        "Añadir filtro cruzado bidireccional entre las tres"
+      ],
+      correct: 1,
+      explanation: "Es un copo de nieve. Aplanarlo reduce saltos de relación y simplifica tanto el DAX como el panel de campos."
+    },
+    {
+      question: "¿Por qué conviene desactivar la opción Fecha y hora automáticas?",
+      options: [
+        "Porque impide usar segmentadores de fecha",
+        "Porque genera una tabla de fechas oculta por cada columna de fecha del modelo y aumenta su tamaño sin control",
+        "Porque bloquea la publicación en el Servicio",
+        "Porque desactiva las relaciones existentes"
+      ],
+      correct: 1,
+      explanation: "Esas tablas ocultas no se ven, pero se cargan y ocupan. Mejor una tabla calendario propia y controlada."
+    }
+  ],
+  7: [
+    {
+      question: "¿Cuál de estos objetos puede crearse con DAX?",
+      options: [
+        "Medidas, columnas calculadas y tablas calculadas",
+        "Solo páginas de informe",
+        "Solo consultas de Power Query",
+        "Solo paneles del Servicio"
+      ],
+      correct: 0,
+      explanation: "DAX puede crear medidas, columnas y tablas calculadas dentro del modelo tabular."
+    },
+    {
+      question: "Necesitas un segmentador con los rangos Bajo / Medio / Alto según el importe de cada venta. ¿Qué objeto creas?",
+      options: ["Una medida", "Una columna calculada", "Una tabla calculada", "Una jerarquía"],
+      correct: 1,
+      explanation: "Un segmentador necesita valores materializados en el modelo. Si el resultado sirve para cortar, es columna; si es un número que reacciona a filtros, es medida."
+    },
+    {
+      question: "¿Qué aporta declarar una variable con VAR dentro de una medida?",
+      options: [
+        "Guarda el resultado en el modelo para acelerar la actualización",
+        "Evalúa la expresión una sola vez, da nombre a cada paso y permite depurar devolviendo un valor intermedio",
+        "Convierte la medida en columna calculada",
+        "Permite usar la medida sin relaciones"
+      ],
+      correct: 1,
+      explanation: "Rendimiento, legibilidad y depuración. Además, la variable se evalúa en el contexto donde se declara, no donde se usa."
+    }
+  ],
+  8: [
+    {
+      question: "Para valores agregados en gráficos, ¿qué enfoque recomienda el material?",
+      options: [
+        "Usar siempre columnas nativas sin medidas",
+        "Crear medidas DAX reutilizables",
+        "Duplicar todas las columnas",
+        "Evitar cualquier cálculo"
+      ],
+      correct: 1,
+      explanation: "Las medidas dan control sobre la definición y evitan que cada informe invente la suya."
+    },
+    {
+      question: "El importe de cada línea es Cantidad × Precio. ¿Cuál es la forma correcta de sumarlo?",
+      options: [
+        "Una columna calculada Importe y después SUM sobre ella",
+        "SUMX(Ventas, Ventas[Cantidad] * Ventas[Precio])",
+        "SUM(Ventas[Cantidad]) * SUM(Ventas[Precio])",
+        "Una tabla calculada con el resultado"
+      ],
+      correct: 1,
+      explanation: "El iterador multiplica fila a fila y agrega al final, sin ocupar memoria. La tercera opción además da un resultado matemáticamente falso."
+    },
+    {
+      question: "¿Por qué DIVIDE en lugar del operador de barra?",
+      options: [
+        "Porque redondea automáticamente",
+        "Porque es siempre más rápido",
+        "Porque gestiona el denominador en cero devolviendo un resultado alternativo en lugar de un error",
+        "Porque permite dividir columnas de texto"
+      ],
+      correct: 2,
+      explanation: "Un denominador en cero con el operador de barra rompe el objeto visual completo, no solo esa celda."
+    }
+  ],
+  9: [
+    {
+      question: "¿Por qué una misma medida DAX puede mostrar valores distintos en dos visuales?",
+      options: [
+        "Porque cambia automáticamente la fórmula",
+        "Porque cambia el contexto de evaluación y los filtros activos",
+        "Porque cada visual guarda su propia copia de los datos",
+        "Porque depende del tema aplicado"
+      ],
+      correct: 1,
+      explanation: "El eje del visual, el segmentador y el panel de filtros inyectan condiciones distintas: eso es el contexto de filtro."
+    },
+    {
+      question: "El segmentador marca 'Accesorios' y la medida usa CALCULATE([Ventas], Producto[Categoria] = \"Bicicletas\"). ¿Qué devuelve?",
+      options: [
+        "Vacío, porque no hay intersección entre ambos filtros",
+        "Las ventas de Bicicletas: el argumento reemplaza el filtro sobre esa columna",
+        "Las ventas de ambas categorías sumadas",
+        "Un error de contexto"
+      ],
+      correct: 1,
+      explanation: "Sobre la misma columna, CALCULATE reemplaza. Para intersectar hay que envolver el filtro en KEEPFILTERS."
+    },
+    {
+      question: "El usuario filtra tres categorías en un segmentador y quiere que los porcentajes de esas tres sumen 100%. ¿Qué usas como denominador?",
+      options: [
+        "CALCULATE([Ventas], ALL(Ventas))",
+        "CALCULATE([Ventas], ALLSELECTED())",
+        "SUM(Ventas[Importe])",
+        "CALCULATE([Ventas], REMOVEFILTERS())"
+      ],
+      correct: 1,
+      explanation: "ALLSELECTED conserva la selección del segmentador como universo e ignora el filtro del propio visual. ALL ignoraría también la selección."
+    }
+  ],
+  10: [
+    {
+      question: "¿Qué característica debe tener una tabla Calendario para inteligencia de tiempo?",
+      options: [
+        "Fechas únicas y continuas para el período analizado",
+        "Fechas repetidas para cada venta",
+        "Solo una fila por año",
+        "Únicamente nombres de meses"
+      ],
+      correct: 0,
+      explanation: "Una columna de fecha con valores únicos, sin saltos, y la tabla marcada como tabla de fechas."
+    },
+    {
+      question: "La medida de año anterior devuelve vacío en todos los meses. ¿Qué revisas primero?",
+      options: [
+        "Que la tabla calendario esté marcada como tabla de fechas y no tenga huecos",
+        "El formato numérico de la medida",
+        "El tema del informe",
+        "La licencia del Servicio"
+      ],
+      correct: 0,
+      explanation: "Es el requisito estructural de toda la familia de inteligencia de tiempo. La fórmula rara vez es el problema."
+    },
+    {
+      question: "El acumulado del año en curso aparece por debajo del año anterior y alguien concluye que hay caída. ¿Qué verificas antes?",
+      options: [
+        "El color del gráfico",
+        "Que ambos acumulados cubran el mismo número de días",
+        "La relación con la tabla de clientes",
+        "El orden de las columnas"
+      ],
+      correct: 1,
+      explanation: "Comparar un año en curso incompleto con un año cerrado es el error de lectura más frecuente del análisis temporal."
+    }
+  ],
+  11: [
+    {
+      question: "¿Qué puede ocurrir si una relación entre tablas está mal definida?",
+      options: [
+        "Los filtros se propagan mal y los visuales muestran resultados incorrectos",
+        "El informe se convierte en Excel",
+        "Se elimina el modelo automáticamente",
+        "No afecta a DAX ni a los visuales"
+      ],
+      correct: 0,
+      explanation: "Las relaciones determinan la propagación del filtro y, por tanto, el contexto de todas las medidas."
+    },
+    {
+      question: "En el eje de un gráfico los meses aparecen como abr, ago, dic… ¿Qué falta configurar?",
+      options: [
+        "Marcar la tabla como tabla de fechas",
+        "Ordenar la columna Mes por la columna del número de mes",
+        "Cambiar el tipo de datos a fecha",
+        "Crear una jerarquía"
+      ],
+      correct: 1,
+      explanation: "Ordenar por columna sustituye el orden alfabético por el cronológico."
+    },
+    {
+      question: "Un usuario arrastra 'Número de contenedor' a una tarjeta y ve 480.291.334. ¿Qué faltó definir en el modelo?",
+      options: [
+        "Ocultar la columna",
+        "Establecer la agregación predeterminada en No resumir",
+        "Crear una relación",
+        "Categorizar la columna como ubicación"
+      ],
+      correct: 1,
+      explanation: "No resumir impide que una columna numérica que en realidad es un código se agregue por defecto."
+    }
+  ],
+  12: [
+    {
+      question: "¿Cuál es el criterio principal para elegir una visualización?",
+      options: [
+        "La pregunta analítica que debe responder",
+        "El gráfico con más colores",
+        "El que ocupe más espacio",
+        "Usar siempre un gráfico circular"
+      ],
+      correct: 0,
+      explanation: "Los visuales sirven a objetivos distintos; la pregunta de negocio decide, no el catálogo."
+    },
+    {
+      question: "Un gráfico circular con once categorías. ¿Cuál es el problema de fondo?",
+      options: [
+        "Ocupa demasiado espacio en la página",
+        "El ojo no compara ángulos pequeños con precisión; una barra ordenada haría evidente el ranking",
+        "No admite formato condicional",
+        "No se puede filtrar"
+      ],
+      correct: 1,
+      explanation: "El circular funciona con dos o tres porciones y diferencias grandes. Más allá de eso, deja de comunicar."
+    },
+    {
+      question: "¿Qué panel del objeto visual agrega líneas de tendencia, previsión o detección de anomalías?",
+      options: ["Campos", "Formato", "Analytics", "Filtros"],
+      correct: 2,
+      explanation: "Campos define qué datos entran, Formato cómo se ve y Analytics añade las capas analíticas disponibles para ese tipo de gráfico."
+    }
+  ],
+  13: [
+    {
+      question: "Cuando aplicas un filtro en un informe, ¿qué ocurre con los datos almacenados?",
+      options: [
+        "Se modifican en el origen",
+        "Se borran las filas no visibles",
+        "No se modifican; se consulta un subconjunto según el filtro",
+        "Se convierten en una tabla nueva"
+      ],
+      correct: 2,
+      explanation: "El filtrado cambia la consulta y la vista, nunca los datos del modelo ni del origen."
+    },
+    {
+      question: "Quieres que al seleccionar una barra en un gráfico otro visual no se vea afectado. ¿Qué configuras?",
+      options: [
+        "Sincronizar segmentadores",
+        "Editar interacciones",
+        "Un filtro de nivel de informe",
+        "El panel Selección"
+      ],
+      correct: 1,
+      explanation: "Editar interacciones define, par por par, si un visual filtra, resalta o no afecta a otro."
+    },
+    {
+      question: "Necesitas que el usuario llegue a una página de detalle de un cliente conservando el contexto desde el que hizo clic. ¿Qué usas?",
+      options: [
+        "Un marcador",
+        "Obtención de detalles (drillthrough)",
+        "Un filtro de página",
+        "Un navegador de páginas"
+      ],
+      correct: 1,
+      explanation: "El drillthrough traslada el contexto de la selección a una página diseñada para el detalle."
+    }
+  ],
+  14: [
+    {
+      question: "¿Qué perfiles de Power Query se usan para explorar contenido y problemas de las columnas?",
+      options: [
+        "Calidad, distribución y perfil de columna",
+        "Tema, licencia y área de trabajo",
+        "Color, fuente y tamaño",
+        "Desktop, Service y Mobile"
+      ],
+      correct: 0,
+      explanation: "Los tres perfiles muestran errores y vacíos, reparto de valores y detalle estadístico de la columna."
+    },
+    {
+      question: "Por defecto, ¿sobre cuántas filas calcula Power Query el perfil de columna?",
+      options: [
+        "Sobre todas las filas siempre",
+        "Sobre las primeras 1.000 filas",
+        "Sobre una muestra aleatoria del 10%",
+        "Sobre las últimas 100 filas"
+      ],
+      correct: 1,
+      explanation: "Se puede cambiar al conjunto completo, pero dejarlo siempre activo penaliza el rendimiento del editor."
+    },
+    {
+      question: "¿Qué objeto permite escribir una pregunta en lenguaje natural sobre el modelo y obtener un visual?",
+      options: [
+        "Narración inteligente",
+        "Elementos influyentes clave",
+        "Preguntas y respuestas",
+        "Esquema jerárquico"
+      ],
+      correct: 2,
+      explanation: "Preguntas y respuestas se beneficia mucho de sinónimos y de un esquema lingüístico bien configurado."
+    }
+  ],
+  15: [
+    {
+      question: "Antes de diseñar la narrativa de un informe, ¿qué dos aspectos destaca el capítulo?",
+      options: [
+        "Público objetivo y objetivo del informe",
+        "Marca del monitor y tamaño del archivo",
+        "Cantidad de páginas y número de licencias",
+        "Solo el color corporativo"
+      ],
+      correct: 0,
+      explanation: "La historia debe diseñarse para una audiencia y un propósito concretos."
+    },
+    {
+      question: "¿Para qué sirven los marcadores en Power BI?",
+      options: [
+        "Para guardar el archivo en la nube",
+        "Para guardar estados de una página y navegar entre ellos como una secuencia",
+        "Para bloquear los filtros del informe",
+        "Para exportar a PDF"
+      ],
+      correct: 1,
+      explanation: "Combinados con botones y el panel Selección, permiten varias vistas sin duplicar páginas."
+    },
+    {
+      question: "En términos de accesibilidad, ¿cuál es la regla que no debe romperse?",
+      options: [
+        "Usar siempre fondo blanco",
+        "No usar el color como único portador de significado",
+        "Limitar el informe a una sola página",
+        "Evitar los segmentadores"
+      ],
+      correct: 1,
+      explanation: "Quien no distingue ciertos colores debe poder leer la misma información por texto, forma o posición."
+    }
+  ],
+  16: [
+    {
+      question: "¿Qué función distingue principalmente al Servicio Power BI dentro del flujo del curso?",
+      options: [
+        "Publicar, administrar, colaborar y consumir contenido en la nube",
+        "Reemplazar todos los modelos por CSV",
+        "Editar código M exclusivamente",
+        "Instalar Power BI Desktop"
+      ],
+      correct: 0,
+      explanation: "El Servicio es la capa de publicación, administración, colaboración y consumo."
+    },
+    {
+      question: "El origen es una base de datos SQL en la red interna. Para actualizar desde el Servicio necesitas…",
+      options: [
+        "Cambiar obligatoriamente a DirectQuery",
+        "Una puerta de enlace de datos instalada y en línea",
+        "Una licencia Premium por capacidad",
+        "Volver a publicar el PBIX cada día"
+      ],
+      correct: 1,
+      explanation: "La puerta de enlace es el puente entre la nube y los orígenes que no son accesibles públicamente."
+    },
+    {
+      question: "Aplicas seguridad de nivel de fila y, como autor, sigues viendo todos los datos. ¿Por qué?",
+      options: [
+        "La expresión del rol está mal escrita",
+        "RLS no restringe a quien tiene permisos de edición sobre el conjunto de datos",
+        "Falta publicar el informe",
+        "RLS solo funciona en DirectQuery"
+      ],
+      correct: 1,
+      explanation: "Hay que validarlo con Ver como rol y comprobarlo con un usuario de solo lectura."
+    }
+  ]
+};
+
+/* ------------------------------------------------------- 2. ALMACENAMIENTO */
+/* Envoltorio seguro: si el navegador bloquea el almacenamiento local
+   (modo privado, iframe restringido), la app sigue funcionando en memoria
+   durante la sesión en lugar de romperse en el primer render.            */
+
+const STORAGE_KEY = "powerbi-learning-hub-v4";
+const LEGACY_KEY = "powerbi-learning-hub-v3";
+const PASS_RATIO = 0.66;
+
+const storage = (() => {
+  let native = false;
+  try {
+    const probe = "__probe__";
+    window.localStorage.setItem(probe, "1");
+    window.localStorage.removeItem(probe);
+    native = true;
+  } catch (_) {
+    native = false;
+  }
+  const memory = {};
+  return {
+    native,
+    get(key) {
+      try { return native ? window.localStorage.getItem(key) : (memory[key] ?? null); }
+      catch (_) { return memory[key] ?? null; }
+    },
+    set(key, value) {
+      try { native ? window.localStorage.setItem(key, value) : (memory[key] = value); }
+      catch (_) { memory[key] = value; }
+    },
+    remove(key) {
+      try { native ? window.localStorage.removeItem(key) : delete memory[key]; }
+      catch (_) { delete memory[key]; }
+    }
+  };
+})();
+
+function parseState(raw) {
+  try { return JSON.parse(raw || "{}") || {}; } catch (_) { return {}; }
+}
+
+function loadState() {
+  let saved = parseState(storage.get(STORAGE_KEY));
+
+  /* Migración desde la versión anterior: se conservan capítulos y notas. */
+  if (!saved.version) {
+    const legacy = parseState(storage.get(LEGACY_KEY));
+    if (legacy.completed || legacy.notes) {
+      saved = {
+        currentChapterId: legacy.currentChapterId,
+        completed: legacy.completed,
+        visited: legacy.completed,
+        notes: legacy.notes,
+        theme: legacy.theme,
+        openUnits: legacy.openUnits,
+        view: legacy.view
+      };
+    }
+  }
+
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  return {
+    version: 4,
+    currentChapterId: Number(saved.currentChapterId) || 1,
+    completed: new Set(Array.isArray(saved.completed) ? saved.completed.map(Number) : []),
+    visited: new Set(Array.isArray(saved.visited) ? saved.visited.map(Number) : []),
+    quizAnswers: saved.quizAnswers && typeof saved.quizAnswers === "object" ? saved.quizAnswers : {},
+    notes: saved.notes && typeof saved.notes === "object" ? saved.notes : {},
+    theme: saved.theme === "dark" || saved.theme === "light" ? saved.theme : (prefersDark ? "dark" : "light"),
+    openUnits: new Set(Array.isArray(saved.openUnits) ? saved.openUnits.map(Number) : [1]),
+    view: saved.view === "course" ? "course" : "dashboard"
+  };
+}
+
+const state = loadState();
+
+function saveState() {
+  storage.set(STORAGE_KEY, JSON.stringify({
+    version: 4,
+    currentChapterId: state.currentChapterId,
+    completed: [...state.completed],
+    visited: [...state.visited],
+    quizAnswers: state.quizAnswers,
+    notes: state.notes,
+    theme: state.theme,
+    openUnits: [...state.openUnits],
+    view: state.view
+  }));
+}
+
+/* -------------------------------------------------------------- 3. RENDER */
+
+const el = id => document.getElementById(id);
+const els = {
+  app: el("app"),
+  navHome: el("navHome"),
+  navContinue: el("navContinue"),
+  chapterSearch: el("chapterSearch"),
+  unitNav: el("unitNav"),
+  sidebarPct: el("sidebarPct"),
+  sidebarProgress: el("sidebarProgress"),
+  sidebarDone: el("sidebarDone"),
+  sidebarRemaining: el("sidebarRemaining"),
+  storageWarning: el("storageWarning"),
+  mobileMenu: el("mobileMenu"),
+  overlay: el("overlay"),
+  breadcrumb: el("breadcrumb"),
+  themeToggle: el("themeToggle"),
+  profileLevel: el("profileLevel"),
+  dashboardView: el("dashboardView"),
+  courseView: el("courseView"),
+  progressRing: el("progressRing"),
+  ringPct: el("ringPct"),
+  ringMessage: el("ringMessage"),
+  resumeTitle: el("resumeTitle"),
+  resumeMeta: el("resumeMeta"),
+  resumeProgress: el("resumeProgress"),
+  statProgress: el("statProgress"),
+  statDone: el("statDone"),
+  statQuiz: el("statQuiz"),
+  statQuizSub: el("statQuizSub"),
+  statNotes: el("statNotes"),
+  unitProgressList: el("unitProgressList"),
+  nextList: el("nextList"),
+  heroContinue: el("heroContinue"),
+  heroStart: el("heroStart"),
+  chapterKicker: el("chapterKicker"),
+  chapterTitle: el("chapterTitle"),
+  chapterSummary: el("chapterSummary"),
+  chapterDuration: el("chapterDuration"),
+  chapterTopicCount: el("chapterTopicCount"),
+  chapterCodeCount: el("chapterCodeCount"),
+  chapterStatus: el("chapterStatus"),
+  objectiveList: el("objectiveList"),
+  topicGrid: el("topicGrid"),
+  lessonContent: el("lessonContent"),
+  lessonSource: el("lessonSource"),
+  specialVisual: el("specialVisual"),
+  codeSection: el("codeSection"),
+  codeStack: el("codeStack"),
+  practiceText: el("practiceText"),
+  quizIntro: el("quizIntro"),
+  quizList: el("quizList"),
+  quizScoreText: el("quizScoreText"),
+  quizScoreBar: el("quizScoreBar"),
+  retryQuiz: el("retryQuiz"),
+  railStatus: el("railStatus"),
+  railProgress: el("railProgress"),
+  railSteps: el("railSteps"),
+  chapterNotes: el("chapterNotes"),
+  notesState: el("notesState"),
+  saveNotes: el("saveNotes"),
+  completeChapter: el("completeChapter"),
+  resetChapter: el("resetChapter"),
+  exportProgress: el("exportProgress"),
+  importProgress: el("importProgress"),
+  importFile: el("importFile"),
+  resetCourse: el("resetCourse"),
+  prevChapter: el("prevChapter"),
+  nextChapter: el("nextChapter"),
+  footerProgressText: el("footerProgressText"),
+  footerProgress: el("footerProgress"),
+  toast: el("toast")
+};
+
+const escapeHtml = value => String(value)
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+/* Resaltado ligero para DAX, M, Python y JSON. Se sustituye por marcadores
+   para que una regla posterior no vuelva a procesar lo ya resaltado.     */
+function highlight(code) {
+  const parts = [];
+  const keep = (cls, text) => {
+    parts.push('<span class="' + cls + '">' + text + "</span>");
+    return "\u0000" + (parts.length - 1) + "\u0000";
+  };
+
+  let out = escapeHtml(code);
+  out = out.replace(/&quot;[^&\n]*?&quot;/g, m => keep("tok-str", m));
+  out = out.replace(/(--[^\n]*|\/\/[^\n]*|#[^\n]*)/g, m => keep("tok-com", m));
+  out = out.replace(/\b(VAR|RETURN|let|in|each|if|then|else|type|true|false|import|def|and|or|not|null)\b/g,
+    m => keep("tok-kw", m));
+  out = out.replace(/\b([A-Z][A-Z0-9_]{2,})(?=\s*\()/g, m => keep("tok-fn", m));
+
+  return out.replace(/\u0000(\d+)\u0000/g, (_, i) => parts[Number(i)]);
+}
+
+const allChapterIds = () => Object.keys(courseData.chapters).map(Number).sort((a, b) => a - b);
+const unitForChapter = id => courseData.units.find(unit => unit.chapters.includes(Number(id)));
+const chapterCode = id => codeLibrary[id] || [];
+const chapterQuiz = id => quizData[id] || [];
+
+function quizStats(id) {
+  const questions = chapterQuiz(id);
+  const answers = state.quizAnswers[id] || [];
+  let answered = 0;
+  let correct = 0;
+  questions.forEach((question, index) => {
+    const given = answers[index];
+    if (given === null || given === undefined) return;
+    answered += 1;
+    if (given === question.correct) correct += 1;
+  });
+  const total = questions.length;
+  const ratio = total ? correct / total : 0;
+  return { total, answered, correct, ratio, passed: total > 0 && ratio >= PASS_RATIO };
+}
+
+/* Progreso real del capítulo: lectura abierta 30 · autoevaluación 40 · cierre 30 */
+function chapterProgress(id) {
+  const quiz = quizStats(id);
+  let value = 0;
+  if (state.visited.has(Number(id))) value += 30;
+  value += 40 * quiz.ratio;
+  if (state.completed.has(Number(id))) value += 30;
+  return Math.round(Math.min(100, value));
+}
+
+function courseProgress() {
+  const ids = allChapterIds();
+  const sum = ids.reduce((acc, id) => acc + chapterProgress(id), 0);
+  return Math.round(sum / ids.length);
+}
+
+function unitProgress(unit) {
+  const done = unit.chapters.filter(id => state.completed.has(id)).length;
+  const weighted = Math.round(
+    unit.chapters.reduce((acc, id) => acc + chapterProgress(id), 0) / unit.chapters.length
+  );
+  return { done, total: unit.chapters.length, pct: weighted };
+}
+
+let toastTimer;
+function showToast(message) {
+  els.toast.textContent = message;
+  els.toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => els.toast.classList.remove("show"), 2200);
+}
+
+function setMenu(open) {
+  els.app.classList.toggle("menu-open", open);
+  els.mobileMenu.setAttribute("aria-expanded", String(open));
+}
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  els.themeToggle.textContent = theme === "dark" ? "☀" : "◐";
+}
+
+function syncHash() {
+  const target = state.view === "course" ? "#cap-" + state.currentChapterId : "#inicio";
+  if (window.location.hash === target) return;
+  try { window.history.replaceState(null, "", target); }
+  catch (_) { /* algunos contextos embebidos no permiten history API */ }
+}
+
+/* --- sidebar --- */
+function searchHaystack(id) {
+  const chapter = courseData.chapters[id];
+  const lesson = chapterLessons[id];
+  const code = chapterCode(id).map(block => block.label + " " + block.value).join(" ");
+  const lessonText = lesson
+    ? [lesson.lead, ...lesson.sections.map(s => s.title + " " + s.body), ...lesson.remember].join(" ")
+    : "";
+  return (id + " " + chapter.title + " " + chapter.summary + " " +
+    chapter.topics.join(" ") + " " + lessonText + " " + code).toLowerCase();
+}
+
+function renderSidebar(filter = "") {
+  const query = String(filter || "").trim().toLowerCase();
+  els.unitNav.innerHTML = "";
+  let matches = 0;
+
+  courseData.units.forEach(unit => {
+    const visible = unit.chapters.filter(id => !query || searchHaystack(id).includes(query));
+    if (!visible.length) return;
+    matches += visible.length;
+
+    const wrapper = document.createElement("section");
+    wrapper.className = "unit";
+    const shouldOpen = Boolean(query) || state.openUnits.has(unit.id);
+    if (shouldOpen) wrapper.classList.add("open");
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "unit-toggle";
+    toggle.setAttribute("aria-expanded", String(shouldOpen));
+    toggle.innerHTML =
+      '<span class="unit-num">' + String(unit.id).padStart(2, "0") + "</span>" +
+      '<span class="unit-title"><strong>' + escapeHtml(unit.title) + "</strong>" +
+      "<span>" + escapeHtml(unit.subtitle) + "</span></span>" +
+      '<span class="unit-arrow" aria-hidden="true">›</span>';
+
+    toggle.addEventListener("click", () => {
+      if (state.openUnits.has(unit.id)) state.openUnits.delete(unit.id);
+      else state.openUnits.add(unit.id);
+      saveState();
+      renderSidebar(els.chapterSearch.value);
+    });
+
+    const list = document.createElement("div");
+    list.className = "chapter-list";
+
+    visible.forEach(id => {
+      const chapter = courseData.chapters[id];
+      const done = state.completed.has(id);
+      const started = !done && chapterProgress(id) > 0;
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "chapter-btn" + (done ? " done" : "") + (started ? " started" : "");
+      if (state.currentChapterId === id && state.view === "course") {
+        button.classList.add("active");
+        button.setAttribute("aria-current", "true");
+      }
+      button.innerHTML =
+        '<span class="chapter-index">' + (done ? "✓" : id) + "</span>" +
+        '<span class="chapter-name">' + escapeHtml(chapter.title) + "</span>" +
+        '<span class="chapter-state">' + (done ? "hecho" : started ? chapterProgress(id) + "%" : "") + "</span>";
+      button.addEventListener("click", () => goToChapter(id));
+      list.appendChild(button);
+    });
+
+    wrapper.append(toggle, list);
+    els.unitNav.appendChild(wrapper);
+  });
+
+  if (query && !matches) {
+    const empty = document.createElement("p");
+    empty.className = "search-empty";
+    empty.textContent = "Ningún capítulo menciona “" + filter.trim() + "”. Prueba con un término más corto.";
+    els.unitNav.appendChild(empty);
+  }
+}
+
+/* --- progreso global --- */
+function renderGlobalProgress() {
+  const ids = allChapterIds();
+  const pct = courseProgress();
+  const done = state.completed.size;
+  const remaining = ids.length - done;
+  const passedQuiz = ids.filter(id => quizStats(id).passed).length;
+  const totalCorrect = ids.reduce((acc, id) => acc + quizStats(id).correct, 0);
+  const totalQuestions = ids.reduce((acc, id) => acc + quizStats(id).total, 0);
+
+  els.sidebarPct.textContent = pct + "%";
+  els.sidebarProgress.style.width = pct + "%";
+  els.sidebarDone.textContent = done + " de " + ids.length + " capítulos";
+  els.sidebarRemaining.textContent = remaining + " pendiente" + (remaining === 1 ? "" : "s");
+
+  els.statProgress.textContent = pct + "%";
+  els.statDone.textContent = done + " / " + ids.length;
+  els.statQuiz.textContent = passedQuiz + " / " + ids.length;
+  els.statQuizSub.textContent = totalCorrect + " de " + totalQuestions + " respuestas correctas";
+  els.statNotes.textContent = Object.values(state.notes).filter(v => String(v).trim()).length;
+
+  els.progressRing.style.setProperty("--p", pct);
+  els.progressRing.setAttribute("aria-label", "Progreso del curso: " + pct + "%");
+  els.ringPct.textContent = pct + "%";
+  els.footerProgressText.textContent = pct + "%";
+  els.footerProgress.style.width = pct + "%";
+
+  els.profileLevel.textContent =
+    pct >= 80 ? "Nivel avanzado" : pct >= 45 ? "Nivel intermedio" : "Nivel inicial";
+
+  els.ringMessage.textContent =
+    pct === 100 ? "Ruta completada. Puedes volver a cualquier capítulo para repasar."
+      : pct >= 60 ? "Vas muy bien: ya superaste más de la mitad de la ruta."
+      : pct > 0 ? "El progreso combina lectura, autoevaluación y capítulos cerrados."
+      : "Empieza por el primer capítulo y construye la ruta paso a paso.";
+}
+
+/* --- dashboard --- */
+function renderDashboard() {
+  const chapter = courseData.chapters[state.currentChapterId];
+  const currentUnit = unitForChapter(state.currentChapterId);
+
+  els.resumeTitle.textContent = "Cap. " + state.currentChapterId + " · " + chapter.title;
+  els.resumeMeta.textContent = "Unidad " + currentUnit.id;
+  els.resumeProgress.style.width = chapterProgress(state.currentChapterId) + "%";
+
+  els.unitProgressList.innerHTML = "";
+  courseData.units.forEach(item => {
+    const p = unitProgress(item);
+    const row = document.createElement("div");
+    row.className = "unit-progress-row";
+    row.innerHTML =
+      '<div class="unit-progress-name"><strong>' + String(item.id).padStart(2, "0") +
+      " · " + escapeHtml(item.title) + "</strong><span>" + p.done + " de " + p.total +
+      " capítulos cerrados</span></div>" +
+      '<div class="progress-track"><div class="progress-fill" style="width:' + p.pct + '%"></div></div>' +
+      '<div class="pct">' + p.pct + "%</div>";
+    els.unitProgressList.appendChild(row);
+  });
+
+  const ids = allChapterIds();
+  const startIndex = Math.max(0, ids.indexOf(state.currentChapterId));
+  const rotated = [...ids.slice(startIndex), ...ids.slice(0, startIndex)];
+  const pending = rotated.filter(id => !state.completed.has(id)).slice(0, 4);
+  const shown = pending.length ? pending : ids.slice(-4);
+
+  els.nextList.innerHTML = "";
+  shown.forEach(id => {
+    const item = courseData.chapters[id];
+    const unit = unitForChapter(id);
+    const pct = chapterProgress(id);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "next-item";
+    button.innerHTML =
+      '<span class="next-num">' + String(id).padStart(2, "0") + "</span>" +
+      '<span class="next-copy"><strong>' + escapeHtml(item.title) + "</strong>" +
+      "<span>Unidad " + unit.id + " · " + item.duration + " min" +
+      (pct > 0 ? " · " + pct + "% avanzado" : "") + "</span></span>" +
+      '<span class="next-arrow" aria-hidden="true">→</span>';
+    button.addEventListener("click", () => goToChapter(id));
+    els.nextList.appendChild(button);
+  });
+}
+
+/* --- lección --- */
+function renderLessonContent(id) {
+  const lesson = chapterLessons[id];
+  els.lessonSource.textContent = "Lectura guiada · Cap. " + id;
+
+  if (!lesson) {
+    els.lessonContent.innerHTML = "<p>Contenido en preparación.</p>";
+    return;
+  }
+
+  els.lessonContent.innerHTML =
+    '<p class="lesson-lead">' + lesson.lead + "</p>" +
+    '<div class="content-blocks">' +
+    lesson.sections.map((section, index) =>
+      '<article class="content-block">' +
+      '<div class="content-index">' + String(index + 1).padStart(2, "0") + "</div><div>" +
+      "<h3>" + section.title + "</h3><p>" + section.body + "</p>" +
+      (Array.isArray(section.points) && section.points.length
+        ? '<ul class="content-points">' + section.points.map(p => "<li>" + p + "</li>").join("") + "</ul>"
+        : "") +
+      (section.callout ? '<div class="content-note">💡 ' + section.callout + "</div>" : "") +
+      "</div></article>"
+    ).join("") +
+    "</div>" +
+    '<div class="remember-box"><strong>✓ Qué debes recordar</strong><ul>' +
+    lesson.remember.map(item => "<li>" + item + "</li>").join("") +
+    "</ul></div>";
+}
+
+function renderSpecialVisual(id) {
+  if (id === 1) {
+    const steps = [
+      ["1", "Conectar", "Orígenes de datos"],
+      ["2", "Transformar", "Power Query"],
+      ["3", "Modelar", "Modelo tabular"],
+      ["4", "Visualizar", "Informe"],
+      ["5", "Publicar", "Servicio Power BI"]
+    ];
+    els.specialVisual.innerHTML =
+      '<div class="flow" aria-label="Flujo general de trabajo">' +
+      steps.map(([n, t, s]) =>
+        '<div class="flow-step"><b>' + n + "</b><strong>" + t + "</strong><span>" + s + "</span></div>"
+      ).join("") + "</div>";
+    return;
+  }
+
+  if (id === 6) {
+    els.specialVisual.innerHTML =
+      '<div style="margin-top:16px;border:1px solid var(--border);border-radius:14px;' +
+      'background:var(--surface-2);padding:16px">' +
+      '<svg viewBox="0 0 520 250" width="100%" height="auto" role="img" ' +
+      'aria-label="Esquema en estrella: una tabla de hechos rodeada de cuatro dimensiones">' +
+      '<g font-family="Inter, sans-serif" font-size="11">' +
+      '<line x1="260" y1="125" x2="90"  y2="45"  stroke="#94a3b8" stroke-width="1.4"/>' +
+      '<line x1="260" y1="125" x2="430" y2="45"  stroke="#94a3b8" stroke-width="1.4"/>' +
+      '<line x1="260" y1="125" x2="90"  y2="205" stroke="#94a3b8" stroke-width="1.4"/>' +
+      '<line x1="260" y1="125" x2="430" y2="205" stroke="#94a3b8" stroke-width="1.4"/>' +
+      '<rect x="198" y="100" width="124" height="50" rx="9" fill="#f2c811"/>' +
+      '<text x="260" y="121" text-anchor="middle" font-weight="800" fill="#111827">Ventas</text>' +
+      '<text x="260" y="137" text-anchor="middle" font-size="9" fill="#4b3f00">tabla de hechos</text>' +
+      '<rect x="28"  y="24"  width="124" height="42" rx="9" fill="#1f2937"/>' +
+      '<text x="90"  y="50"  text-anchor="middle" fill="#e5e7eb">Calendario</text>' +
+      '<rect x="368" y="24"  width="124" height="42" rx="9" fill="#1f2937"/>' +
+      '<text x="430" y="50"  text-anchor="middle" fill="#e5e7eb">Cliente</text>' +
+      '<rect x="28"  y="184" width="124" height="42" rx="9" fill="#1f2937"/>' +
+      '<text x="90"  y="210" text-anchor="middle" fill="#e5e7eb">Producto</text>' +
+      '<rect x="368" y="184" width="124" height="42" rx="9" fill="#1f2937"/>' +
+      '<text x="430" y="210" text-anchor="middle" fill="#e5e7eb">Vendedor</text>' +
+      '<text x="168" y="80"  font-size="9" fill="#94a3b8">1 → *</text>' +
+      '<text x="336" y="80"  font-size="9" fill="#94a3b8">1 → *</text>' +
+      '<text x="168" y="178" font-size="9" fill="#94a3b8">1 → *</text>' +
+      '<text x="336" y="178" font-size="9" fill="#94a3b8">1 → *</text>' +
+      "</g></svg>" +
+      '<p style="margin:10px 0 0;color:var(--muted);font-size:10px;line-height:1.6">' +
+      "Cada dimensión filtra la tabla de hechos en una sola dirección. Ninguna dimensión " +
+      "cuelga de otra: eso sería un copo de nieve.</p></div>";
+    return;
+  }
+
+  els.specialVisual.innerHTML = "";
+}
+
+function renderCode(id) {
+  const blocks = chapterCode(id);
+  els.chapterCodeCount.textContent = "⌘ " + blocks.length + (blocks.length === 1 ? " ejemplo" : " ejemplos");
+
+  if (!blocks.length) {
+    els.codeSection.hidden = true;
+    els.codeStack.innerHTML = "";
+    return;
+  }
+
+  els.codeSection.hidden = false;
+  els.codeStack.innerHTML = blocks.map((block, index) =>
+    '<div class="code-item">' +
+    '<p class="code-intro">' + escapeHtml(block.intro) + "</p>" +
+    '<div class="code-card"><div class="code-head"><span>' + escapeHtml(block.label) + "</span>" +
+    '<button class="copy-code" type="button" data-code-index="' + index + '">Copiar</button></div>' +
+    "<pre><code>" + highlight(block.value) + "</code></pre></div></div>"
+  ).join("");
+
+  els.codeStack.querySelectorAll("[data-code-index]").forEach(button => {
+    button.addEventListener("click", async () => {
+      const source = blocks[Number(button.dataset.codeIndex)].value;
+      try {
+        await navigator.clipboard.writeText(source);
+        showToast("Código copiado al portapapeles");
+      } catch (_) {
+        const range = document.createRange();
+        range.selectNodeContents(button.closest(".code-card").querySelector("code"));
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        showToast("Selecciona y copia con Ctrl+C");
+      }
+    });
+  });
+}
+
+/* --- autoevaluación --- */
+function renderQuiz(id) {
+  const questions = chapterQuiz(id);
+  const answers = state.quizAnswers[id] || [];
+  const stats = quizStats(id);
+
+  els.quizIntro.textContent = questions.length
+    ? "Responde las " + questions.length + " preguntas de control. Puedes repetirlas las veces que quieras."
+    : "Autoevaluación no disponible para este capítulo.";
+
+  els.quizScoreText.textContent = stats.correct + " / " + stats.total + " correctas" +
+    (stats.passed ? " · superada" : stats.answered === stats.total && stats.total ? " · repasa el capítulo" : "");
+  els.quizScoreBar.style.width = (stats.total ? (stats.correct / stats.total) * 100 : 0) + "%";
+  els.retryQuiz.disabled = stats.answered === 0;
+
+  els.quizList.innerHTML = questions.map((question, qIndex) => {
+    const given = answers[qIndex];
+    const answered = given !== null && given !== undefined;
+    const isCorrect = answered && given === question.correct;
+
+    const options = question.options.map((option, oIndex) => {
+      let cls = "quiz-option";
+      if (answered && oIndex === question.correct) cls += " correct";
+      if (answered && oIndex === given && !isCorrect) cls += " wrong";
+      return '<button type="button" class="' + cls + '" data-q="' + qIndex + '" data-o="' + oIndex + '"' +
+        (answered ? " disabled" : "") + ">" + escapeHtml(option) + "</button>";
+    }).join("");
+
+    const feedback = answered
+      ? '<div class="quiz-feedback ' + (isCorrect ? "ok" : "bad") + '">' +
+        (isCorrect ? "Correcto. " : "Revisa este concepto. ") + escapeHtml(question.explanation) + "</div>"
+      : '<div class="quiz-feedback"></div>';
+
+    return '<div class="quiz-block">' +
+      '<div class="quiz-prompt"><b>' + (qIndex + 1) + "</b><span>" + escapeHtml(question.question) + "</span></div>" +
+      '<div class="quiz-options">' + options + "</div>" + feedback + "</div>";
+  }).join("");
+
+  els.quizList.querySelectorAll(".quiz-option:not([disabled])").forEach(button => {
+    button.addEventListener("click", () => {
+      const qIndex = Number(button.dataset.q);
+      const oIndex = Number(button.dataset.o);
+      const current = state.quizAnswers[id] ? state.quizAnswers[id].slice() : [];
+      current[qIndex] = oIndex;
+      state.quizAnswers[id] = current;
+      saveState();
+
+      const wasPassed = quizStats(id).passed;
+      renderQuiz(id);
+      renderChapterMeta(id);
+      renderSidebar(els.chapterSearch.value);
+      renderGlobalProgress();
+
+      if (oIndex === questions[qIndex].correct) {
+        showToast(wasPassed && quizStats(id).answered === questions.length
+          ? "Autoevaluación superada"
+          : "Respuesta correcta");
+      }
+    });
+  });
+}
+
+/* --- cabecera y panel lateral del capítulo --- */
+function renderChapterMeta(id) {
+  const chapter = courseData.chapters[id];
+  const done = state.completed.has(id);
+  const stats = quizStats(id);
+  const pct = chapterProgress(id);
+
+  els.chapterStatus.textContent = done ? "✓ Completado" : pct > 0 ? "En curso · " + pct + "%" : "Pendiente";
+  els.chapterStatus.className = "chip " + (done ? "success" : "pending");
+
+  els.railStatus.textContent = done ? "Completado" : pct > 0 ? "En curso" : "Pendiente";
+  els.railStatus.style.color = done ? "var(--success)" : "var(--muted)";
+  els.railProgress.style.width = pct + "%";
+
+  const steps = [
+    { label: "Lección abierta", on: state.visited.has(id) },
+    { label: "Autoevaluación " + stats.correct + "/" + stats.total, on: stats.passed },
+    { label: "Capítulo marcado como completado", on: done }
+  ];
+  els.railSteps.innerHTML = steps.map(step =>
+    '<div class="rail-step' + (step.on ? " on" : "") + '"><i>' + (step.on ? "✓" : "") + "</i><span>" +
+    step.label + "</span></div>"
+  ).join("");
+
+  els.completeChapter.disabled = done;
+  els.completeChapter.textContent = done ? "✓ Capítulo completado" : "✓ Marcar completado";
+  els.chapterDuration.textContent = "◷ " + chapter.duration + " min";
+  els.chapterTopicCount.textContent = "☷ " + chapter.topics.length + " temas";
+}
+
+function renderChapter() {
+  const id = state.currentChapterId;
+  const chapter = courseData.chapters[id];
+  const lesson = chapterLessons[id];
+  const unit = unitForChapter(id);
+
+  if (!state.visited.has(id)) {
+    state.visited.add(id);
+    saveState();
+  }
+
+  els.breadcrumb.innerHTML = "<strong>Unidad " + unit.id + "</strong> · Capítulo " + id + " · " +
+    escapeHtml(chapter.title);
+  els.chapterKicker.textContent = "Unidad " + unit.id + " · " + unit.title;
+  els.chapterTitle.textContent = "Capítulo " + id + " · " + chapter.title;
+  els.chapterSummary.textContent = chapter.summary;
+
+  els.objectiveList.innerHTML = chapter.objectives.map(item =>
+    '<li><span class="check" aria-hidden="true">✓</span><span>' + escapeHtml(item) + "</span></li>"
+  ).join("");
+
+  els.topicGrid.innerHTML = chapter.topics.map((topic, index) =>
+    '<div class="topic"><strong>' + String(index + 1).padStart(2, "0") + " · " + escapeHtml(topic) +
+    "</strong><span>" +
+    escapeHtml((lesson && lesson.topicDescriptions && lesson.topicDescriptions[index]) || "Concepto clave del capítulo") +
+    "</span></div>"
+  ).join("");
+
+  renderSpecialVisual(id);
+  renderLessonContent(id);
+  renderCode(id);
+  renderQuiz(id);
+  renderChapterMeta(id);
+
+  els.practiceText.textContent = chapter.practice;
+  els.chapterNotes.value = state.notes[id] || "";
+  els.notesState.textContent = state.notes[id] ? "Guardado" : "";
+
+  const ids = allChapterIds();
+  const index = ids.indexOf(id);
+  els.prevChapter.disabled = index <= 0;
+  els.nextChapter.disabled = index >= ids.length - 1;
+  els.prevChapter.textContent = index > 0 ? "← Cap. " + ids[index - 1] : "← Anterior";
+  els.nextChapter.textContent = index < ids.length - 1 ? "Cap. " + ids[index + 1] + " →" : "Fin del curso";
+}
+
+function renderAll() {
+  applyTheme(state.theme);
+  els.storageWarning.classList.toggle("show", !storage.native);
+  els.dashboardView.classList.toggle("active", state.view === "dashboard");
+  els.courseView.classList.toggle("active", state.view === "course");
+  els.navHome.classList.toggle("active", state.view === "dashboard");
+  els.navContinue.classList.toggle("active", state.view === "course");
+
+  if (state.view === "dashboard") {
+    els.breadcrumb.innerHTML = "<strong>Inicio</strong> · Tu ruta de Power BI";
+    renderDashboard();
+  } else {
+    renderChapter();
+  }
+
+  renderSidebar(els.chapterSearch.value);
+  renderGlobalProgress();
+  syncHash();
+}
+
+/* -------------------------------------------------------------- 4. EVENTOS */
+
+function scrollTop() {
+  try { window.scrollTo({ top: 0, behavior: "smooth" }); }
+  catch (_) { try { window.scrollTo(0, 0); } catch (__) { /* entorno sin scroll */ } }
+}
+
+function setView(view) {
+  state.view = view;
+  saveState();
+  renderAll();
+  setMenu(false);
+  scrollTop();
+}
+
+function goToChapter(id, options = {}) {
+  const target = Number(id);
+  if (!courseData.chapters[target]) return;
+  state.currentChapterId = target;
+  state.view = "course";
+  const unit = unitForChapter(target);
+  if (unit) state.openUnits.add(unit.id);
+  saveState();
+  renderAll();
+  setMenu(false);
+  scrollTop();
+  if (!options.silent) {
+    try { els.chapterTitle.setAttribute("tabindex", "-1"); els.chapterTitle.focus({ preventScroll: true }); }
+    catch (_) { /* navegadores sin preventScroll */ }
+  }
+}
+
+els.navHome.addEventListener("click", () => setView("dashboard"));
+els.navContinue.addEventListener("click", () => goToChapter(state.currentChapterId));
+els.heroContinue.addEventListener("click", () => goToChapter(state.currentChapterId));
+els.heroStart.addEventListener("click", () => goToChapter(1));
+
+let searchTimer;
+els.chapterSearch.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => renderSidebar(els.chapterSearch.value), 120);
+});
+
+els.themeToggle.addEventListener("click", () => {
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  applyTheme(state.theme);
+  saveState();
+});
+
+els.mobileMenu.addEventListener("click", () => setMenu(!els.app.classList.contains("menu-open")));
+els.overlay.addEventListener("click", () => setMenu(false));
+
+els.saveNotes.addEventListener("click", () => {
+  state.notes[state.currentChapterId] = els.chapterNotes.value;
+  saveState();
+  renderGlobalProgress();
+  els.notesState.textContent = "Guardado";
+  showToast("Notas guardadas");
+});
+
+let noteTimer;
+els.chapterNotes.addEventListener("input", () => {
+  els.notesState.textContent = "Escribiendo…";
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => {
+    state.notes[state.currentChapterId] = els.chapterNotes.value;
+    saveState();
+    renderGlobalProgress();
+    els.notesState.textContent = "Guardado automáticamente";
+  }, 600);
+});
+
+els.completeChapter.addEventListener("click", () => {
+  const id = state.currentChapterId;
+  const stats = quizStats(id);
+  state.completed.add(id);
+  saveState();
+  renderAll();
+  showToast(stats.passed
+    ? "Capítulo " + id + " completado"
+    : "Capítulo " + id + " completado. La autoevaluación sigue pendiente de superar.");
+});
+
+els.retryQuiz.addEventListener("click", () => {
+  const id = state.currentChapterId;
+  delete state.quizAnswers[id];
+  saveState();
+  renderAll();
+  showToast("Autoevaluación reiniciada");
+});
+
+els.resetChapter.addEventListener("click", () => {
+  const id = state.currentChapterId;
+  if (!window.confirm("Se borrarán el progreso, las respuestas y las notas del capítulo " + id + ". ¿Continuar?")) return;
+  state.completed.delete(id);
+  state.visited.delete(id);
+  delete state.quizAnswers[id];
+  delete state.notes[id];
+  saveState();
+  renderAll();
+  showToast("Capítulo " + id + " restablecido");
+});
+
+els.resetCourse.addEventListener("click", () => {
+  if (!window.confirm("Se borrará todo el progreso del curso, incluidas las notas de los 16 capítulos. Esta acción no se puede deshacer. ¿Continuar?")) return;
+  state.completed.clear();
+  state.visited.clear();
+  state.quizAnswers = {};
+  state.notes = {};
+  state.currentChapterId = 1;
+  state.view = "dashboard";
+  saveState();
+  renderAll();
+  showToast("Curso reiniciado");
+});
+
+els.exportProgress.addEventListener("click", () => {
+  const payload = {
+    app: "powerbi-learning-hub",
+    version: 4,
+    exportedAt: new Date().toISOString(),
+    currentChapterId: state.currentChapterId,
+    completed: [...state.completed],
+    visited: [...state.visited],
+    quizAnswers: state.quizAnswers,
+    notes: state.notes
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "avance-powerbi-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast("Avance exportado");
+});
+
+els.importProgress.addEventListener("click", () => els.importFile.click());
+
+els.importFile.addEventListener("change", () => {
+  const file = els.importFile.files && els.importFile.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(String(reader.result)); }
+    catch (_) { showToast("El archivo no es un JSON válido"); return; }
+
+    if (!data || data.app !== "powerbi-learning-hub") {
+      showToast("Ese archivo no corresponde a un avance de este curso");
+      return;
+    }
+    state.completed = new Set((data.completed || []).map(Number));
+    state.visited = new Set((data.visited || data.completed || []).map(Number));
+    state.quizAnswers = data.quizAnswers && typeof data.quizAnswers === "object" ? data.quizAnswers : {};
+    state.notes = data.notes && typeof data.notes === "object" ? data.notes : {};
+    state.currentChapterId = Number(data.currentChapterId) || 1;
+    saveState();
+    renderAll();
+    showToast("Avance importado");
+  };
+  reader.onerror = () => showToast("No se pudo leer el archivo");
+  reader.readAsText(file);
+  els.importFile.value = "";
+});
+
+els.prevChapter.addEventListener("click", () => {
+  const ids = allChapterIds();
+  const index = ids.indexOf(state.currentChapterId);
+  if (index > 0) goToChapter(ids[index - 1]);
+});
+
+els.nextChapter.addEventListener("click", () => {
+  const ids = allChapterIds();
+  const index = ids.indexOf(state.currentChapterId);
+  if (index < ids.length - 1) goToChapter(ids[index + 1]);
+});
+
+/* Atajos: Ctrl/Cmd + Shift + flecha. Se evita Alt+flecha porque en Windows
+   equivale a atrás/adelante del navegador.                               */
+document.addEventListener("keydown", event => {
+  const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement && document.activeElement.tagName);
+  if (typing) return;
+
+  if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "ArrowLeft") {
+    event.preventDefault();
+    els.prevChapter.click();
+  }
+  if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "ArrowRight") {
+    event.preventDefault();
+    els.nextChapter.click();
+  }
+  if (event.key === "Escape" && els.app.classList.contains("menu-open")) setMenu(false);
+});
+
+/* Enlaces profundos: #cap-9 abre directamente ese capítulo. */
+function readHash() {
+  const match = /^#cap-(\d+)$/.exec(window.location.hash || "");
+  if (match && courseData.chapters[Number(match[1])]) {
+    state.currentChapterId = Number(match[1]);
+    state.view = "course";
+    const unit = unitForChapter(state.currentChapterId);
+    if (unit) state.openUnits.add(unit.id);
+    return true;
+  }
+  if (window.location.hash === "#inicio") {
+    state.view = "dashboard";
+    return true;
+  }
+  return false;
+}
+
+window.addEventListener("hashchange", () => {
+  if (readHash()) renderAll();
+});
+
+/* Verificación de integridad: avisa en consola si falta contenido o si el
+   JS espera un elemento que no existe en el HTML.                        */
+(function auditCourse() {
+  const problems = [];
+  Object.entries(els).forEach(([key, node]) => { if (!node) problems.push("Falta el elemento #" + key); });
+  allChapterIds().forEach(id => {
+    if (!chapterLessons[id]) problems.push("Capítulo " + id + " sin lección desarrollada");
+    if (chapterQuiz(id).length < 3) problems.push("Capítulo " + id + " con menos de 3 preguntas");
+    chapterQuiz(id).forEach((q, i) => {
+      if (q.correct < 0 || q.correct >= q.options.length) {
+        problems.push("Capítulo " + id + ", pregunta " + (i + 1) + ": índice de respuesta fuera de rango");
+      }
+    });
+  });
+  if (problems.length) console.warn("[Learning Hub] Revisión de contenido:", problems);
+  else console.info("[Learning Hub] Contenido verificado: 16 capítulos, 48 preguntas, sin elementos faltantes.");
+})();
+
+readHash();
+renderAll();
+</script>
+</body>
+</html>
