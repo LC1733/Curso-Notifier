@@ -3984,13 +3984,17 @@ els.saveNotes.addEventListener("click", () => {
 
 let noteTimer;
 els.chapterNotes.addEventListener("input", () => {
+  const chapterId = state.currentChapterId;
+  const noteValue = els.chapterNotes.value;
+  state.notes[chapterId] = noteValue;
   els.notesState.textContent = "Escribiendo…";
   clearTimeout(noteTimer);
   noteTimer = setTimeout(() => {
-    state.notes[state.currentChapterId] = els.chapterNotes.value;
     saveState();
     renderGlobalProgress();
-    els.notesState.textContent = "Guardado automáticamente";
+    if (state.currentChapterId === chapterId && els.chapterNotes.value === noteValue) {
+      els.notesState.textContent = "Guardado automáticamente";
+    }
   }, 600);
 });
 
@@ -4076,11 +4080,21 @@ els.importFile.addEventListener("change", () => {
       showToast("Ese archivo no corresponde a un avance de este curso");
       return;
     }
-    state.completed = new Set((data.completed || []).map(Number));
-    state.visited = new Set((data.visited || data.completed || []).map(Number));
-    state.quizAnswers = data.quizAnswers && typeof data.quizAnswers === "object" ? data.quizAnswers : {};
-    state.notes = data.notes && typeof data.notes === "object" ? data.notes : {};
-    state.currentChapterId = Number(data.currentChapterId) || 1;
+    const validIds = new Set(allChapterIds());
+    const validChapterList = value => Array.isArray(value)
+      ? value.map(Number).filter(id => validIds.has(id))
+      : [];
+    const validChapterObject = value => {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+      return Object.fromEntries(Object.entries(value).filter(([id]) => validIds.has(Number(id))));
+    };
+    const importedCurrentChapter = Number(data.currentChapterId);
+
+    state.completed = new Set(validChapterList(data.completed));
+    state.visited = new Set(validChapterList(data.visited || data.completed));
+    state.quizAnswers = validChapterObject(data.quizAnswers);
+    state.notes = validChapterObject(data.notes);
+    state.currentChapterId = validIds.has(importedCurrentChapter) ? importedCurrentChapter : 1;
     saveState();
     renderAll();
     showToast("Avance importado");
@@ -4141,8 +4155,22 @@ window.addEventListener("hashchange", () => {
 });
 
 /* Verificación de integridad: avisa en consola si falta contenido o si el
-   JS espera un elemento que no existe en el HTML.                        */
-(function auditCourse() {
+   JS espera un elemento que no existe en el HTML.
+   El registro pasa por safeLog porque algunos entornos embebidos exponen
+   un objeto console incompleto (sin info, sin warn) y una llamada directa
+   detendría la ejecución del script.                                     */
+function safeLog(level, ...args) {
+  try {
+    const target = (typeof console !== "undefined" && console) || null;
+    if (!target) return;
+    const method = typeof target[level] === "function" ? target[level]
+      : typeof target.log === "function" ? target.log
+      : null;
+    if (method) method.apply(target, args);
+  } catch (_) { /* sin consola disponible: no es un fallo de la aplicación */ }
+}
+
+function auditCourse() {
   const problems = [];
   Object.entries(els).forEach(([key, node]) => { if (!node) problems.push("Falta el elemento #" + key); });
   allChapterIds().forEach(id => {
@@ -4154,12 +4182,17 @@ window.addEventListener("hashchange", () => {
       }
     });
   });
-  if (problems.length) console.warn("[Learning Hub] Revisión de contenido:", problems);
-  else console.info("[Learning Hub] Contenido verificado: 16 capítulos, 48 preguntas, sin elementos faltantes.");
-})();
+  if (problems.length) safeLog("warn", "[Learning Hub] Revisión de contenido:", problems);
+  else safeLog("info", "[Learning Hub] Contenido verificado: 16 capítulos, 48 preguntas, sin elementos faltantes.");
+}
 
+/* Arranque. La auditoría va al final: es una ayuda de desarrollo y nunca
+   debe poder impedir que la aplicación se dibuje.                        */
 readHash();
 renderAll();
+
+try { auditCourse(); }
+catch (error) { safeLog("warn", "[Learning Hub] La verificación de contenido no pudo ejecutarse:", error); }
 </script>
 </body>
 </html>
